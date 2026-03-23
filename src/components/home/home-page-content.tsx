@@ -12,7 +12,8 @@ import { TrustBoundaryCard } from "@/components/trust/trust-boundary-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { guardianTierBadgeVariant, guardianTierLabel } from "@/lib/guardian-tier-ui";
+import { guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
+import type { GuardianTier } from "@/types/domain";
 import { ArrowRight, ChevronRight, MapPin, Plane, Sparkles, Star, Sun } from "lucide-react";
 
 const icons = {
@@ -33,7 +34,39 @@ export async function HomePageContent() {
   const t = await getTranslations("Home");
   const tSvc = await getTranslations("Services");
   const tExp = await getTranslations("Explore");
+  const tTier = await getTranslations("GuardianTier");
   const locale = await getLocale();
+
+  const categoryChipMap = t.raw("categoryChip") as Record<string, string> | undefined;
+  const regionCopy = t.raw("region") as Record<string, { name: string; desc: string }> | undefined;
+
+  function categoryLabel(slug: string, fallback: string) {
+    return categoryChipMap?.[slug] ?? fallback;
+  }
+
+  function regionTitle(slug: string, fallback: string) {
+    return regionCopy?.[slug]?.name ?? fallback;
+  }
+
+  function regionDesc(slug: string, fallback: string) {
+    return regionCopy?.[slug]?.desc ?? fallback;
+  }
+
+  function tierLabel(tier: GuardianTier) {
+    return tTier(tier);
+  }
+
+  function spotlightHeadline(userId: string, fallback: string) {
+    if (userId === "g1") return t("spotlightHeadlineG1");
+    if (userId === "g2") return t("spotlightHeadlineG2");
+    return fallback;
+  }
+
+  function spotlightTagline(userId: string, fallback: string) {
+    if (userId === "g1") return t("spotlightTaglineG1");
+    if (userId === "g2") return t("spotlightTaglineG2");
+    return fallback;
+  }
 
   const approvedPosts = mockContentPosts.filter((p) => p.status === "approved");
   const featuredPosts = [...approvedPosts]
@@ -112,6 +145,7 @@ export async function HomePageContent() {
                 {t("viewServicesLink")}
               </Link>
             </p>
+            <p className="text-muted-foreground mt-3 max-w-xl text-xs leading-relaxed">{t("scopeNote")}</p>
           </div>
 
           {/* Product showcase */}
@@ -159,7 +193,7 @@ export async function HomePageContent() {
                     href="/explore"
                     className="border-border hover:border-primary/40 hover:bg-[var(--brand-primary-soft)]/80 text-foreground rounded-full border bg-background px-3 py-1 text-xs font-medium transition-colors"
                   >
-                    {c.name}
+                    {categoryLabel(c.slug, c.name)}
                   </Link>
                 ))}
               </div>
@@ -178,7 +212,9 @@ export async function HomePageContent() {
                         <MapPin className="size-4" aria-hidden />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-foreground truncate text-sm font-semibold leading-tight">{r.name}</p>
+                        <p className="text-foreground truncate text-sm font-semibold leading-tight">
+                          {regionTitle(r.slug, r.name)}
+                        </p>
                         <p className="text-muted-foreground text-[10px]">{tExp("phase", { n: r.phase })}</p>
                       </div>
                       <ChevronRight className="text-muted-foreground group-hover:text-primary ml-auto size-4 shrink-0 transition-colors" />
@@ -211,14 +247,19 @@ export async function HomePageContent() {
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-foreground truncate text-sm font-semibold">{g.display_name}</span>
                         <Badge variant={guardianTierBadgeVariant(g.guardian_tier)} className="text-[9px]">
-                          {guardianTierLabel(g.guardian_tier)}
+                          {tierLabel(g.guardian_tier)}
                         </Badge>
                       </div>
-                      <p className="text-muted-foreground truncate text-xs">{f.tagline}</p>
+                      <p className="text-muted-foreground truncate text-xs font-medium">
+                        {spotlightHeadline(g.user_id, g.headline)}
+                      </p>
+                      <p className="text-muted-foreground truncate text-[11px] leading-snug">
+                        {spotlightTagline(g.user_id, f.tagline)}
+                      </p>
                       {g.avg_traveler_rating != null ? (
                         <p className="text-primary mt-0.5 flex items-center gap-1 text-[11px] font-medium">
                           <Star className="size-3 fill-current" aria-hidden />
-                          {g.avg_traveler_rating.toFixed(1)} {t("travelerRated")}
+                          {g.avg_traveler_rating.toFixed(1)} · {t("travelerRatingLabel")}
                         </p>
                       ) : null}
                     </div>
@@ -252,17 +293,25 @@ export async function HomePageContent() {
           }}
         />
         <div className="relative mx-auto max-w-6xl space-y-12 px-4 py-14 sm:px-6 sm:py-16">
-          <div className="max-w-2xl">
-            <p className="text-[var(--accent-pink)] text-xs font-semibold tracking-widest uppercase">{t("discoverEyebrow")}</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{t("discoverSectionTitle")}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/75">{t("discoverSectionLead")}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-[var(--accent-pink)] text-xs font-semibold tracking-widest uppercase">{t("discoverEyebrow")}</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{t("discoverSectionTitle")}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/75">{t("discoverSectionLead")}</p>
+            </div>
+            <Link
+              href="/explore"
+              className="text-sm font-semibold text-[var(--accent-pink)] hover:underline sm:mt-8 sm:shrink-0"
+            >
+              {t("discoverOpenExplore")}
+            </Link>
           </div>
 
           <div>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <h3 className="text-base font-semibold tracking-tight">{t("featuredRegionsTitle")}</h3>
               <Link href="/explore" className="text-sm font-medium text-[var(--accent-pink)] hover:underline">
-                {t("featuredIntelCta")}
+                {t("viewAllRegions")}
               </Link>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
@@ -274,9 +323,9 @@ export async function HomePageContent() {
                 >
                   <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-[var(--accent-pink)]" aria-hidden />
-                    <span className="font-semibold">{r.name}</span>
+                    <span className="font-semibold">{regionTitle(r.slug, r.name)}</span>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-white/70">{r.short_description}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-white/70">{regionDesc(r.slug, r.short_description)}</p>
                   <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-white/90 group-hover:underline">
                     {tExp("openHub")}
                     <ChevronRight className="size-3.5" />
@@ -307,7 +356,7 @@ export async function HomePageContent() {
                     ) : null}
                     {cat ? (
                       <span className="text-[var(--brand-trust-blue)] text-[10px] font-semibold uppercase tracking-wide">
-                        {cat.name}
+                        {categoryLabel(cat.slug, cat.name)}
                       </span>
                     ) : null}
                     <p className="mt-1 font-semibold leading-snug text-white group-hover:underline">{p.title}</p>
@@ -316,9 +365,11 @@ export async function HomePageContent() {
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3 text-[11px] text-white/60">
                       <span>{p.author_display_name}</span>
-                      <span className="flex items-center gap-0.5 text-[var(--accent-pink)]">
+                      <span className="flex items-center gap-1 text-[var(--accent-pink)]">
                         <Star className="size-3 fill-current" aria-hidden />
-                        {(p.helpful_rating ?? 0).toFixed(1)}
+                        <span className="tabular-nums">{(p.helpful_rating ?? 0).toFixed(1)}</span>
+                        <span className="text-white/50">·</span>
+                        <span className="font-normal text-white/55">{t("travelerRatingLabel")}</span>
                       </span>
                     </div>
                   </Link>
@@ -354,8 +405,8 @@ export async function HomePageContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-white">{g.display_name}</p>
-                    <p className="text-sm text-white/70">{g.headline}</p>
-                    <p className="mt-1 text-xs text-white/60">{f.tagline}</p>
+                    <p className="text-sm text-white/70">{spotlightHeadline(g.user_id, g.headline)}</p>
+                    <p className="mt-1 text-xs text-white/60">{spotlightTagline(g.user_id, f.tagline)}</p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {g.expertise_tags.slice(0, 3).map((tag) => (
                         <span
@@ -397,11 +448,13 @@ export async function HomePageContent() {
                       })()}
                     </div>
                     <CardTitle className="text-lg">{tSvc(`cards.${code}.title`)}</CardTitle>
-                    <CardDescription className="text-sm leading-relaxed">{bullets[0]}</CardDescription>
+                    <CardDescription className="text-sm leading-relaxed">
+                      {tSvc(`cards.${code}.shortDescription`)}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="text-muted-foreground space-y-2 text-sm">
-                      {bullets.slice(1).map((b) => (
+                      {bullets.map((b) => (
                         <li key={b}>• {b}</li>
                       ))}
                     </ul>

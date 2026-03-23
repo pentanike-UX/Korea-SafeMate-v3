@@ -1,14 +1,14 @@
 {
   "Nav": {
     "explore": "Explore",
-    "guardians": "Guardians",
+    "guardians": "Guardian",
     "services": "Services",
     "book": "Book",
-    "contribute": "Contribute"
+    "contribute": "Join"
   },
   "Header": {
     "logIn": "Log in",
-    "bookSupport": "Book support",
+    "bookSupport": "Request Support",
     "openMenu": "Open menu",
     "menu": "Menu"
   },
@@ -26,65 +26,98 @@
     "dashboard": "Dashboard",
     "admin": "Admin",
     "disclaimer": "Companion support only. Not medical, legal, or emergency services. No claim of 24/7 protection or guaranteed safety. By using Korea SafeMate you acknowledge these limits.",
-    "disclaimerShort": "Companion support only — not medical, legal, or emergency services. No guaranteed 24/7 coverage."
+    "disclaimerShort": "This service is designed for practical local support and useful information. It does not replace medical, legal, or emergency services, and does not guarantee 24/7 protection."
   },
   "Brand": {
-    "tagline": "Local intelligence · Guardian community · Safe support",
-    "description": "Practical local information, a contributor Guardian community with clear tiers, and ops-gated matching for on-the-ground support — not generic tourism marketing or a forum free-for-all."
+    "tagline": "Local insights · Guardian community · On-the-ground support",
+    "description": "Korea SafeMate connects local insights, a Guardian community, and on-the-ground support when it matters. It is not a generic travel marketplace, but a platform built around trust."
+  },
+  "GuardianTier": {
+    "verified_guardian": "Verified Guardian",
+    "active_guardian": "Active Guardian",
+    "contributor": "Contributor"
   },
   "Home": {
     "metaTitle": "Home",
-    "metaDescription": "Trustworthy local intelligence and calm, scoped support from Korea SafeMate — regions, Guardians, and booking.",
-    "eyebrow": "Korea travel · intel & real Guardians",
-    "heroTitle": "Real locals, curated intel — before and during your Korea trip.",
-    "heroLead": "{brand} brings together moderated regional guides and Guardians you can book for arrivals, K-culture routes, and first-day friction. For visitors and domestic explorers — not anonymous forum noise or scripted tour packages.",
-    "ctaPrimaryRequest": "Request support",
-    "ctaSecondaryExplore": "Explore regions",
+    "metaDescription": "Trusted local insights and Guardians for your Korea trip — regions, booking, and calm support.",
+    "eyebrow": "See Korea more clearly",
+    "heroTitle": "Trusted local insights, and the right person when you need one.",
+    "heroLead": "From city-based local insights to arrival support, K-content routes, and first-day help, {brand} brings together trusted information and carefully reviewed Guardian connections.",
+    "ctaPrimaryRequest": "Request Support",
+    "ctaSecondaryExplore": "Explore Regions",
     "ctaTertiaryGuardian": "Become a Guardian",
-    "viewServicesLink": "View companion services →",
-    "showcaseEyebrow": "Live snapshot",
-    "statVerified": "Verified for matching",
-    "statPosts": "Curated intel posts",
-    "statRating": "Traveler avg.",
-    "statLanguages": "Languages represented",
-    "processClarity": "Requests are reviewed before any Guardian or external chat is introduced. MVP: expect initial email follow-up within about 1–2 business days.",
+    "viewServicesLink": "View support services →",
+    "showcaseEyebrow": "Live overview",
+    "statVerified": "Available Guardians",
+    "statPosts": "Curated posts",
+    "statRating": "Avg. traveler rating",
+    "statLanguages": "Languages",
+    "processClarity": "Requests are reviewed by our team before being matched with a Guardian. During the MVP phase, email or external chat handoff may take 1–2 days.",
     "chipsLabel": "Popular topics",
     "regionsPreviewLabel": "Region hubs",
     "featuredGuardiansLabel": "Spotlight Guardians",
-    "travelerRated": "traveler avg.",
-    "trustBandTitle": "Trust, scope & safety",
-    "trustBandLead": "We are upfront about what we deliver — and what we never promise. Read the boundaries before you book.",
-    "discoverEyebrow": "Discovery",
-    "discoverSectionTitle": "Explore Korea with signal, not brochure clutter",
-    "discoverSectionLead": "Region-scoped posts from contributors and Guardians — read the mechanics, then request matched support when you want a person next to the plan.",
+    "travelerRatingLabel": "Traveler rating",
+    "trustBandTitle": "First, let’s be clear about what we do",
+    "trustBandLead": "We make clear what we help with—and what we don’t.",
+    "discoverEyebrow": "Explore",
+    "discoverSectionTitle": "Signals from the ground, more useful than a brochure",
+    "discoverSectionLead": "Start with local posts and Guardian recommendations, then request human support only when you need it.",
+    "discoverOpenExplore": "Open Explore",
+    "viewAllRegions": "View all regions",
     "featuredRegionsTitle": "Regions",
-    "featuredIntelTitle": "Trending intel",
+    "featuredIntelTitle": "Featured insights",
     "featuredIntelCta": "Open Explore",
     "pickBadge": "Editor’s pick",
-    "featuredGuardiansSectionTitle": "Featured Guardians",
-    "featuredGuardiansCta": "All Guardian profiles",
-    "servicesSectionTitle": "On-the-ground support sessions",
-    "servicesSectionLead": "Arrival, K-route execution, and first-day help — fixed scope, clear limits, human coordination.",
-    "howItWorksTitle": "How it fits together",
-    "howItWorksLead": "Three related pieces — not one vague “trust” badge.",
+    "featuredGuardiansSectionTitle": "Guardians available now",
+    "featuredGuardiansCta": "View all Guardians",
+    "servicesSectionTitle": "Support for the moments that matter",
+    "servicesSectionLead": "Arrival, K-routes, and first-day help. Clear in scope, useful where it matters.",
+    "howItWorksTitle": "How the system works",
+    "howItWorksLead": "Built so information, reputation, and support stay connected.",
     "exploreRegions": "Explore regions",
-    "bookSupport": "Book support",
+    "bookSupport": "Request Support",
     "services": "Services",
-    "scopeNote": "Not emergency response, medical, or legal advice. Scope and exclusions are shown before you book.",
+    "scopeNote": "Not a medical, legal, or emergency-response service. Please review the service scope before booking.",
     "layersTitle": "Three layers, one platform",
     "layersLead": "Open participation for intel; separate verification for matching; external chat handoff in the MVP — clarity over hype.",
-    "layer1Title": "Local travel intelligence",
-    "layer1Body": "Region-scoped tips, hot places, and practical arrival mechanics — vivid and specific, moderated for quality.",
-    "layer2Title": "Guardian community & reputation",
-    "layer2Body": "Open contribution with tier rules; activity and mutual reviews build trust signals separate from matching eligibility.",
-    "layer3Title": "Safe companion matching",
-    "layer3Body": "Verified Guardians only after review + policy checks; early coordination uses external chat handoff — no full in-app chat MVP.",
-    "sessionsTitle": "Support sessions",
-    "sessionsLead": "Arrival, K-route execution, and first-day adaptation — scoped companion help, not licensed tour commentary.",
+    "layer1Title": "Local information by region",
+    "layer1Body": "From city tips and hot spots to practical arrival info. Fresh, but still reviewed.",
+    "layer2Title": "Guardian reputation and contribution",
+    "layer2Body": "Trust builds through both contributions and reviews. Activity alone is never enough.",
+    "layer3Title": "Carefully reviewed support connections",
+    "layer3Body": "Requests are reviewed before matching. In the early phase, connections are handed off through external channels.",
+    "sessionsTitle": "Support options",
+    "sessionsLead": "Arrival, K-routes, and first-day help — clear scope, practical support.",
     "startBooking": "Start booking →",
-    "ctaTitle": "Ready to reduce first-day friction?",
-    "ctaLead": "Tell us your arrival window and needs. Our team reviews every request and matches a Guardian when availability aligns.",
-    "bookNow": "Book now"
+    "ctaTitle": "Make your first day in Korea feel smoother, sooner",
+    "ctaLead": "Tell us your timing and what kind of help you need. Our team will review it and connect you with the right Guardian.",
+    "bookNow": "Request Support",
+    "spotlightHeadlineG1": "Hongdae · fluent in EN/JP",
+    "spotlightHeadlineG2": "Gangnam · fluent in EN/ES",
+    "spotlightTaglineG1": "Arrival support · first-day calm",
+    "spotlightTaglineG2": "K-content routes · Gangnam · shopping",
+    "categoryChip": {
+      "hot-places": "Hot places",
+      "local-tips": "Local tips",
+      "food": "Food",
+      "shopping": "Shopping",
+      "k-content": "K-pop / drama / film spots",
+      "practical": "Practical travel info"
+    },
+    "region": {
+      "seoul": {
+        "name": "Seoul Capital Area",
+        "desc": "Arrivals, dense transit, and K-culture hubs."
+      },
+      "busan": {
+        "name": "Busan & vicinity",
+        "desc": "Coastlines, markets, practical transit, and local city tips."
+      },
+      "jeju": {
+        "name": "Jeju",
+        "desc": "Island logistics, weather, rental car, and route tips."
+      }
+    }
   },
   "Services": {
     "metaTitle": "Services",
@@ -97,29 +130,26 @@
     "cards": {
       "arrival": {
         "title": "Arrival Companion",
-        "shortDescription": "From airport or station to your accommodation — transit basics and check-in support.",
+        "shortDescription": "From airport or station to your stay, make your first move easier.",
         "bullets": [
-          "Airport or major station to your stay",
-          "T-money / SIM basics and first navigation",
-          "Check-in support and simple local setup"
+          "Transit card, SIM, and first-trip setup",
+          "Check-in help and light local settling support"
         ]
       },
       "k_route": {
         "title": "K-Route Companion",
-        "shortDescription": "Execution support for K-content related places you choose — not professional tour guiding.",
+        "shortDescription": "Get to the places you care about, with less friction along the way.",
         "bullets": [
-          "Visit K-content related spots you already chose",
-          "Route execution: tickets, queues, ordering, directions",
-          "Practical help — not scripted tourism commentary"
+          "Practical support along K-content routes",
+          "Help with ordering, navigation, and on-site communication"
         ]
       },
       "first_24h": {
         "title": "First 24 Hours",
-        "shortDescription": "First-day adaptation: transit, apps, food ordering, and settling in with realistic scope.",
+        "shortDescription": "For the first day in Korea, when everything feels most unfamiliar.",
         "bullets": [
-          "First-day adaptation in Korea",
-          "Apps, transit, food ordering basics",
-          "Settling-in support with realistic scope"
+          "Help with apps, transit, food, and getting oriented",
+          "Practical support within a clearly defined scope"
         ]
       }
     }
@@ -136,7 +166,7 @@
     "regionSectionTitle": "Browse by region",
     "regionSectionLead": "Phase 1 metros first — structure ready for Phase 2 destinations.",
     "phase": "Phase {n}",
-    "openHub": "Open hub",
+    "openHub": "Open hub →",
     "jumpToIntel": "Jump to intel",
     "featuredTitle": "Featured Guardians",
     "featuredLead": "Trusted locals and seed partners — highlighted for quality, not pay-to-play ads.",
@@ -170,21 +200,21 @@
     "loading": "Loading…"
   },
   "TrustScope": {
-    "title": "Service scope & boundaries",
-    "lead": "Korea SafeMate provides practical companion support. We are not a licensed tour operator, medical provider, legal advisor, or emergency service. We do not guarantee outcomes or \"full responsibility\" for your safety.",
-    "includedLabel": "Typically includes",
+    "title": "Service scope and limits",
+    "lead": "Korea SafeMate focuses on practical local support and useful information. It is not a guided tour, medical or legal assistance, or an emergency-response service. By being clear about scope, we make the experience easier to trust.",
+    "includedLabel": "Typically included",
     "excludedLabel": "Not included",
     "included": [
-      "Curated local intel and moderated posts by region",
-      "Guardian reputation from contribution + mutual reviews",
-      "Practical companion sessions with clear scope (arrival, routes, first hours)",
-      "External chat handoff (Telegram, KakaoTalk, WhatsApp, etc.) once matched"
+      "City-based local insights and reviewed posts",
+      "Guardian reputation built through contributions and reviews",
+      "On-the-ground support for arrival, K-routes, and first 24 hours",
+      "External chat handoff after matching (Telegram, KakaoTalk, WhatsApp, etc.)"
     ],
     "excluded": [
-      "Generic brochure marketing or unmoderated forum chaos",
-      "Automatic matching privileges from post volume alone",
-      "Medical, legal, or emergency response claims",
-      "First-party real-time chat platform (MVP uses external channels)"
+      "Promotional content or an unmoderated forum",
+      "Automatic matching rights based on post count alone",
+      "Support that replaces medical, legal, or emergency services",
+      "Built-in real-time chat during the MVP phase"
     ]
   },
   "BookingSuccess": {

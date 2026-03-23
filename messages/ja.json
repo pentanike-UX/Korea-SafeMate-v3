@@ -29,104 +29,134 @@
     "disclaimerShort": "同伴・実務サポートのみ — 医療・法律・緊急対応ではありません。24時間保証なし。"
   },
   "Brand": {
-    "tagline": "ローカル情報 · Guardianコミュニティ · 安心サポート",
-    "description": "地域別にモデレートされた実用情報、段階が明確なGuardianコミュニティ、運用がゲートを持つ現地サポートのマッチングを組み合わせます。一般的な観光マーケや無秩序なフォーラムではありません。"
+    "tagline": "ローカル情報 · Guardianコミュニティ · 現地サポート",
+    "description": "Korea SafeMateは、地域ごとのローカル情報、Guardianコミュニティ、必要な瞬間の現地サポートをつなぎます。汎用の観光マーケットでも、無秩序なフォーラムでもありません。信頼を積み上げる旅のためのプラットフォームです。"
+  },
+  "GuardianTier": {
+    "verified_guardian": "認証済みGuardian",
+    "active_guardian": "アクティブなGuardian",
+    "contributor": "コントリビューター"
   },
   "Home": {
     "metaTitle": "ホーム",
-    "metaDescription": "Korea SafeMate — 信頼できるローカル情報と範囲の明確な現地サポート。地域、Guardian、手配まで。",
-    "eyebrow": "韓国旅行 · 情報と本物のGuardian",
-    "heroTitle": "キュレーションされた情報と、現地の人 — 韓国滞在を通して。",
-    "heroLead": "{brand}は地域別に整えられたガイドと、予約できるGuardianをつなぎます。到着動線、Kコンテンツの現地実行、初日の負担まで — 匿名フォーラムや型どおりのパッケージではありません。",
+    "metaDescription": "韓国旅行のための信頼できるローカル情報とGuardian。地域、予約、落ち着いたサポート。",
+    "eyebrow": "韓国をもっとはっきりと",
+    "heroTitle": "信頼できるローカル情報と、必要なときにつながる人。",
+    "heroLead": "都市ごとの情報から到着サポート、Kコンテンツの動線、初日の不安まで。{brand}は、信頼できる情報と審査されたGuardianとの接続をひとつにまとめます。",
     "ctaPrimaryRequest": "サポートを依頼",
     "ctaSecondaryExplore": "地域を見る",
     "ctaTertiaryGuardian": "Guardianになる",
     "viewServicesLink": "同伴サービスを見る →",
     "showcaseEyebrow": "ライブ概要",
-    "statVerified": "マッチング審査済み",
-    "statPosts": "キュレーション投稿",
-    "statRating": "旅行者平均",
+    "statVerified": "マッチング可能なGuardian",
+    "statPosts": "キュレーションされた情報",
+    "statRating": "旅行者の平均評価",
     "statLanguages": "対応言語",
-    "processClarity": "リクエストは確認後にのみGuardian・外部チャットへつながります。MVPでは初回メール返信に概ね1〜2営業日を想定しています。",
-    "chipsLabel": "人気トピック",
+    "processClarity": "依頼は運営が確認したうえでGuardianとつながります。MVPではメールや外部チャットまで1〜2日かかる場合があります。",
+    "chipsLabel": "人気のトピック",
     "regionsPreviewLabel": "地域ハブ",
-    "featuredGuardiansLabel": "スポットライト",
-    "travelerRated": "旅行者平均",
-    "trustBandTitle": "信頼・範囲・安全",
-    "trustBandLead": "できることとできないことをはっきり示します。予約前に境界をご確認ください。",
+    "featuredGuardiansLabel": "おすすめGuardian",
+    "travelerRatingLabel": "旅行者評価",
+    "trustBandTitle": "まず、どこまでお手伝いできるか",
+    "trustBandLead": "できることとしないことを最初に明示します。",
     "discoverEyebrow": "探索",
-    "discoverSectionTitle": "パンフではなく、判断に効く情報で韓国を読む",
-    "discoverSectionLead": "投稿者とGuardianによる地域別の実務ネタ — 動線を読み、必要なときだけ人のサポートを依頼できます。",
+    "discoverSectionTitle": "パンフより役立つ、現地からのサイン",
+    "discoverSectionLead": "地域の投稿とGuardianのおすすめから入り、必要なときだけ人のサポートを依頼できます。",
+    "discoverOpenExplore": "Exploreを開く",
+    "viewAllRegions": "すべての地域を見る",
     "featuredRegionsTitle": "地域",
-    "featuredIntelTitle": "注目のインサイト",
+    "featuredIntelTitle": "おすすめ情報",
     "featuredIntelCta": "Exploreを開く",
     "pickBadge": "エディターズピック",
-    "featuredGuardiansSectionTitle": "注目のGuardian",
-    "featuredGuardiansCta": "Guardian一覧へ",
-    "servicesSectionTitle": "現地同伴セッション",
-    "servicesSectionLead": "到着・Kルート・初日 — 範囲固定、限界明示、人が調整します。",
-    "howItWorksTitle": "仕組みの整理",
-    "howItWorksLead": "三つの柱 — 曖昧な「信頼」バッジ一つではありません。",
+    "featuredGuardiansSectionTitle": "いまつながりやすいGuardian",
+    "featuredGuardiansCta": "Guardianをすべて見る",
+    "servicesSectionTitle": "大切な場面のためのサポート",
+    "servicesSectionLead": "到着、Kルート、初日。範囲は明確に、必要なところだけ。",
+    "howItWorksTitle": "サービスの動き方",
+    "howItWorksLead": "情報・評判・サポートがバラバラにならないよう設計しています。",
     "exploreRegions": "地域を見る",
     "bookSupport": "サポートを依頼",
     "services": "サービス",
-    "scopeNote": "緊急・医療・法律のアドバイスではありません。予約前に範囲と除外事項を案内します。",
-    "layersTitle": "三層構造、ひとつのプラットフォーム",
-    "layersLead": "情報はオープンな参加、マッチングは別途検証、MVPでは外部チャットで連携 — 煽りより明確さを優先します。",
-    "layer1Title": "ローカル旅行インテリジェンス",
-    "layer1Body": "地域単位のヒント、話題の場所、到着直後の実務 — 具体的で、品質はモデレートされます。",
-    "layer2Title": "Guardianコミュニティと評判",
-    "layer2Body": "ルールのあるオープンな貢献。活動と相互レビューは、マッチング資格とは切り離したシグナルになります。",
-    "layer3Title": "安全な同伴マッチング",
-    "layer3Body": "審査済みGuardianのみ。初期調整は外部チャットのハンドオフで — アプリ内フルチャットのMVPはありません。",
-    "sessionsTitle": "サポートセッション",
-    "sessionsLead": "到着同伴、Kルート実行、初日の適応 — ライセンスツアー解説ではなく、範囲がはっきりした実務サポートです。",
+    "scopeNote": "医療・法律・緊急対応のサービスではありません。予約前に範囲をご確認ください。",
+    "layersTitle": "三つの層、ひとつのプラットフォーム",
+    "layersLead": "情報はオープンに集め、マッチングは別途検証。MVPでは外部チャネルでつなぎます。煽りより明確さを優先します。",
+    "layer1Title": "地域別ローカル情報",
+    "layer1Body": "都市のヒント、話題のスポット、到着直後の実務まで。鮮度はありつつ、審査された情報だけを残します。",
+    "layer2Title": "Guardianの評判と貢献",
+    "layer2Body": "貢献とレビューで信頼が積み上がります。活動量だけでは足りません。",
+    "layer3Title": "慎重につなぐ現地サポート",
+    "layer3Body": "依頼は確認のうえでマッチング。初期は外部チャネルで丁寧に引き継ぎます。",
+    "sessionsTitle": "サポートの選択肢",
+    "sessionsLead": "到着、Kルート、初日 — 範囲は明確に、実務的なサポート。",
     "startBooking": "予約を始める →",
-    "ctaTitle": "初日の負担を減らす準備はできていますか？",
-    "ctaLead": "到着枠とニーズをお知らせください。リクエストはチームが確認し、都合が合えばGuardianをマッチングします。",
-    "bookNow": "今すぐ依頼"
+    "ctaTitle": "韓国の初日を、もっとスムーズに",
+    "ctaLead": "日程と必要なサポートだけお知らせください。運営が確認し、適したGuardianをつなぎます。",
+    "bookNow": "サポートを依頼",
+    "spotlightHeadlineG1": "弘大 · EN/JP対応",
+    "spotlightHeadlineG2": "江南 · EN/ES対応",
+    "spotlightTaglineG1": "到着サポート · 初日の落ち着き",
+    "spotlightTaglineG2": "Kコンテンツ動線 · 江南 · ショッピング",
+    "categoryChip": {
+      "hot-places": "話題のスポット",
+      "local-tips": "ローカルTips",
+      "food": "グルメ",
+      "shopping": "ショッピング",
+      "k-content": "K-POP / ドラマ / 映画ロケ地",
+      "practical": "実用トラベル情報"
+    },
+    "region": {
+      "seoul": {
+        "name": "ソウル首都圏",
+        "desc": "到着動線、複雑な乗り換え、Kカルチャーの中心地"
+      },
+      "busan": {
+        "name": "釜山と周辺",
+        "desc": "海岸、市場、移動のコツ、実用的な街のヒント"
+      },
+      "jeju": {
+        "name": "済州",
+        "desc": "島内移動、天気、レンタカーとルートのコツ"
+      }
+    }
   },
   "Services": {
     "metaTitle": "サービス",
     "metaDescription": "ソウル圏を想定した到着同伴、Kルート、初日24時間の実務サポート。",
     "title": "同伴・実務サポート",
-    "intro": "範囲が定まったサポートセッションです。表示価格はMVP計画用の目安で、距離・時間帯により最終見積もりは変わる場合があります。",
+    "intro": "範囲が定まった同伴サポートです。表示価格はMVPの参考値で、距離・時間帯により見積もりは変わる場合があります。",
     "fromPrice": "{price}〜",
     "selectBook": "選んで依頼",
     "durationBadge": "約{hours}時間",
     "cards": {
       "arrival": {
         "title": "到着同伴",
-        "shortDescription": "空港・駅から宿まで — 交通の基本とチェックインをサポートします。",
+        "shortDescription": "空港や駅から宿まで、最初の移動をもっと安心して。",
         "bullets": [
-          "空港・主要駅から宿泊先まで",
-          "交通系IC・SIMの基本と初動の移動",
-          "チェックイン補助と簡単な現地セットアップ"
+          "交通IC、SIM、最初の移動の整理",
+          "チェックインと軽い現地セットアップのサポート"
         ]
       },
       "k_route": {
         "title": "Kルート同伴",
-        "shortDescription": "自分で選んだKコンテンツ・買い物ルートの実行支援 — 観光ガイド業ではありません。",
+        "shortDescription": "行きたい場所へ、もっとスムーズに。複雑な動線で迷いにくく。",
         "bullets": [
-          "自分で選んだKコンテンツ・買い物ルートの実行",
-          "チケット・列・注文・道案内などの実務",
-          "台本型の観光解説ではない実用的ヘルプ"
+          "Kコンテンツ動線の実務サポート",
+          "注文、道案内、現場でのコミュニケーション補助"
         ]
       },
       "first_24h": {
         "title": "初日24時間",
-        "shortDescription": "初日の適応 — アプリ・公共交通・デリバリー注文と、現実的な範囲の定着支援。",
+        "shortDescription": "韓国初日、いちばん戸惑う時間を少し軽く。",
         "bullets": [
-          "韓国初日の適応",
-          "アプリ・公共交通・デリバリー注文の基本",
-          "現実的な範囲での定着サポート"
+          "アプリ、交通、食事、基本の動線の慣れ",
+          "明確な範囲の中での実用的な初日サポート"
         ]
       }
     }
   },
   "Explore": {
     "metaTitle": "探索",
-    "metaDescription": "地域別のローカル情報 — モデレートされ、実務的でGuardian起点。",
+    "metaDescription": "地域別に整理されたローカル情報。審査された投稿とGuardian起点のコンテンツ。",
     "eyebrow": "探索",
     "heroTitle": "予約前に使える、本物のローカル情報",
     "heroDescription": "Exploreは「判断に使う」情報のための場所です。行列の長い店、Kコンテンツの現地実行、買い物のコツ、到着の実務など。多くは段階と貢献履歴が見えるGuardian由来です — 一般的なブログやオープンフォーラムではありません。",
@@ -136,14 +166,14 @@
     "regionSectionTitle": "地域から見る",
     "regionSectionLead": "フェーズ1は大都市圏中心 — フェーズ2の目的地拡張に備えた構造です。",
     "phase": "フェーズ {n}",
-    "openHub": "ハブを開く",
+    "openHub": "ハブを開く →",
     "jumpToIntel": "インサイトへ",
     "featuredTitle": "注目のGuardian",
     "featuredLead": "信頼できるローカル・シードパートナー — 有料広告ではなく品質基準で掲載します。",
     "viewProfile": "プロフィール",
     "influencerSeed": "シードパートナー",
     "ctaTitle": "次の一歩へ進みますか？",
-    "ctaLead": "まず情報を読み、範囲のはっきりしたサポートを依頼するか、Guardianとして貢献を始められます。",
+    "ctaLead": "投稿とおすすめを先に見て、必要なときだけサポートを依頼するか、Guardianとして参加できます。",
     "becomeGuardian": "Guardianに応募",
     "guardianProfiles": "Guardian一覧",
     "backToExplore": "← 探索トップ",
@@ -170,21 +200,21 @@
     "loading": "読み込み中…"
   },
   "TrustScope": {
-    "title": "サービス範囲と境界",
-    "lead": "Korea SafeMateは実務的な同伴・サポートに焦点を当てます。許認可ツアー事業者・医療・法律・緊急サービスではなく、結果や安全について「全面的な責任」を保証するものではありません。",
+    "title": "サービス範囲と限界",
+    "lead": "Korea SafeMateは現地サポートと実用情報に集中します。ガイド付きツアー、医療・法律対応、緊急対応の代わりにはなりません。範囲をはっきりさせることで、より安心して使えるようにしています。",
     "includedLabel": "一般的に含まれるもの",
     "excludedLabel": "含まれないもの",
     "included": [
-      "地域別にキュレーションされた情報とモデレートされた投稿",
-      "貢献と相互レビューに基づくGuardianの評判",
-      "範囲が明確な実務同伴（到着・ルート・初日帯）",
-      "マッチング後の外部チャットハンドオフ（Telegram、KakaoTalk、WhatsApp など）"
+      "地域ごとのローカル情報と審査された投稿",
+      "貢献とレビューで積み上がるGuardianの評判",
+      "到着・Kルート・初日24時間を中心とした現地サポート",
+      "マッチング後の外部チャットへの引き継ぎ（Telegram、KakaoTalk、WhatsApp など）"
     ],
     "excluded": [
-      "パンフレット型マーケや無モデレートのフォーラム",
-      "投稿数だけで自動付与されるマッチング特権",
-      "医療・法律・緊急対応を謳うサービス",
-      "MVPでは自社リアルタイムチャット（外部チャネル利用）"
+      "誇張した広告コンテンツや無秩序なフォーラム",
+      "投稿数だけで自動的に与えられるマッチング権限",
+      "医療・法律・緊急対応に取って代わるサポート",
+      "MVP段階での自社リアルタイムチャット機能"
     ]
   },
   "BookingSuccess": {

@@ -26,107 +26,137 @@
     "dashboard": "대시보드",
     "admin": "관리",
     "disclaimer": "동행·실무 지원 서비스일 뿐이며, 의료·법률·긴급 구조 서비스가 아닙니다. 24시간 보호나 안전을 보장하지 않습니다. Korea SafeMate 이용 시 이러한 한계에 동의한 것으로 간주됩니다.",
-    "disclaimerShort": "동행·실무 지원만 제공 — 의료·법률·긴급 대응 아님. 24시간 보장 없음."
+    "disclaimerShort": "본 서비스는 현장 지원과 실용 정보 제공을 위한 것입니다. 의료·법률·긴급 구조를 대체하지 않으며, 24시간 보호를 보장하지 않습니다."
   },
   "Brand": {
-    "tagline": "로컬 인텔리전스 · Guardian 커뮤니티 · 안심 지원",
-    "description": "지역별로 검수된 실용 정보, 단계가 명확한 Guardian 커뮤니티, 그리고 운영팀이 관문을 두는 현장 지원 매칭을 함께 제공합니다. 일반 관광 마케팅이나 무제한 포럼이 아닙니다."
+    "tagline": "로컬 정보 · Guardian 커뮤니티 · 현장 지원",
+    "description": "Korea SafeMate는 지역별 로컬 정보, Guardian 커뮤니티, 그리고 필요한 순간의 현장 지원을 연결합니다. 관광 상품 마켓플레이스가 아니라, 신뢰를 쌓아가는 여행 플랫폼입니다."
+  },
+  "GuardianTier": {
+    "verified_guardian": "검증된 Guardian",
+    "active_guardian": "활동 중인 Guardian",
+    "contributor": "기여자"
   },
   "Home": {
     "metaTitle": "홈",
-    "metaDescription": "Korea SafeMate — 신뢰할 수 있는 로컬 정보와 범위가 분명한 현지 지원. 지역, Guardian, 예약까지 한곳에서.",
-    "eyebrow": "한국 여행 · 인텔과 실제 Guardian",
-    "heroTitle": "검수된 로컬 정보와, 현장의 사람 — 한국 여행 내내.",
-    "heroLead": "{brand}는 지역별로 다듬어진 가이드와 예약 가능한 Guardian을 연결합니다. 도착 동선, K-콘텐츠 동선, 첫날 마찰까지 — 익명 포럼이나 대본형 패키지 투어가 아닙니다.",
+    "metaDescription": "한국 여행을 위한 검증된 로컬 정보와 Guardian 연결.",
+    "eyebrow": "한국 여행을 더 선명하게",
+    "heroTitle": "검증된 로컬 정보와, 필요할 때 연결되는 사람.",
+    "heroLead": "도시별 로컬 정보부터 첫 도착, K-콘텐츠 동선, 첫날 적응까지. {brand}는 믿을 수 있는 정보와 검토된 Guardian 연결을 함께 제공합니다.",
     "ctaPrimaryRequest": "지원 요청하기",
-    "ctaSecondaryExplore": "지역 탐색",
+    "ctaSecondaryExplore": "지역 둘러보기",
     "ctaTertiaryGuardian": "Guardian 지원하기",
     "viewServicesLink": "동행 서비스 보기 →",
     "showcaseEyebrow": "라이브 요약",
-    "statVerified": "매칭 검증 Guardian",
-    "statPosts": "큐레이션 인텔 글",
+    "statVerified": "배정 가능 Guardian",
+    "statPosts": "큐레이션된 정보",
     "statRating": "여행자 평균",
     "statLanguages": "사용 언어",
-    "processClarity": "요청은 검토된 뒤에만 Guardian·외부 채널이 연결됩니다. MVP 기준 이메일 회신은 영업일 1–2일 전후를 가정합니다.",
+    "processClarity": "요청은 운영팀 검토 후 Guardian과 연결됩니다. MVP 단계에서는 이메일 또는 외부 채널 연결까지 1–2일이 걸릴 수 있습니다.",
     "chipsLabel": "인기 주제",
     "regionsPreviewLabel": "지역 허브",
-    "featuredGuardiansLabel": "스포트라이트 Guardian",
-    "travelerRated": "여행자 평균",
-    "trustBandTitle": "신뢰·범위·안전",
-    "trustBandLead": "해 드리는 것과 하지 않는 것을 분명히 말합니다. 예약 전 한계를 확인해 주세요.",
+    "featuredGuardiansLabel": "추천 Guardian",
+    "travelerRatingLabel": "여행자 평점",
+    "trustBandTitle": "먼저, 어디까지 도와드리는지 분명하게",
+    "trustBandLead": "무엇을 돕고, 무엇은 하지 않는지 먼저 알려드립니다.",
     "discoverEyebrow": "탐색",
-    "discoverSectionTitle": "브로슈어가 아니라, 쓸 신호로 한국을 읽기",
-    "discoverSectionLead": "기여자와 Guardian의 지역별 글 — 동선과 팁을 읽고, 필요할 때만 사람과 매칭을 요청하세요.",
+    "discoverSectionTitle": "브로슈어보다 믿을 만한, 현지의 신호들",
+    "discoverSectionLead": "지역별 글과 Guardian의 추천을 먼저 보고, 필요할 때만 사람 연결을 요청하세요.",
+    "discoverOpenExplore": "Explore 열기",
+    "viewAllRegions": "지역 전체 보기",
     "featuredRegionsTitle": "지역",
-    "featuredIntelTitle": "주목 인텔",
+    "featuredIntelTitle": "추천 정보",
     "featuredIntelCta": "Explore 열기",
-    "pickBadge": "에디터 픽",
-    "featuredGuardiansSectionTitle": "추천 Guardian",
+    "pickBadge": "에디터 추천",
+    "featuredGuardiansSectionTitle": "지금 연결 가능한 Guardian",
     "featuredGuardiansCta": "Guardian 전체 보기",
-    "servicesSectionTitle": "현장 동행 세션",
-    "servicesSectionLead": "도착·K-루트·첫날 — 범위 고정, 한계 명확, 사람이 조율합니다.",
-    "howItWorksTitle": "구조 한눈에",
-    "howItWorksLead": "세 가지 축 — 하나의 막연한 ‘신뢰’ 배지가 아닙니다.",
+    "servicesSectionTitle": "이런 도움을 받을 수 있어요",
+    "servicesSectionLead": "도착, K-루트, 첫날 적응. 범위는 분명하게, 도움은 꼭 필요한 만큼.",
+    "howItWorksTitle": "이 서비스가 작동하는 방식",
+    "howItWorksLead": "정보, 평판, 연결이 따로 놀지 않도록 설계했습니다.",
     "exploreRegions": "지역 둘러보기",
     "bookSupport": "지원 요청",
     "services": "서비스",
-    "scopeNote": "응급·의료·법률 상담이 아닙니다. 예약 전에 범위와 제외 사항을 안내드립니다.",
+    "scopeNote": "의료·법률·긴급 대응 서비스가 아닙니다. 예약 전 지원 범위를 먼저 확인해 주세요.",
     "layersTitle": "세 겹의 구조, 하나의 플랫폼",
-    "layersLead": "인텔에는 열린 참여, 매칭에는 별도 검증, MVP에서는 외부 채널로 소통 — 과장보다 명확함을 우선합니다.",
-    "layer1Title": "로컬 여행 인텔리전스",
-    "layer1Body": "지역 단위 팁, 핫플, 도착 직후 실무 — 생생하지만 품질 검수를 거칩니다.",
-    "layer2Title": "Guardian 커뮤니티와 평판",
-    "layer2Body": "기여 규칙이 있는 열린 참여; 활동과 상호 리뷰는 매칭 자격과 별도의 신호로 쌓입니다.",
-    "layer3Title": "안전한 동행 매칭",
-    "layer3Body": "검증된 Guardian만 정책 검토 후; 초기 조율은 외부 채팅 핸드오프로 — 앱 내 풀채팅 MVP는 아닙니다.",
-    "sessionsTitle": "지원 세션",
-    "sessionsLead": "도착 동행, K-루트 실행, 첫날 적응 — 라이선스 관광 해설이 아닌, 범위가 분명한 실무 도움입니다.",
+    "layersLead": "정보는 열린 참여로 모으고, 매칭은 별도 검증을 거칩니다. MVP에서는 외부 채널로 이어집니다. 과장보다 명확함을 우선합니다.",
+    "layer1Title": "지역별 로컬 정보",
+    "layer1Body": "도시 단위 팁, 핫플, 도착 직후 실무 정보까지. 생생하지만 검토된 정보만 남깁니다.",
+    "layer2Title": "Guardian 평판과 기여도",
+    "layer2Body": "기여와 리뷰를 바탕으로 신뢰가 쌓입니다. 활동량과 평판은 함께 봅니다.",
+    "layer3Title": "신중하게 연결되는 현장 지원",
+    "layer3Body": "요청은 검토 후 연결됩니다. 초기에는 외부 채널로 조심스럽게 이어집니다.",
+    "sessionsTitle": "지원 옵션",
+    "sessionsLead": "도착, K-루트, 첫날 — 범위는 분명하게, 필요한 만큼만.",
     "startBooking": "예약 시작 →",
-    "ctaTitle": "첫날의 마찰을 줄일 준비가 되셨나요?",
-    "ctaLead": "도착 일정과 필요를 알려주세요. 요청은 팀이 검토한 뒤, 일정이 맞을 때 Guardian을 매칭합니다.",
-    "bookNow": "지금 요청하기"
+    "ctaTitle": "한국 첫날, 덜 헤매고 더 빨리 적응하세요",
+    "ctaLead": "일정과 필요한 도움만 알려주세요. 운영팀이 확인한 뒤, 맞는 Guardian을 연결합니다.",
+    "bookNow": "지원 요청하기",
+    "spotlightHeadlineG1": "홍대 · EN/JP 가능",
+    "spotlightHeadlineG2": "강남 · EN/ES 가능",
+    "spotlightTaglineG1": "도착 지원 · 첫날 적응 중심",
+    "spotlightTaglineG2": "K-콘텐츠 동선 · 강남 · 쇼핑",
+    "categoryChip": {
+      "hot-places": "핫플레이스",
+      "local-tips": "로컬 팁",
+      "food": "음식",
+      "shopping": "쇼핑",
+      "k-content": "K-pop / 드라마 / 영화 스팟",
+      "practical": "실용 여행 정보"
+    },
+    "region": {
+      "seoul": {
+        "name": "서울 수도권",
+        "desc": "도착 동선, 복합 환승, K-컬처 중심지"
+      },
+      "busan": {
+        "name": "부산과 인근",
+        "desc": "해안, 시장, 이동 동선, 실용적인 도시 팁"
+      },
+      "jeju": {
+        "name": "제주",
+        "desc": "섬 이동, 날씨, 렌터카와 동선 팁"
+      }
+    }
   },
   "Services": {
     "metaTitle": "서비스",
     "metaDescription": "서울·수도권 기준 도착 동행, K-루트, 첫 24시간 실무 지원.",
     "title": "동행·실무 지원 서비스",
-    "intro": "범위가 정해진 지원 세션입니다. 표시 가격은 MVP 기획용 참고이며, 거리·시간에 따라 최종 견적은 달라질 수 있습니다.",
+    "intro": "범위가 정해진 동행 지원입니다. 표시 가격은 MVP 참고용이며, 거리·시간에 따라 최종 견적은 달라질 수 있습니다.",
     "fromPrice": "{price}부터",
     "selectBook": "선택 후 요청",
     "durationBadge": "약 {hours}시간",
     "cards": {
       "arrival": {
         "title": "도착 동행",
-        "shortDescription": "공항·역에서 숙소까지 — 교통 기초와 체크인을 함께 정리합니다.",
+        "shortDescription": "공항이나 역에서 숙소까지, 첫 이동을 더 안정적으로.",
         "bullets": [
-          "공항·주요 역에서 숙소까지",
-          "교통카드·유심 기초와 첫 이동",
-          "체크인 보조와 간단한 현지 세팅"
+          "교통카드, 유심, 첫 이동 정리",
+          "체크인과 간단한 현지 적응 지원"
         ]
       },
       "k_route": {
         "title": "K-루트 동행",
-        "shortDescription": "직접 고른 K-콘텐츠·쇼핑 동선 실행 지원 — 라이선스 관광 가이드 서비스는 아닙니다.",
+        "shortDescription": "좋아하는 장소를 더 수월하게, 복잡한 동선은 덜 헤매게.",
         "bullets": [
-          "직접 고른 K-콘텐츠·쇼핑 동선 실행",
-          "티켓·줄서기·주문·길찾기 등 실무",
-          "대본형 관광 해설이 아닌 실용 도움"
+          "K-콘텐츠 동선 이동 지원",
+          "주문, 길찾기, 현장 커뮤니케이션 보조"
         ]
       },
       "first_24h": {
         "title": "첫 24시간",
-        "shortDescription": "첫날 적응: 앱·대중교통·배달 주문과 현실적인 범위의 정착 지원.",
+        "shortDescription": "한국 첫날, 가장 막막한 순간을 줄여드립니다.",
         "bullets": [
-          "한국 첫날 적응",
-          "앱·대중교통·배달 주문 기초",
-          "현실적인 범위의 정착 지원"
+          "앱, 교통, 식사, 기본 동선 적응",
+          "현실적인 범위 안에서의 첫날 지원"
         ]
       }
     }
   },
   "Explore": {
     "metaTitle": "탐색",
-    "metaDescription": "지역 기반 로컬 인텔 — 검수되고 실용적이며 Guardian 기반입니다.",
+    "metaDescription": "지역별로 정리된 로컬 정보. 검토된 글과 Guardian 기반 콘텐츠.",
     "eyebrow": "탐색",
     "heroTitle": "예약 전에 쓸 수 있는 진짜 로컬 정보",
     "heroDescription": "Explore는 ‘결정에 쓰는’ 정보를 모읍니다. 웨이팅이 긴 맛집, K-콘텐츠 동선 실행, 쇼핑 팁, 도착 실무 등. 대부분은 단계와 기여 이력이 보이는 Guardian이 제공합니다 — 일반 블로그나 개방형 포럼이 아닙니다.",
@@ -136,19 +166,19 @@
     "regionSectionTitle": "지역별로 보기",
     "regionSectionLead": "1단계 수도권 중심 — 2단계 목적지 확장 구조를 염두에 둡니다.",
     "phase": "단계 {n}",
-    "openHub": "허브 열기",
+    "openHub": "허브 열기 →",
     "jumpToIntel": "인사이트로",
     "featuredTitle": "추천 Guardian",
     "featuredLead": "신뢰할 수 있는 로컬·시드 파트너 — 유료 광고가 아닌 품질 기준으로 소개합니다.",
     "viewProfile": "프로필 보기",
     "influencerSeed": "시드 파트너",
     "ctaTitle": "다음 단계로 갈까요?",
-    "ctaLead": "먼저 인텔을 살펴본 뒤, 범위가 분명한 지원을 요청하거나 Guardian으로 기여를 시작하세요.",
+    "ctaLead": "글과 추천을 먼저 보고, 필요할 때 지원을 요청하거나 Guardian으로 참여해 보세요.",
     "becomeGuardian": "Guardian 지원",
     "guardianProfiles": "Guardian 프로필",
     "backToExplore": "← 탐색 홈",
     "bookInArea": "이 지역에서 지원 요청",
-    "contributeIntel": "인텔 기여하기",
+    "contributeIntel": "로컬 정보 올리기",
     "backLink": "탐색으로 돌아가기",
     "allRegions": "← 모든 지역",
     "regionHubTagsTitle": "이 허브의 태그·주제",
@@ -171,20 +201,20 @@
   },
   "TrustScope": {
     "title": "서비스 범위와 한계",
-    "lead": "Korea SafeMate는 실무 동행·지원에 초점을 둡니다. 허가된 여행사, 의료·법률·긴급 구조 기관이 아니며, 결과나 안전에 대한 ‘전적인 책임’을 보장하지 않습니다.",
+    "lead": "Korea SafeMate는 현장 지원과 실용 정보에 집중합니다. 가이드 투어, 의료·법률 대응, 긴급 구조를 대신하는 서비스는 아닙니다. 필요한 범위를 분명히 해, 더 믿고 이용할 수 있게 만들었습니다.",
     "includedLabel": "일반적으로 포함",
     "excludedLabel": "포함되지 않음",
     "included": [
-      "지역별 큐레이션 인텔과 검수된 포스트",
-      "기여와 상호 리뷰를 통한 Guardian 평판",
-      "범위가 분명한 실무 동행 세션(도착·루트·첫 시간대)",
-      "매칭 후 외부 채널 핸드오프(텔레그램, 카카오톡, 왓츠앱 등)"
+      "지역별 로컬 정보와 검토된 포스트",
+      "기여와 리뷰를 바탕으로 쌓이는 Guardian 평판",
+      "도착·K-루트·첫 24시간 중심의 현장 지원",
+      "매칭 이후 외부 채널 연결(텔레그램·카카오톡·왓츠앱 등)"
     ],
     "excluded": [
-      "브로슈어형 마케팅이나 무검수 포럼",
-      "게시물 수만으로 자동 부여되는 매칭 특권",
-      "의료·법률·긴급 대응을 주장하는 서비스",
-      "MVP 단계의 자사 실시간 채팅 플랫폼(외부 채널 사용)"
+      "과장된 광고성 콘텐츠나 무분별한 포럼",
+      "게시물 수만으로 자동 부여되는 매칭 권한",
+      "의료·법률·긴급 구조를 대체하는 지원",
+      "MVP 단계의 자체 실시간 채팅 기능"
     ]
   },
   "BookingSuccess": {
@@ -198,7 +228,7 @@
     "summaryUnavailableTitle": "요약을 불러올 수 없습니다",
     "summaryUnavailableBody": "제출 직후 같은 브라우저에서 이 페이지를 열거나, 지원 시 참고 번호를 보관해 주세요.",
     "summaryUnavailableHint": "새로고침했거나 다른 기기에서 연 경우, 클라이언트에 세부 정보가 남아 있지 않을 수 있습니다.",
-    "exploreIntel": "로컬 인텔 보기",
+    "exploreIntel": "로컬 정보 보기",
     "services": "서비스",
     "home": "홈"
   },
