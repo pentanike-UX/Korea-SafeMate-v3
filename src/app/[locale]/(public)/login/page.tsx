@@ -52,7 +52,7 @@ export default async function LoginPage({ searchParams }: Props) {
             <Link href="/login/guardian">{t("guardianLoginLink")}</Link>
           </Button>
           <Button asChild variant="ghost" className="rounded-xl">
-            <NextLink href="/guardian/dashboard">{t("previewGuardian")}</NextLink>
+            <NextLink href="/guardian">{t("previewGuardian")}</NextLink>
           </Button>
           <Button asChild variant="ghost" className="rounded-xl">
             <NextLink href="/admin">{t("previewAdmin")}</NextLink>

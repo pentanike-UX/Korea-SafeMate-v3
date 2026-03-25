@@ -11,9 +11,9 @@ type Variant = "traveler" | "guardian";
 
 function postLoginPath(locale: string, variant: Variant): string {
   if (variant === "guardian") {
-    return "/guardian/dashboard";
+    return locale === routing.defaultLocale ? "/guardian" : `/${locale}/guardian`;
   }
-  return locale === routing.defaultLocale ? "/traveler" : `/${locale}/traveler`;
+  return locale === routing.defaultLocale ? "/mypage" : `/${locale}/mypage`;
 }
 
 function GoogleMark({ className }: { className?: string }) {

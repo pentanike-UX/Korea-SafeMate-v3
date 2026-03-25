@@ -1,74 +1,8 @@
-import Image from "next/image";
-import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
-import { listPublicGuardians } from "@/lib/guardian-public";
-import { getTravelerSavedGuardianIds } from "@/lib/traveler-saved-guardians-cookie";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { TrustBadgesServer } from "@/components/forty-two/trust-badges-server";
-import { BRAND } from "@/lib/constants";
-import { Star } from "lucide-react";
+import { redirect } from "@/i18n/navigation";
 
-export async function generateMetadata() {
-  const t = await getTranslations("TravelerHub");
-  return { title: `${t("navSavedGuardians")} | ${BRAND.name}` };
-}
+type Props = { params: Promise<{ locale: string }> };
 
-export default async function TravelerSavedGuardiansPage() {
-  const t = await getTranslations("TravelerHub");
-  const all = listPublicGuardians();
-  const cookieIds = await getTravelerSavedGuardianIds();
-  const saved = cookieIds.map((id) => all.find((g) => g.user_id === id)).filter(Boolean) as ReturnType<
-    typeof listPublicGuardians
-  >;
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-text-strong text-xl font-semibold">{t("savedGuardiansTitle")}</h2>
-        <p className="text-muted-foreground mt-2 text-sm">{t("savedGuardiansLead")}</p>
-      </div>
-      {saved.length === 0 ? (
-        <div className="border-border/60 rounded-2xl border border-dashed bg-muted/10 px-6 py-14 text-center">
-          <p className="text-foreground text-sm font-semibold">{t("savedGuardiansEmptyTitle")}</p>
-          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{t("savedGuardiansEmptyLead")}</p>
-          <Button asChild className="mt-6 rounded-xl">
-            <Link href="/guardians">{t("savedGuardiansBrowse")}</Link>
-          </Button>
-        </div>
-      ) : null}
-      <ul className="grid gap-4 sm:grid-cols-2">
-        {saved.map((g) => (
-          <li key={g.user_id}>
-            <Card className="overflow-hidden rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-              <div className="flex gap-4 p-4">
-                <div className="relative size-24 shrink-0 overflow-hidden rounded-xl">
-                  <Image src={g.photo_url} alt="" fill className="object-cover" sizes="96px" />
-                </div>
-                <CardContent className="flex flex-1 flex-col gap-2 p-0">
-                  <p className="font-semibold">{g.display_name}</p>
-                  <p className="text-muted-foreground line-clamp-2 text-sm">{g.headline}</p>
-                  <TrustBadgesServer ids={g.trust_badge_ids} size="xs" />
-                  {g.avg_traveler_rating != null ? (
-                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <Star className="size-3.5 fill-amber-400 text-amber-400" aria-hidden />
-                      {g.avg_traveler_rating.toFixed(1)}
-                    </p>
-                  ) : null}
-                  <div className="mt-auto flex gap-2 pt-2">
-                    <Button asChild size="sm" className="rounded-xl">
-                      <Link href={`/guardians/${g.user_id}`}>{t("openProfile")}</Link>
-                    </Button>
-                    <Button asChild size="sm" variant="outline" className="rounded-xl">
-                      <Link href={`/book?guardian=${g.user_id}`}>{t("request")}</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </div>
-            </Card>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+export default async function LegacySavedGuardiansRedirect({ params }: Props) {
+  const { locale } = await params;
+  redirect({ href: "/mypage/saved-guardians", locale });
 }

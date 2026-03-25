@@ -50,7 +50,7 @@ export function SaveGuardianButton({ guardianUserId }: { guardianUserId: string 
         <span>{t("cardSave")}</span>
       </Button>
       <Button asChild variant="ghost" size="sm" className="text-[var(--link-color)] h-auto min-h-10 w-full text-sm font-semibold">
-        <Link href="/traveler/saved-guardians" className="inline-flex items-center justify-center gap-2">
+        <Link href="/mypage/saved-guardians" className="inline-flex items-center justify-center gap-2">
           <Bookmark className="size-4 shrink-0 opacity-90" aria-hidden />
           {t("saveViewList")}
         </Link>

@@ -46,7 +46,7 @@ export default async function GuardianLoginPage({ searchParams }: Props) {
           <NextLink href="/guardian/onboarding">{t("startOnboarding")}</NextLink>
         </Button>
         <Button asChild variant="ghost" className="rounded-xl">
-          <NextLink href="/guardian/dashboard">{t("dashboardPreview")}</NextLink>
+          <NextLink href="/guardian">{t("dashboardPreview")}</NextLink>
         </Button>
       </div>
     </div>

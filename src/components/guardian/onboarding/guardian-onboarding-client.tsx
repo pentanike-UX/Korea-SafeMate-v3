@@ -267,7 +267,7 @@ export function GuardianOnboardingClient() {
           </Button>
         ) : (
           <Button type="button" className="rounded-xl" asChild>
-            <Link href="/guardian/dashboard">대시보드로 이동</Link>
+            <Link href="/guardian">허브로 이동</Link>
           </Button>
         )}
       </div>

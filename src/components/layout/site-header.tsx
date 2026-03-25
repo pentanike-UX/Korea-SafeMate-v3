@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { BRAND } from "@/lib/constants";
+import { HeaderAccountMenu } from "@/components/auth/header-account-menu";
 import { useAuthUser } from "@/hooks/use-auth-user";
 import { useHomeHeaderContrast } from "@/hooks/use-home-header-contrast";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser-client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Compass, FileText, Info, Menu, Users } from "lucide-react";
@@ -28,7 +28,6 @@ function isNavActive(href: string, pathname: string) {
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const router = useRouter();
   const user = useAuthUser();
   const tNav = useTranslations("Nav");
   const tHeader = useTranslations("Header");
@@ -36,12 +35,6 @@ export function SiteHeader() {
   const isHome = pathname === "/";
   const heroContrast = useHomeHeaderContrast();
   const onDarkSurface = isHome && heroContrast === "dark";
-
-  async function handleSignOut() {
-    const sb = createSupabaseBrowserClient();
-    await sb?.auth.signOut();
-    router.refresh();
-  }
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => {
     const glassHeaderNav = onDarkSurface && !mobile;
@@ -125,61 +118,31 @@ export function SiteHeader() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <div className="hidden items-center gap-1 sm:flex">
-            {user === undefined ? (
-              <div
-                className={cn(
-                  "bg-muted/80 h-9 w-[7.5rem] animate-pulse rounded-[var(--radius-md)]",
-                  onDarkSurface && "bg-white/15",
-                )}
-                aria-hidden
-              />
-            ) : user ? (
-              <>
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="default"
-                  className={cn(
-                    "px-3 transition-colors duration-200",
-                    onDarkSurface
-                      ? "text-white/90 hover:bg-white/10 hover:text-white"
-                      : "text-[var(--text-strong)]/85 hover:bg-muted hover:text-[var(--text-strong)]",
-                  )}
-                >
-                  <Link href="/traveler">{tHeader("myJourney")}</Link>
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="default"
-                  className={cn(
-                    "px-3 transition-colors duration-200",
-                    onDarkSurface
-                      ? "text-white/90 hover:bg-white/10 hover:text-white"
-                      : "text-[var(--text-strong)]/85 hover:bg-muted hover:text-[var(--text-strong)]",
-                  )}
-                  onClick={() => void handleSignOut()}
-                >
-                  {tHeader("logOut")}
-                </Button>
-              </>
-            ) : (
-              <Button
-                asChild
-                variant="ghost"
-                size="default"
-                className={cn(
-                  "px-3 transition-colors duration-200",
-                  onDarkSurface
-                    ? "text-white/90 hover:bg-white/10 hover:text-white"
-                    : "text-[var(--text-strong)]/85 hover:bg-muted hover:text-[var(--text-strong)]",
-                )}
-              >
-                <Link href="/login">{tHeader("logIn")}</Link>
-              </Button>
-            )}
-          </div>
+          {user === undefined ? (
+            <div
+              className={cn(
+                "bg-muted/80 h-9 w-28 animate-pulse rounded-[var(--radius-md)]",
+                onDarkSurface && "bg-white/15",
+              )}
+              aria-hidden
+            />
+          ) : user ? (
+            <HeaderAccountMenu authUser={user} onDarkSurface={onDarkSurface} />
+          ) : (
+            <Button
+              asChild
+              variant="ghost"
+              size="default"
+              className={cn(
+                "inline-flex px-3",
+                onDarkSurface
+                  ? "text-white/90 hover:bg-white/10 hover:text-white"
+                  : "text-[var(--text-strong)]/85 hover:bg-muted hover:text-[var(--text-strong)]",
+              )}
+            >
+              <Link href="/login">{tHeader("logIn")}</Link>
+            </Button>
+          )}
 
           <Sheet>
             <SheetTrigger
@@ -200,27 +163,11 @@ export function SiteHeader() {
               <div className="flex flex-1 flex-col gap-5 pb-2">
                 <NavLinks mobile />
                 <div className="border-border/60 flex flex-col gap-2.5 border-t pt-4">
-                  {user === undefined ? (
-                    <div className="bg-muted h-11 w-full animate-pulse rounded-[var(--radius-md)]" aria-hidden />
-                  ) : user ? (
-                    <>
-                      <Button asChild variant="default" className="w-full justify-center rounded-[var(--radius-md)] font-semibold">
-                        <Link href="/traveler">{tHeader("myJourney")}</Link>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full justify-center rounded-[var(--radius-md)] font-semibold"
-                        onClick={() => void handleSignOut()}
-                      >
-                        {tHeader("logOut")}
-                      </Button>
-                    </>
-                  ) : (
+                  {!user ? (
                     <Button asChild variant="default" className="w-full justify-center rounded-[var(--radius-md)] font-semibold">
                       <Link href="/login">{tHeader("logIn")}</Link>
                     </Button>
-                  )}
+                  ) : null}
                   <Button asChild variant="ghost" className="text-muted-foreground w-full justify-center rounded-[var(--radius-md)] text-sm">
                     <Link href="/login/guardian">{tHeader("guardianLoginShort")}</Link>
                   </Button>

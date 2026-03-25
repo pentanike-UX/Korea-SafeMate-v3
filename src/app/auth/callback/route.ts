@@ -1,6 +1,8 @@
 import { createServerClient, type SetAllCookies } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { syncOAuthUserFromSession } from "@/lib/auth/sync-oauth-user";
+import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 
 function safeNextPath(raw: string | null): string {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/";
@@ -58,6 +60,12 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
     return NextResponse.redirect(`${base}/login?error=oauth`);
+  }
+
+  const { data: userData } = await supabase.auth.getUser();
+  const svc = createServiceRoleSupabase();
+  if (userData.user && svc) {
+    await syncOAuthUserFromSession(userData.user, svc);
   }
 
   return redirectResponse;

@@ -26,7 +26,7 @@ export async function SiteFooter() {
     { href: "/explore" as const, label: tNav("explore"), Icon: Compass },
     { href: "/posts" as const, label: tNav("posts"), Icon: FileText },
     { href: "/guardians" as const, label: tNav("guardians"), Icon: Users },
-    { href: "/traveler" as const, label: tHeader("myJourney"), Icon: Plane },
+    { href: "/mypage" as const, label: tHeader("myJourney"), Icon: Plane },
     { href: "/about" as const, label: tNav("about"), Icon: Info },
     { href: "/book" as const, label: tNav("book"), Icon: Calendar },
   ];
@@ -39,7 +39,7 @@ export async function SiteFooter() {
   }[] = [
     { href: "/guardians", label: tNav("guardians"), Icon: Users },
     { href: "/guardians/apply", label: tFooter("apply"), Icon: UserPlus },
-    { href: "/guardian/dashboard", label: tFooter("dashboard"), Icon: LayoutDashboard, native: true },
+    { href: "/guardian", label: tFooter("dashboard"), Icon: LayoutDashboard, native: true },
     { href: "/login/guardian", label: tFooter("guardianLogin"), Icon: LogIn },
   ];
 

@@ -1,5 +1,6 @@
 import type { GuardianPostSavePayload } from "@/lib/guardian-posts-api";
 import { isUuidString, resolveAuthorUserId } from "@/lib/guardian-posts-api";
+import { processContentPostPointsAfterWrite } from "@/lib/points/point-hooks";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 
 export type GuardianPostSaveResult =
@@ -73,6 +74,8 @@ export async function insertGuardianContentPost(payload: GuardianPostSavePayload
     console.error("[guardian-posts-persist] insert", error);
     return { ok: false, error: error.message, status: 500 };
   }
+
+  await processContentPostPointsAfterWrite(data.id);
 
   return { ok: true, id: data.id, saved: true };
 }
@@ -151,6 +154,8 @@ export async function updateGuardianContentPost(
     console.error("[guardian-posts-persist] update", error);
     return { ok: false, error: error.message, status: 500 };
   }
+
+  await processContentPostPointsAfterWrite(postId);
 
   return { ok: true, id: postId, saved: true };
 }
