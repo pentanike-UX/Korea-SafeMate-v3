@@ -30,3 +30,11 @@ export async function getSessionUserId(): Promise<string | null> {
   const { data } = await sb.auth.getUser();
   return data.user?.id ?? null;
 }
+
+/** 모의 가디언 쿠키를 무시하고 Supabase 세션 사용자만 반환 (여행자 매칭 요청 등). */
+export async function getSupabaseAuthUserIdOnly(): Promise<string | null> {
+  const sb = await getServerSupabaseForUser();
+  if (!sb) return null;
+  const { data } = await sb.auth.getUser();
+  return data.user?.id ?? null;
+}

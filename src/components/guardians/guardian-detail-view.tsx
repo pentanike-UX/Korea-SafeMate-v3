@@ -9,13 +9,21 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrustBadgesServer } from "@/components/forty-two/trust-badges-server";
 import { GuardianStickyCta } from "@/components/guardians/guardian-sticky-cta";
+import { GuardianMatchRequestButton } from "@/components/guardians/guardian-match-request-button";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Star } from "lucide-react";
 
-export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuardian }) {
+export async function GuardianDetailView({
+  guardian: g,
+  allowTravelerMatchRequest = false,
+}: {
+  guardian: PublicGuardian;
+  allowTravelerMatchRequest?: boolean;
+}) {
   const t = await getTranslations("GuardianDetail");
+  const tHub = await getTranslations("TravelerHub");
   const tLaunch = await getTranslations("LaunchAreas");
   const tTier = await getTranslations("GuardianTier");
   const locale = await getLocale();
@@ -115,6 +123,20 @@ export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuar
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed sm:text-[15px]">{intro}</p>
             <p className="text-muted-foreground mt-2 text-sm">{isKo ? g.response_note.ko : g.response_note.en}</p>
           </section>
+
+          {areaLive ? (
+            <section className="border-border/60 bg-card rounded-2xl border p-5 shadow-[var(--shadow-sm)] sm:p-6">
+              <h2 className="text-text-strong text-lg font-semibold">{tHub("matchRequestSectionTitle")}</h2>
+              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{tHub("matchRequestSectionLead")}</p>
+              <div className="mt-4">
+                <GuardianMatchRequestButton
+                  guardianUserId={g.user_id}
+                  guardianDisplayName={g.display_name}
+                  canRequest={allowTravelerMatchRequest}
+                />
+              </div>
+            </section>
+          ) : null}
 
           <section>
             <h2 className="text-text-strong text-lg font-semibold">{t("expertiseTitle")}</h2>

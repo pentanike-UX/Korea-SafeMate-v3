@@ -27,6 +27,7 @@ function formatSignedP(n: number) {
 
 export default async function TravelerPointsPage() {
   const t = await getTranslations("TravelerPoints");
+  const th = await getTranslations("TravelerHub");
   const userId = await getSessionUserId();
 
   if (!userId) {
@@ -114,7 +115,19 @@ export default async function TravelerPointsPage() {
       <div>
         <h3 className="text-text-strong mb-4 text-base font-semibold tracking-tight">{t("historyTitle")}</h3>
         {ledger.length === 0 ? (
-          <p className="text-muted-foreground text-sm">{t("historyEmpty")}</p>
+          <Card className="border-border/60 rounded-2xl border-dashed py-0 shadow-none">
+            <CardContent className="space-y-4 p-6">
+              <p className="text-muted-foreground text-sm leading-relaxed">{t("historyEmpty")}</p>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="outline" size="sm" className="rounded-xl font-semibold">
+                  <Link href="/mypage/matches">{th("hubQuickMatches")}</Link>
+                </Button>
+                <Button asChild variant="outline" size="sm" className="rounded-xl font-semibold">
+                  <Link href="/guardians">{th("hubQuickFindGuardian")}</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ) : (
           <ul className="border-border/60 divide-border/60 divide-y overflow-hidden rounded-xl border bg-card">
             {ledger.map((row) => {

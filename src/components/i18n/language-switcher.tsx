@@ -6,11 +6,27 @@ import { cn } from "@/lib/utils";
 
 const SWITCH_LOCALES = ["en", "ko", "ja"] as const;
 
+type LocaleCode = (typeof SWITCH_LOCALES)[number];
+
+/** US · 대한민국 · 日本 — regional indicator emoji pairs */
+const LOCALE_FLAGS: Record<LocaleCode, string> = {
+  en: "\u{1F1FA}\u{1F1F8}",
+  ko: "\u{1F1F0}\u{1F1F7}",
+  ja: "\u{1F1EF}\u{1F1F5}",
+};
+
+const FLAG_ARIA_KEY: Record<LocaleCode, "flagAriaEn" | "flagAriaKo" | "flagAriaJa"> = {
+  en: "flagAriaEn",
+  ko: "flagAriaKo",
+  ja: "flagAriaJa",
+};
+
 export function LanguageSwitcher({
   className,
   variant = "default",
 }: {
   className?: string;
+  /** @deprecated Header no longer uses the switcher; both map to the same footer-oriented style. */
   variant?: "default" | "onDark";
 }) {
   const t = useTranslations("LanguageSwitcher");
@@ -22,13 +38,13 @@ export function LanguageSwitcher({
   return (
     <div
       className={cn(
-        "flex items-center gap-1 rounded-[var(--radius-md)] border p-1 transition-[border-color,background-color] duration-300 ease-out",
+        "inline-flex items-center gap-0.5 rounded-[var(--radius-md)] border p-0.5 sm:gap-1 sm:p-1",
         onDark
           ? "border-white/20 bg-white/10 backdrop-blur-sm"
-          : "border-border/70 bg-[color-mix(in_srgb,var(--brand-primary-soft)_45%,var(--bg-surface-subtle))]",
+          : "border-border/70 bg-[color-mix(in_srgb,var(--brand-primary-soft)_35%,var(--muted))]",
         className,
       )}
-      role="group"
+      role="toolbar"
       aria-label={t("label")}
     >
       {SWITCH_LOCALES.map((code) => (
@@ -36,18 +52,23 @@ export function LanguageSwitcher({
           key={code}
           type="button"
           onClick={() => router.replace(pathname, { locale: code })}
+          aria-pressed={locale === code}
+          aria-label={t(FLAG_ARIA_KEY[code])}
+          title={t(FLAG_ARIA_KEY[code])}
           className={cn(
-            "min-h-10 min-w-10 rounded-[var(--radius-sm)] px-3 text-xs font-semibold tracking-wide transition-[color,background-color,box-shadow] duration-200 sm:min-w-[2.75rem]",
+            "flex size-10 items-center justify-center rounded-[var(--radius-sm)] text-[1.375rem] leading-none transition-[box-shadow,background-color,opacity] duration-200 sm:size-11 sm:text-[1.5rem]",
             locale === code
               ? onDark
-                ? "bg-white text-[var(--brand-primary)] shadow-sm ring-1 ring-white/40"
-                : "bg-[var(--brand-primary)] text-[var(--text-on-brand)] shadow-sm ring-1 ring-[color-mix(in_srgb,var(--brand-primary)_40%,#fff)]"
+                ? "bg-white shadow-sm ring-2 ring-white/50"
+                : "bg-background shadow-sm ring-2 ring-[var(--brand-primary)] ring-offset-1 ring-offset-[color-mix(in_srgb,var(--brand-primary-soft)_35%,var(--muted))]"
               : onDark
-                ? "text-white/75 hover:bg-white/12 hover:text-white"
-                : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
+                ? "opacity-80 hover:bg-white/15 hover:opacity-100"
+                : "opacity-70 hover:bg-background/90 hover:opacity-100",
           )}
         >
-          {t(code)}
+          <span aria-hidden className="select-none">
+            {LOCALE_FLAGS[code]}
+          </span>
         </button>
       ))}
     </div>

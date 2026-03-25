@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import type { User } from "@supabase/supabase-js";
-import { useTranslations } from "next-intl";
-import { useRouter as useI18nRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter as useI18nRouter } from "@/i18n/navigation";
 import { useRouter as useNextRouter } from "next/navigation";
+import { routing } from "@/i18n/routing";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import { isPrivilegedAppRole } from "@/lib/auth/app-role";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser-client";
@@ -18,7 +19,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { ChevronDown, FileText, Heart, Shield, Sparkles, UserRound, Users, Wallet } from "lucide-react";
+import { ChevronDown, Coins, FileText, Heart, LayoutDashboard, Plane, Shield, UserRound, Users } from "lucide-react";
 
 type MeResponse = {
   auth: { id: string; email: string | undefined; sessionAvatar: string | null; sessionName: string };
@@ -103,6 +104,8 @@ export function HeaderAccountMenu({
   onDarkSurface: boolean;
 }) {
   const t = useTranslations("Header");
+  const locale = useLocale();
+  const pathname = usePathname();
   const i18nRouter = useI18nRouter();
   const nextRouter = useNextRouter();
   const [me, setMe] = useState<MeResponse | null>(null);
@@ -124,12 +127,26 @@ export function HeaderAccountMenu({
     void load();
   }, [load, authUser.id]);
 
-  const handleSignOut = async () => {
+  const publicHomeHref = locale === routing.defaultLocale ? "/" : `/${locale}`;
+
+  const isProtectedPath = (p: string) =>
+    p === "/mypage" ||
+    p.startsWith("/mypage/") ||
+    p === "/guardian" ||
+    p.startsWith("/guardian/") ||
+    p.startsWith("/admin");
+
+  const handleSignOut = async (close: () => void) => {
+    close();
     await fetch("/api/dev/mock-guardian-logout", { method: "POST", credentials: "include" });
     const sb = createSupabaseBrowserClient();
     await sb?.auth.signOut();
     setDesktopOpen(false);
     setMobileOpen(false);
+    if (isProtectedPath(pathname)) {
+      window.location.href = publicHomeHref;
+      return;
+    }
     nextRouter.refresh();
   };
 
@@ -166,21 +183,33 @@ export function HeaderAccountMenu({
   );
 
   const menuItemsDesktop = (close: () => void) => {
+    const itemClick = (path: string) => (e: MouseEvent) => {
+      e.preventDefault();
+      go(path, close);
+    };
+
     if (isPrivilegedAppRole(role)) {
       return (
         <>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/admin", close)}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/admin")}>
             <Shield className="size-4 opacity-80" aria-hidden />
             {t("accountAdminConsole")}
           </DropdownMenuItem>
           {role === "super_admin" ? (
-            <DropdownMenuItem className="min-h-11" onSelect={() => go("/admin/managers/invite", close)}>
+            <DropdownMenuItem className="min-h-11" onClick={itemClick("/admin/managers/invite")}>
               <Shield className="size-4 opacity-80" aria-hidden />
               {t("accountSuperInvites")}
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" className="min-h-11" onSelect={() => void handleSignOut()}>
+          <DropdownMenuItem
+            variant="destructive"
+            className="min-h-11"
+            onClick={(e) => {
+              e.preventDefault();
+              void handleSignOut(close);
+            }}
+          >
             {t("logOut")}
           </DropdownMenuItem>
         </>
@@ -189,32 +218,47 @@ export function HeaderAccountMenu({
     if (role === "guardian") {
       return (
         <>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage", close)}>
-            <Sparkles className="size-4 opacity-80" aria-hidden />
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage")}>
+            <LayoutDashboard className="size-4 opacity-80" aria-hidden />
+            {t("accountMypage")}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/journeys")}>
+            <Plane className="size-4 opacity-80" aria-hidden />
             {t("accountMyJourney")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/guardian/profile", close)}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/profile")}>
+            <UserRound className="size-4 opacity-80" aria-hidden />
+            {t("accountProfile")}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/points")}>
+            <Coins className="size-4 opacity-80" aria-hidden />
+            {t("accountPoints")}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/matches")}>
+            <Users className="size-4 opacity-80" aria-hidden />
+            {t("accountMatches")}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardian/profile")}>
             <Users className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianProfile")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/guardian/posts", close)}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardian/posts")}>
             <FileText className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianPosts")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/guardian/matches", close)}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardian/matches")}>
             <Heart className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianMatches")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage/points", close)}>
-            <Wallet className="size-4 opacity-80" aria-hidden />
-            {t("accountPoints")}
-          </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage/profile", close)}>
-            <UserRound className="size-4 opacity-80" aria-hidden />
-            {t("accountSettings")}
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" className="min-h-11" onSelect={() => void handleSignOut()}>
+          <DropdownMenuItem
+            variant="destructive"
+            className="min-h-11"
+            onClick={(e) => {
+              e.preventDefault();
+              void handleSignOut(close);
+            }}
+          >
             {t("logOut")}
           </DropdownMenuItem>
         </>
@@ -222,24 +266,39 @@ export function HeaderAccountMenu({
     }
     return (
       <>
-        <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage", close)}>
-          <Sparkles className="size-4 opacity-80" aria-hidden />
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage")}>
+          <LayoutDashboard className="size-4 opacity-80" aria-hidden />
+          {t("accountMypage")}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/journeys")}>
+          <Plane className="size-4 opacity-80" aria-hidden />
           {t("accountMyJourney")}
         </DropdownMenuItem>
-        <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage/points", close)}>
-          <Wallet className="size-4 opacity-80" aria-hidden />
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/profile")}>
+          <UserRound className="size-4 opacity-80" aria-hidden />
+          {t("accountProfile")}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/points")}>
+          <Coins className="size-4 opacity-80" aria-hidden />
           {t("accountPoints")}
         </DropdownMenuItem>
-        <DropdownMenuItem className="min-h-11" onSelect={() => go("/mypage/profile", close)}>
-          <UserRound className="size-4 opacity-80" aria-hidden />
-          {t("accountSettings")}
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/matches")}>
+          <Users className="size-4 opacity-80" aria-hidden />
+          {t("accountMatches")}
         </DropdownMenuItem>
-        <DropdownMenuItem className="min-h-11" onSelect={() => go("/guardians/apply", close)}>
+        <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardians/apply")}>
           <Shield className="size-4 opacity-80" aria-hidden />
           {t("accountGuardianApply")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" className="min-h-11" onSelect={() => void handleSignOut()}>
+        <DropdownMenuItem
+          variant="destructive"
+          className="min-h-11"
+          onClick={(e) => {
+            e.preventDefault();
+            void handleSignOut(close);
+          }}
+        >
           {t("logOut")}
         </DropdownMenuItem>
       </>
@@ -267,7 +326,7 @@ export function HeaderAccountMenu({
           <button
             type="button"
             className={cn(row, "text-destructive hover:bg-destructive/10")}
-            onClick={() => void handleSignOut()}
+            onClick={() => void handleSignOut(close)}
           >
             {t("logOut")}
           </button>
@@ -278,8 +337,24 @@ export function HeaderAccountMenu({
       return (
         <nav className="flex flex-col gap-1 px-2" aria-label={t("accountMenuTitle")}>
           <button type="button" className={row} onClick={() => go("/mypage", close)}>
-            <Sparkles className="size-5 shrink-0 opacity-80" aria-hidden />
+            <LayoutDashboard className="size-5 shrink-0 opacity-80" aria-hidden />
+            {t("accountMypage")}
+          </button>
+          <button type="button" className={row} onClick={() => go("/mypage/journeys", close)}>
+            <Plane className="size-5 shrink-0 opacity-80" aria-hidden />
             {t("accountMyJourney")}
+          </button>
+          <button type="button" className={row} onClick={() => go("/mypage/profile", close)}>
+            <UserRound className="size-5 shrink-0 opacity-80" aria-hidden />
+            {t("accountProfile")}
+          </button>
+          <button type="button" className={row} onClick={() => go("/mypage/points", close)}>
+            <Coins className="size-5 shrink-0 opacity-80" aria-hidden />
+            {t("accountPoints")}
+          </button>
+          <button type="button" className={row} onClick={() => go("/mypage/matches", close)}>
+            <Users className="size-5 shrink-0 opacity-80" aria-hidden />
+            {t("accountMatches")}
           </button>
           <button type="button" className={row} onClick={() => go("/guardian/profile", close)}>
             <Users className="size-5 shrink-0 opacity-80" aria-hidden />
@@ -293,19 +368,11 @@ export function HeaderAccountMenu({
             <Heart className="size-5 shrink-0 opacity-80" aria-hidden />
             {t("accountGuardianMatches")}
           </button>
-          <button type="button" className={row} onClick={() => go("/mypage/points", close)}>
-            <Wallet className="size-5 shrink-0 opacity-80" aria-hidden />
-            {t("accountPoints")}
-          </button>
-          <button type="button" className={row} onClick={() => go("/mypage/profile", close)}>
-            <UserRound className="size-5 shrink-0 opacity-80" aria-hidden />
-            {t("accountSettings")}
-          </button>
           <div className="border-border/60 my-2 border-t" />
           <button
             type="button"
             className={cn(row, "text-destructive hover:bg-destructive/10")}
-            onClick={() => void handleSignOut()}
+            onClick={() => void handleSignOut(close)}
           >
             {t("logOut")}
           </button>
@@ -315,16 +382,24 @@ export function HeaderAccountMenu({
     return (
       <nav className="flex flex-col gap-1 px-2" aria-label={t("accountMenuTitle")}>
         <button type="button" className={row} onClick={() => go("/mypage", close)}>
-          <Sparkles className="size-5 shrink-0 opacity-80" aria-hidden />
-          {t("accountMyJourney")}
+          <LayoutDashboard className="size-5 shrink-0 opacity-80" aria-hidden />
+          {t("accountMypage")}
         </button>
-        <button type="button" className={row} onClick={() => go("/mypage/points", close)}>
-          <Wallet className="size-5 shrink-0 opacity-80" aria-hidden />
-          {t("accountPoints")}
+        <button type="button" className={row} onClick={() => go("/mypage/journeys", close)}>
+          <Plane className="size-5 shrink-0 opacity-80" aria-hidden />
+          {t("accountMyJourney")}
         </button>
         <button type="button" className={row} onClick={() => go("/mypage/profile", close)}>
           <UserRound className="size-5 shrink-0 opacity-80" aria-hidden />
-          {t("accountSettings")}
+          {t("accountProfile")}
+        </button>
+        <button type="button" className={row} onClick={() => go("/mypage/points", close)}>
+          <Coins className="size-5 shrink-0 opacity-80" aria-hidden />
+          {t("accountPoints")}
+        </button>
+        <button type="button" className={row} onClick={() => go("/mypage/matches", close)}>
+          <Users className="size-5 shrink-0 opacity-80" aria-hidden />
+          {t("accountMatches")}
         </button>
         <button type="button" className={row} onClick={() => go("/guardians/apply", close)}>
           <Shield className="size-5 shrink-0 opacity-80" aria-hidden />
@@ -334,7 +409,7 @@ export function HeaderAccountMenu({
         <button
           type="button"
           className={cn(row, "text-destructive hover:bg-destructive/10")}
-          onClick={() => void handleSignOut()}
+          onClick={() => void handleSignOut(close)}
         >
           {t("logOut")}
         </button>

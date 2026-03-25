@@ -1,8 +1,9 @@
 import { defineRouting } from "next-intl/routing";
 
 /**
- * Locales: default English; URL uses prefix only for ko/ja (`as-needed`).
- * Cookie NEXT_LOCALE remembers choice (next-intl middleware).
+ * App locales: English (default), Korean, Japanese.
+ * URL: `en` has no prefix; `ko` / `ja` use `/ko`, `/ja` (`as-needed`).
+ * Cookie NEXT_LOCALE remembers choice (next-intl / proxy).
  */
 export const routing = defineRouting({
   locales: ["en", "ko", "ja"],
