@@ -1,5 +1,6 @@
 {
   "Nav": {
+    "home": "Home",
     "explore": "Explore",
     "posts": "Posts",
     "guardians": "Guardians",
@@ -190,6 +191,14 @@
     "dualCtaGuardianLead": "Your feel for the city can shape someone’s day.",
     "dualCtaGuardianButton": "Apply as a guardian",
     "dualCtaGuardianImageAlt": "Professional woman portrait conveying warmth and trust",
+    "heroCtaTravelerAuthedPrimary": "My journey",
+    "heroCtaTravelerAuthedSecondary": "Find guardians",
+    "heroCtaGuardianAuthedPrimary": "Guardian hub",
+    "heroCtaGuardianAuthedSecondary": "My posts",
+    "dualCtaSignedTravelerPrimary": "My journey",
+    "dualCtaSignedTravelerSecondary": "Browse guardians",
+    "dualCtaSignedGuardianLeftPrimary": "Guardian hub",
+    "dualCtaSignedGuardianLeftSecondary": "Find guardians",
     "ctaTitle": "Design your Seoul journey today",
     "ctaLead": "Pick a guardian and send a request — we confirm scope before handoff.",
     "bookNow": "Start a request",

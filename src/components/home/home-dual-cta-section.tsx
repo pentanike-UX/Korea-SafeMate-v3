@@ -1,17 +1,36 @@
+"use client";
+
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { HOME_CTA_IMAGES } from "@/data/home-cta-images";
+import { useViewerRole } from "@/hooks/use-viewer-role";
+import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-export async function HomeDualCtaSection() {
-  const t = await getTranslations("Home");
+export function HomeDualCtaSection() {
+  const t = useTranslations("Home");
+  const tHeader = useTranslations("Header");
+  const viewer = useViewerRole();
+  const guest = viewer == null;
+  const guardian = viewer === "guardian";
+
+  const travelerPrimaryHref = guest ? "/guardians" : guardian ? "/guardian" : "/mypage";
+  const travelerSecondaryHref = guest ? "/explore" : guardian ? "/guardians" : "/guardians";
+  const travelerPrimaryLabel = guest
+    ? t("dualCtaTravelerPrimary")
+    : guardian
+      ? t("dualCtaSignedGuardianLeftPrimary")
+      : t("dualCtaSignedTravelerPrimary");
+  const travelerSecondaryLabel = guest
+    ? t("dualCtaTravelerSecondary")
+    : guardian
+      ? t("dualCtaSignedGuardianLeftSecondary")
+      : t("dualCtaSignedTravelerSecondary");
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 pb-16 sm:px-5 sm:py-14 sm:pb-20">
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-2">
-        {/* 여행자 · 가디언 찾기 */}
         <div className="border-border/60 flex min-h-[min(22rem,70vw)] flex-col-reverse overflow-hidden rounded-[var(--radius-lg)] border bg-card shadow-[var(--shadow-sm)] sm:min-h-[17rem] sm:flex-row sm:items-stretch">
           <div className="flex flex-1 flex-col justify-center gap-4 p-6 sm:max-w-[min(100%,22rem)] sm:p-8">
             <div>
@@ -22,7 +41,7 @@ export async function HomeDualCtaSection() {
             </div>
             <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="w-full rounded-[var(--radius-md)] font-semibold sm:w-auto sm:min-w-[11rem]">
-                <Link href="/guardians">{t("dualCtaTravelerPrimary")}</Link>
+                <Link href={travelerPrimaryHref}>{travelerPrimaryLabel}</Link>
               </Button>
               <Button
                 asChild
@@ -30,8 +49,8 @@ export async function HomeDualCtaSection() {
                 variant="outline"
                 className="group/cta2 w-full rounded-[var(--radius-md)] border-2 bg-background font-semibold sm:w-auto sm:min-w-[11rem]"
               >
-                <Link href="/explore" className="inline-flex items-center justify-center gap-2">
-                  {t("dualCtaTravelerSecondary")}
+                <Link href={travelerSecondaryHref} className="inline-flex items-center justify-center gap-2">
+                  {travelerSecondaryLabel}
                   <ArrowRight
                     className="size-4 shrink-0 transition-transform duration-200 group-hover/cta2:translate-x-0.5"
                     aria-hidden
@@ -56,7 +75,6 @@ export async function HomeDualCtaSection() {
           </div>
         </div>
 
-        {/* 가디언 지원 */}
         <div className="flex min-h-[min(22rem,70vw)] flex-col-reverse overflow-hidden rounded-[var(--radius-lg)] border border-white/10 bg-zinc-900 text-white shadow-[var(--shadow-md)] sm:min-h-[17rem] sm:flex-row-reverse sm:items-stretch">
           <div className="relative z-[1] flex flex-1 flex-col justify-center gap-4 p-6 sm:max-w-[min(100%,22rem)] sm:p-8">
             <div>
@@ -69,7 +87,9 @@ export async function HomeDualCtaSection() {
               variant="secondary"
               className="w-full rounded-[var(--radius-md)] border border-white/35 bg-white font-semibold text-zinc-900 hover:bg-white/95 sm:w-auto sm:min-w-[11rem]"
             >
-              <Link href="/guardians/apply">{t("dualCtaGuardianButton")}</Link>
+              <Link href={guest || viewer !== "guardian" ? "/guardians/apply" : "/guardian/profile"}>
+                {guest || viewer !== "guardian" ? t("dualCtaGuardianButton") : tHeader("accountGuardianProfile")}
+              </Link>
             </Button>
           </div>
           <div className="relative h-52 w-full shrink-0 sm:h-auto sm:min-h-[17rem] sm:w-[min(42%,280px)]">

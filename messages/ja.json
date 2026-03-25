@@ -1,5 +1,6 @@
 {
   "Nav": {
+    "home": "ホーム",
     "explore": "探索",
     "posts": "投稿",
     "guardians": "Guardian",
@@ -190,6 +191,14 @@
     "dualCtaGuardianLead": "街への感覚が、誰かの一日を形にします。",
     "dualCtaGuardianButton": "Guardianに応募",
     "dualCtaGuardianImageAlt": "信頼感のある女性のポートレート",
+    "heroCtaTravelerAuthedPrimary": "マイジャーニー",
+    "heroCtaTravelerAuthedSecondary": "Guardianを探す",
+    "heroCtaGuardianAuthedPrimary": "Guardianハブ",
+    "heroCtaGuardianAuthedSecondary": "自分の投稿",
+    "dualCtaSignedTravelerPrimary": "マイジャーニー",
+    "dualCtaSignedTravelerSecondary": "Guardianを見る",
+    "dualCtaSignedGuardianLeftPrimary": "Guardianハブ",
+    "dualCtaSignedGuardianLeftSecondary": "Guardianを探す",
     "ctaTitle": "旅を今日デザインする",
     "ctaLead": "Guardianを選び、リクエストを送ってください。",
     "bookNow": "リクエストを始める",

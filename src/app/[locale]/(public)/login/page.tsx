@@ -14,12 +14,14 @@ export async function generateMetadata() {
 }
 
 type Props = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string | string[] }>;
 };
 
 export default async function LoginPage({ searchParams }: Props) {
   const t = await getTranslations("Login");
-  const { error } = await searchParams;
+  const sp = await searchParams;
+  const { error } = sp;
+  const nextParam = typeof sp.next === "string" ? sp.next : Array.isArray(sp.next) ? sp.next[0] : null;
   const errorMessage =
     error === "oauth"
       ? t("oauthFailed")
@@ -38,7 +40,7 @@ export default async function LoginPage({ searchParams }: Props) {
           {errorMessage ? (
             <p className="bg-destructive/10 text-destructive rounded-[var(--radius-md)] px-3 py-2 text-sm">{errorMessage}</p>
           ) : null}
-          <GoogleSignInButton variant="traveler" />
+          <GoogleSignInButton variant="traveler" returnPath={nextParam} />
           <Button disabled className="rounded-xl">
             {t("continueEmail")}
           </Button>

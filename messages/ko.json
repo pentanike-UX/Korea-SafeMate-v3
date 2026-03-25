@@ -1,5 +1,6 @@
 {
   "Nav": {
+    "home": "홈",
     "explore": "탐색",
     "posts": "포스트",
     "guardians": "가디언",
@@ -190,6 +191,14 @@
     "dualCtaGuardianLead": "서울에 대한 감각이 누군가의 하루를 완성합니다.",
     "dualCtaGuardianButton": "가디언으로 지원하기",
     "dualCtaGuardianImageAlt": "신뢰감 있는 인상의 여성 전문가 초상",
+    "heroCtaTravelerAuthedPrimary": "내 여정",
+    "heroCtaTravelerAuthedSecondary": "가디언 찾기",
+    "heroCtaGuardianAuthedPrimary": "가디언 허브",
+    "heroCtaGuardianAuthedSecondary": "내 포스팅",
+    "dualCtaSignedTravelerPrimary": "내 여정",
+    "dualCtaSignedTravelerSecondary": "가디언 둘러보기",
+    "dualCtaSignedGuardianLeftPrimary": "가디언 허브",
+    "dualCtaSignedGuardianLeftSecondary": "가디언 찾기",
     "ctaTitle": "지금 바로 여정을 설계해 보세요",
     "ctaLead": "가디언을 고르고 요청을 남기면 팀이 범위를 확인한 뒤 연결을 도와드립니다.",
     "bookNow": "요청 시작하기",

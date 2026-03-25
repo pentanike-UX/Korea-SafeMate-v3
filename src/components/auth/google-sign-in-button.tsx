@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { routing } from "@/i18n/routing";
+import { safeNextPath } from "@/lib/auth/safe-next-path";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser-client";
-import { getCanonicalSiteOrigin } from "@/lib/site-url";
+import { getOAuthRedirectOriginForClient } from "@/lib/site-url";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -43,9 +44,11 @@ function GoogleMark({ className }: { className?: string }) {
 type Props = {
   variant?: Variant;
   className?: string;
+  /** 로그인 페이지 `?next=` — 승인 후 이 경로(로케일 포함)로 복귀 */
+  returnPath?: string | null;
 };
 
-export function GoogleSignInButton({ variant = "traveler", className }: Props) {
+export function GoogleSignInButton({ variant = "traveler", className, returnPath = null }: Props) {
   const t = useTranslations("Login");
   const locale = useLocale();
   const [loading, setLoading] = useState(false);
@@ -61,8 +64,8 @@ export function GoogleSignInButton({ variant = "traveler", className }: Props) {
 
     setLoading(true);
     try {
-      const next = postLoginPath(locale, variant);
-      const origin = getCanonicalSiteOrigin() || window.location.origin;
+      const next = safeNextPath(returnPath) ?? postLoginPath(locale, variant);
+      const origin = getOAuthRedirectOriginForClient() || window.location.origin;
       const redirectTo = new URL("/auth/callback", origin);
       redirectTo.searchParams.set("next", next);
 

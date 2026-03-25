@@ -5,13 +5,26 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { HOME_HERO_INTERVAL_MS, HOME_HERO_SLIDES } from "@/data/home-hero-slides";
+import { useViewerRole } from "@/hooks/use-viewer-role";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronLeft, ChevronRight, Compass, Sparkles, Users } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  FileText,
+  Shield,
+  Sparkles,
+  Users,
+} from "lucide-react";
 
 export function HomeHeroCarousel() {
   const t = useTranslations("Home");
   const tBrand = useTranslations("Brand");
+  const viewer = useViewerRole();
+  const heroGuest = viewer == null;
+  const heroGuardian = viewer === "guardian";
   const total = HOME_HERO_SLIDES.length;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -119,9 +132,22 @@ export function HomeHeroCarousel() {
               size="lg"
               className="h-auto min-h-12 w-full gap-2.5 rounded-[var(--radius-md)] border-0 bg-white px-8 py-3.5 text-base font-semibold text-zinc-900 shadow-lg shadow-black/25 hover:bg-white/95 sm:w-auto"
             >
-              <Link href="/guardians" className="gap-2.5">
-                <Users className="size-5 shrink-0" aria-hidden />
-                {t("ctaPrimaryRequest")}
+              <Link
+                href={heroGuest ? "/guardians" : heroGuardian ? "/guardian" : "/mypage"}
+                className="gap-2.5"
+              >
+                {heroGuest ? (
+                  <Users className="size-5 shrink-0" aria-hidden />
+                ) : heroGuardian ? (
+                  <Shield className="size-5 shrink-0" aria-hidden />
+                ) : (
+                  <Sparkles className="size-5 shrink-0" aria-hidden />
+                )}
+                {heroGuest
+                  ? t("ctaPrimaryRequest")
+                  : heroGuardian
+                    ? t("heroCtaGuardianAuthedPrimary")
+                    : t("heroCtaTravelerAuthedPrimary")}
               </Link>
             </Button>
             <Button
@@ -130,9 +156,22 @@ export function HomeHeroCarousel() {
               variant="outline"
               className="h-auto min-h-12 w-full gap-2.5 rounded-[var(--radius-md)] border-2 border-white/45 bg-white/10 px-8 py-3.5 text-base font-semibold text-white shadow-sm backdrop-blur-sm sm:w-auto hover:border-white/70 hover:bg-white/18 active:scale-[0.99]"
             >
-              <Link href="/posts?content=route" className="gap-2 whitespace-nowrap">
-                <Compass className="size-5 shrink-0 text-white" aria-hidden />
-                <span>{t("ctaSecondaryExplore")}</span>
+              <Link
+                href={heroGuest ? "/posts?content=route" : heroGuardian ? "/guardian/posts" : "/guardians"}
+                className="gap-2 whitespace-nowrap"
+              >
+                {heroGuardian ? (
+                  <FileText className="size-5 shrink-0 text-white" aria-hidden />
+                ) : (
+                  <Compass className="size-5 shrink-0 text-white" aria-hidden />
+                )}
+                <span>
+                  {heroGuest
+                    ? t("ctaSecondaryExplore")
+                    : heroGuardian
+                      ? t("heroCtaGuardianAuthedSecondary")
+                      : t("heroCtaTravelerAuthedSecondary")}
+                </span>
                 <ArrowRight className="size-5 shrink-0 text-white/90" aria-hidden />
               </Link>
             </Button>

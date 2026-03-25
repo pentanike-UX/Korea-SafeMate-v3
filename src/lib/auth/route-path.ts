@@ -29,6 +29,15 @@ export function loginPathForLocale(locale: AppLocale): string {
   return locale === routing.defaultLocale ? "/login" : `/${locale}/login`;
 }
 
+/** 로그인으로 보낼 때, 로그인 페이지가 아니면 `?next=`로 복귀 경로를 붙입니다. */
+export function loginPathWithNext(pathname: string, search: string, locale: AppLocale): string {
+  const base = loginPathForLocale(locale);
+  const { pathname: pathWo } = stripLocaleFromPathname(pathname);
+  if (pathWo === "/login" || pathWo.startsWith("/login/")) return base;
+  const full = `${pathname}${search}`;
+  return `${base}?next=${encodeURIComponent(full)}`;
+}
+
 /** Prefix path with `/ko` / `/ja` when not default locale (matches next-intl `as-needed`). */
 export function withLocalePath(locale: AppLocale, path: string): string {
   const p = path.startsWith("/") ? path : `/${path}`;

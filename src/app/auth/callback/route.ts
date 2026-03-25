@@ -1,28 +1,10 @@
 import { createServerClient, type SetAllCookies } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { safeNextPath } from "@/lib/auth/safe-next-path";
 import { syncOAuthUserFromSession } from "@/lib/auth/sync-oauth-user";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
-import { getCanonicalSiteOrigin } from "@/lib/site-url";
-
-function safeNextPath(raw: string | null): string {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/";
-  return raw;
-}
-
-/** Prefer NEXT_PUBLIC_SITE_URL so OAuth return URL matches production, not a deployment host. */
-function resolveRedirectBase(request: Request): string {
-  const canonical = getCanonicalSiteOrigin();
-  if (canonical) return canonical;
-
-  const { origin } = new URL(request.url);
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const isLocal = process.env.NODE_ENV === "development";
-  if (!isLocal && forwardedHost) {
-    return `https://${forwardedHost}`;
-  }
-  return origin;
-}
+import { resolveOAuthRedirectBase } from "@/lib/site-url";
 
 /**
  * Supabase OAuth (Google 등) PKCE 콜백.
@@ -33,8 +15,8 @@ function resolveRedirectBase(request: Request): string {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safeNextPath(searchParams.get("next"));
-  const base = resolveRedirectBase(request);
+  const next = safeNextPath(searchParams.get("next")) ?? "/";
+  const base = resolveOAuthRedirectBase(request);
 
   const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const sbKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

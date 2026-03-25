@@ -8,7 +8,12 @@ import {
   type GuardianProfileStatus,
 } from "@/lib/auth/guardian-profile-status";
 import { isPrivilegedAppRole } from "@/lib/auth/app-role";
-import { loginPathForLocale, stripLocaleFromPathname, withLocalePath } from "@/lib/auth/route-path";
+import {
+  loginPathForLocale,
+  loginPathWithNext,
+  stripLocaleFromPathname,
+  withLocalePath,
+} from "@/lib/auth/route-path";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
@@ -79,10 +84,9 @@ function copyCookies(from: NextResponse, to: NextResponse) {
   });
 }
 
-function redirectWithSession(request: NextRequest, from: NextResponse, pathname: string) {
-  const url = request.nextUrl.clone();
-  url.pathname = pathname;
-  const red = NextResponse.redirect(url);
+function redirectWithSession(request: NextRequest, from: NextResponse, pathAndQuery: string) {
+  const target = new URL(pathAndQuery, request.url);
+  const red = NextResponse.redirect(target);
   copyCookies(from, red);
   return red;
 }
@@ -94,6 +98,28 @@ function isConsumerAuthedPath(pathWithoutLocale: string) {
     pathWithoutLocale === "/matches" ||
     pathWithoutLocale.startsWith("/matches/")
   );
+}
+
+/** `/guardians`·`/guardians/*`는 공개 — 가디언 허브만 `/guardian` 접두로 구분 */
+function isGuardianContributorPath(pathWithoutLocale: string) {
+  if (pathWithoutLocale.startsWith("/guardians")) return false;
+  return pathWithoutLocale === "/guardian" || pathWithoutLocale.startsWith("/guardian/");
+}
+
+function isTravelerPrivatePath(pathWithoutLocale: string) {
+  const roots = [
+    "/traveler/saved-guardians",
+    "/traveler/saved-posts",
+    "/traveler/points",
+    "/traveler/requests",
+    "/traveler/messages",
+    "/traveler/account",
+  ];
+  return roots.some((p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`));
+}
+
+function needsConsumerAuth(pathWithoutLocale: string) {
+  return isConsumerAuthedPath(pathWithoutLocale) || isTravelerPrivatePath(pathWithoutLocale);
 }
 
 function isSuperAdminOnlyPath(pathWithoutLocale: string) {
@@ -119,7 +145,7 @@ export default async function proxy(request: NextRequest) {
     const ctx = await loadAccessContext(request, res);
 
     if (!ctx.user) {
-      return redirectWithSession(request, res, loginPathForLocale(locale));
+      return redirectWithSession(request, res, loginPathWithNext(request.nextUrl.pathname, request.nextUrl.search, locale));
     }
     if (!isPrivilegedAppRole(ctx.appRole ?? undefined)) {
       return redirectWithSession(request, res, withLocalePath(locale, "/mypage"));
@@ -133,9 +159,13 @@ export default async function proxy(request: NextRequest) {
   const intlResponse = intlMiddleware(request);
   const ctx = await loadAccessContext(request, intlResponse);
 
-  if (pathWo.startsWith("/guardian")) {
+  if (isGuardianContributorPath(pathWo)) {
     if (!ctx.user) {
-      return redirectWithSession(request, intlResponse, loginPathForLocale(locale));
+      return redirectWithSession(
+        request,
+        intlResponse,
+        loginPathWithNext(request.nextUrl.pathname, request.nextUrl.search, locale),
+      );
     }
     if (isPrivilegedAppRole(ctx.appRole ?? undefined)) {
       return redirectWithSession(request, intlResponse, "/admin/dashboard");
@@ -159,9 +189,13 @@ export default async function proxy(request: NextRequest) {
     }
   }
 
-  if (isConsumerAuthedPath(pathWo)) {
+  if (needsConsumerAuth(pathWo)) {
     if (!ctx.user) {
-      return redirectWithSession(request, intlResponse, loginPathForLocale(locale));
+      return redirectWithSession(
+        request,
+        intlResponse,
+        loginPathWithNext(request.nextUrl.pathname, request.nextUrl.search, locale),
+      );
     }
     if (isPrivilegedAppRole(ctx.appRole ?? undefined)) {
       return redirectWithSession(request, intlResponse, "/admin/dashboard");

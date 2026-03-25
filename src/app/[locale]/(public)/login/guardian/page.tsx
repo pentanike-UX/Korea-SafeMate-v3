@@ -13,13 +13,15 @@ export async function generateMetadata() {
 }
 
 type Props = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string | string[] }>;
 };
 
 export default async function GuardianLoginPage({ searchParams }: Props) {
   const t = await getTranslations("LoginGuardian");
   const tLogin = await getTranslations("Login");
-  const { error } = await searchParams;
+  const sp = await searchParams;
+  const { error } = sp;
+  const nextParam = typeof sp.next === "string" ? sp.next : Array.isArray(sp.next) ? sp.next[0] : null;
   const errorMessage =
     error === "oauth"
       ? tLogin("oauthFailed")
@@ -35,7 +37,7 @@ export default async function GuardianLoginPage({ searchParams }: Props) {
         {errorMessage ? (
           <p className="bg-destructive/10 text-destructive rounded-[var(--radius-md)] px-3 py-2 text-sm">{errorMessage}</p>
         ) : null}
-        <GoogleSignInButton variant="guardian" />
+        <GoogleSignInButton variant="guardian" returnPath={nextParam} />
         <Button disabled className="rounded-xl" variant="secondary">
           {t("emailSoon")}
         </Button>

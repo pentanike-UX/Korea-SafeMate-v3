@@ -8,11 +8,12 @@ import { useAuthUser } from "@/hooks/use-auth-user";
 import { useHomeHeaderContrast } from "@/hooks/use-home-header-contrast";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Compass, FileText, Info, Menu, Users } from "lucide-react";
+import { Compass, FileText, Home, Info, Menu, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV: { href: string; msgKey: "explore" | "posts" | "guardians" | "about"; Icon: LucideIcon }[] = [
+const NAV: { href: string; msgKey: "home" | "explore" | "posts" | "guardians" | "about"; Icon: LucideIcon }[] = [
+  { href: "/", msgKey: "home", Icon: Home },
   { href: "/explore", msgKey: "explore", Icon: Compass },
   { href: "/posts", msgKey: "posts", Icon: FileText },
   { href: "/guardians", msgKey: "guardians", Icon: Users },
@@ -20,6 +21,7 @@ const NAV: { href: string; msgKey: "explore" | "posts" | "guardians" | "about"; 
 ];
 
 function isNavActive(href: string, pathname: string) {
+  if (href === "/") return pathname === "/" || pathname === "";
   if (href === "/guardians") return pathname === "/guardians" || pathname.startsWith("/guardians/");
   if (href === "/explore") return pathname === "/explore" || pathname.startsWith("/explore/");
   if (href === "/posts") return pathname === "/posts" || pathname.startsWith("/posts/");
@@ -168,9 +170,11 @@ export function SiteHeader() {
                       <Link href="/login">{tHeader("logIn")}</Link>
                     </Button>
                   ) : null}
-                  <Button asChild variant="ghost" className="text-muted-foreground w-full justify-center rounded-[var(--radius-md)] text-sm">
-                    <Link href="/login/guardian">{tHeader("guardianLoginShort")}</Link>
-                  </Button>
+                  {!user ? (
+                    <Button asChild variant="ghost" className="text-muted-foreground w-full justify-center rounded-[var(--radius-md)] text-sm">
+                      <Link href="/login/guardian">{tHeader("guardianLoginShort")}</Link>
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             </SheetContent>
