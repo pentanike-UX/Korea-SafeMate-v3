@@ -115,7 +115,7 @@ export function TravelerAccountForm({ initial, locale }: { initial: TravelerAcco
             <Label htmlFor="locale">{t("fieldLocale")}</Label>
             <Input id="locale" value={loc} onChange={(e) => setLoc(e.target.value)} className="rounded-xl" />
           </div>
-          <div className="space-y-2">
+          <div id="profile-image-field" className="scroll-mt-28 space-y-2">
             <Label htmlFor="profile_image_url">{t("fieldProfileImage")}</Label>
             <Input id="profile_image_url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="rounded-xl" />
           </div>

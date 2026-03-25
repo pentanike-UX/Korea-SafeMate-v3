@@ -7,9 +7,12 @@ import { cn } from "@/lib/utils";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { MypageGuardianDashboard } from "@/components/mypage/mypage-guardian-dashboard";
+import { MypageAvatarEditTrigger } from "@/components/mypage/mypage-avatar-edit-trigger";
+import { MypageHubProvider } from "@/components/mypage/mypage-hub-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Coins, FileText, Heart, LayoutDashboard, Plane, Settings, Shield, Users } from "lucide-react";
 
 const MYPAGE_MODE_KEY = "safemate-mypage-mode";
@@ -25,7 +28,7 @@ const CORE_NAV: {
   { href: "/mypage/journeys", labelKey: "navJourneys", Icon: Plane },
   { href: "/mypage/profile", labelKey: "navProfile", Icon: Settings },
   { href: "/mypage/points", labelKey: "navPoints", Icon: Coins },
-  { href: "/matches", labelKey: "navMatches", Icon: Users },
+  { href: "/mypage/matches", labelKey: "navMatches", Icon: Users },
 ];
 
 type GuardianCtaLabel =
@@ -48,12 +51,13 @@ function formatMemberSince(iso: string | null, locale: string) {
 
 export function MypageHubShell({
   children,
-  appRole: _appRole,
+  appRole,
   guardianStatus,
   accountDisplayName,
   accountEmail,
   accountAvatarUrl,
   memberSinceIso,
+  accountUserId = null,
 }: {
   children: React.ReactNode;
   appRole: AppAccountRole;
@@ -62,6 +66,7 @@ export function MypageHubShell({
   accountEmail: string | null;
   accountAvatarUrl: string | null;
   memberSinceIso: string | null;
+  accountUserId?: string | null;
 }) {
   const pathname = usePathname();
   const locale = useLocale();
@@ -93,7 +98,8 @@ export function MypageHubShell({
     if (href === "/mypage/journeys") return pathname === "/mypage/journeys" || pathname.startsWith("/mypage/journeys/");
     if (href === "/mypage/profile") return pathname === "/mypage/profile" || pathname.startsWith("/mypage/profile/");
     if (href === "/mypage/points") return pathname === "/mypage/points" || pathname.startsWith("/mypage/points/");
-    if (href === "/matches") return pathname === "/matches" || pathname.startsWith("/matches/");
+    if (href === "/mypage/matches")
+      return pathname === "/mypage/matches" || pathname.startsWith("/mypage/matches/");
     return false;
   };
 
@@ -125,74 +131,95 @@ export function MypageHubShell({
   const initial = (accountDisplayName || accountEmail || "?").slice(0, 1).toUpperCase();
 
   return (
-    <div className="bg-[var(--bg-page)] min-h-screen">
-      <div className="border-border/60 border-b bg-card/95 backdrop-blur-sm">
-        <div className="page-container py-8 sm:py-10 md:py-12">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
-            <Avatar size="lg" className="size-16 ring-2 ring-border/60">
-              {accountAvatarUrl ? <AvatarImage src={accountAvatarUrl} alt="" /> : null}
-              <AvatarFallback className="text-lg font-semibold">{initial}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-text-strong text-xl font-semibold tracking-tight sm:text-2xl">
-                  {accountDisplayName || t("hubProfileFallbackName")}
-                </h1>
-                <Badge variant={hubMode === "traveler" ? "secondary" : "featured"} className="font-semibold">
-                  {hubMode === "traveler" ? t("hubProfileModeTravelerBadge") : t("hubProfileModeGuardianBadge")}
-                </Badge>
-                {hubMode === "guardian" ? (
-                  <Badge variant="outline" className="font-medium">
-                    {t(`guardianStatus.${guardianStatus}`)}
-                  </Badge>
-                ) : null}
+    <MypageHubProvider value={{ appRole, guardianStatus }}>
+      <div className="bg-[var(--bg-page)] min-h-screen">
+        <div className="page-container pt-6 pb-2 sm:pt-8 sm:pb-3 md:pt-10">
+          <Card className="border-border/60 overflow-hidden rounded-[1.25rem] shadow-[var(--shadow-md)] ring-1 ring-border/40">
+            <CardContent className="space-y-6 p-5 sm:p-7 md:p-8">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8" aria-label={t("hubIdentityCardAria")}>
+                <div className="flex items-end gap-3 sm:flex-col sm:items-center sm:gap-2">
+                  <Avatar size="lg" className="size-20 ring-2 ring-border/60 sm:size-24">
+                    {accountAvatarUrl ? <AvatarImage src={accountAvatarUrl} alt="" /> : null}
+                    <AvatarFallback className="text-xl font-semibold sm:text-2xl">{initial}</AvatarFallback>
+                  </Avatar>
+                  <MypageAvatarEditTrigger className="sm:mt-0" />
+                </div>
+                <div className="min-w-0 flex-1 space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-text-strong text-xl font-semibold tracking-tight sm:text-2xl">
+                      {accountDisplayName || t("hubProfileFallbackName")}
+                    </h1>
+                    <Badge variant={hubMode === "traveler" ? "secondary" : "featured"} className="font-semibold">
+                      {hubMode === "traveler" ? t("hubProfileModeTravelerBadge") : t("hubProfileModeGuardianBadge")}
+                    </Badge>
+                    {hubMode === "guardian" ? (
+                      <Badge variant="outline" className="font-medium">
+                        {t(`guardianStatus.${guardianStatus}`)}
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-sm break-all">
+                    {accountEmail || t("hubEmailPlaceholder")}
+                  </p>
+                  {accountUserId ? (
+                    <p className="text-muted-foreground font-mono text-[11px] break-all opacity-80">
+                      {t("hubUserIdLine", { id: accountUserId })}
+                    </p>
+                  ) : null}
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    {memberSince ? t("hubProfileMemberSince", { date: memberSince }) : t("hubProfileMemberSinceUnknown")}
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button asChild variant="default" size="default" className="h-11 rounded-xl font-semibold">
+                      <Link href="/mypage/profile">{t("hubEditProfile")}</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="default" className="h-11 rounded-xl font-medium">
+                      <Link href="/mypage/profile#profile-image-field">{t("hubChangePhotoShort")}</Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
-              {accountEmail ? (
-                <p className="text-muted-foreground text-sm break-all">{accountEmail}</p>
-              ) : null}
-              <p className="text-muted-foreground text-xs leading-relaxed">
-                {memberSince ? t("hubProfileMemberSince", { date: memberSince }) : t("hubProfileMemberSinceUnknown")}
-              </p>
-            </div>
-          </div>
 
-          <div
-            className="mt-8 flex max-w-lg rounded-[var(--radius-md)] bg-muted/90 p-1.5 ring-1 ring-border/70"
-            role="tablist"
-            aria-label={t("modeSegmentAria")}
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={hubMode === "traveler"}
-              onClick={() => setHubMode("traveler")}
-              className={cn(
-                "min-h-[3.25rem] flex-1 rounded-[calc(var(--radius-md)-2px)] px-4 text-sm font-semibold transition-colors",
-                hubMode === "traveler"
-                  ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t("modeSegmentTraveler")}
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={hubMode === "guardian"}
-              onClick={() => setHubMode("guardian")}
-              className={cn(
-                "min-h-[3.25rem] flex-1 rounded-[calc(var(--radius-md)-2px)] px-4 text-sm font-semibold transition-colors",
-                hubMode === "guardian"
-                  ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t("modeSegmentGuardian")}
-            </button>
-          </div>
-          <p className="text-muted-foreground mt-3 max-w-lg text-xs leading-relaxed">{t("modeSegmentHint")}</p>
+              <div className="border-border/50 border-t pt-6">
+                <div
+                  className="flex max-w-lg rounded-[var(--radius-md)] bg-muted/90 p-1.5 ring-1 ring-border/70"
+                  role="tablist"
+                  aria-label={t("modeSegmentAria")}
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hubMode === "traveler"}
+                    onClick={() => setHubMode("traveler")}
+                    className={cn(
+                      "min-h-[3.25rem] flex-1 rounded-[calc(var(--radius-md)-2px)] px-4 text-sm font-semibold transition-colors",
+                      hubMode === "traveler"
+                        ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {t("modeSegmentTraveler")}
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hubMode === "guardian"}
+                    onClick={() => setHubMode("guardian")}
+                    className={cn(
+                      "min-h-[3.25rem] flex-1 rounded-[calc(var(--radius-md)-2px)] px-4 text-sm font-semibold transition-colors",
+                      hubMode === "guardian"
+                        ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {t("modeSegmentGuardian")}
+                  </button>
+                </div>
+                <p className="text-muted-foreground mt-3 max-w-lg text-xs leading-relaxed">{t("modeSegmentHint")}</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
       <div className="page-container flex flex-col gap-10 py-8 sm:py-10 md:gap-12 lg:flex-row lg:gap-14">
         <div className="lg:w-60 lg:shrink-0">
@@ -319,6 +346,7 @@ export function MypageHubShell({
           {showGuardianDashboard ? <MypageGuardianDashboard status={guardianStatus} /> : children}
         </div>
       </div>
-    </div>
+      </div>
+    </MypageHubProvider>
   );
 }

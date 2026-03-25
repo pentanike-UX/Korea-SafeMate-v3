@@ -12,6 +12,7 @@ export default async function MypageLayout({ children }: { children: React.React
   let accountEmail: string | null = null;
   let accountAvatarUrl: string | null = null;
   let memberSinceIso: string | null = null;
+  let accountUserId: string | null = null;
 
   const mockId = await getMockGuardianIdFromCookies();
   if (mockId) {
@@ -25,6 +26,7 @@ export default async function MypageLayout({ children }: { children: React.React
           accountEmail={mock.auth.email ?? null}
           accountAvatarUrl={mock.profile.profile_image_url}
           memberSinceIso={mock.user.created_at}
+          accountUserId={mock.auth.id}
         >
           {children}
         </MypageHubShell>
@@ -38,8 +40,14 @@ export default async function MypageLayout({ children }: { children: React.React
       data: { user },
     } = await sb.auth.getUser();
     if (user) {
+      accountUserId = user.id;
       accountEmail = user.email ?? null;
       memberSinceIso = user.created_at ?? null;
+      const meta = user.user_metadata as Record<string, unknown> | undefined;
+      const oauthAvatar =
+        (typeof meta?.avatar_url === "string" && meta.avatar_url) ||
+        (typeof meta?.picture === "string" && meta.picture) ||
+        null;
       const [{ data: u }, { data: up }] = await Promise.all([
         sb.from("users").select("app_role, legal_name, email").eq("id", user.id).maybeSingle(),
         sb.from("user_profiles").select("display_name, profile_image_url").eq("user_id", user.id).maybeSingle(),
@@ -47,7 +55,8 @@ export default async function MypageLayout({ children }: { children: React.React
       appRole = (u?.app_role as AppAccountRole | undefined) ?? "traveler";
       const rowEmail = u?.email as string | null | undefined;
       if (rowEmail) accountEmail = rowEmail;
-      accountAvatarUrl = (up?.profile_image_url as string | null | undefined) ?? null;
+      const storedAvatar = (up?.profile_image_url as string | null | undefined)?.trim() || null;
+      accountAvatarUrl = storedAvatar || oauthAvatar;
       accountDisplayName =
         (up?.display_name as string | null | undefined)?.trim() ||
         (u?.legal_name as string | null | undefined)?.trim() ||
@@ -75,6 +84,7 @@ export default async function MypageLayout({ children }: { children: React.React
       accountEmail={accountEmail}
       accountAvatarUrl={accountAvatarUrl}
       memberSinceIso={memberSinceIso}
+      accountUserId={accountUserId}
     >
       {children}
     </MypageHubShell>

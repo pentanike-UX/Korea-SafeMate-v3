@@ -1,12 +1,8 @@
-import { getTranslations } from "next-intl/server";
-import { Card, CardContent } from "@/components/ui/card";
+import { redirect } from "@/i18n/navigation";
 
-export default async function MatchesListPage() {
-  const t = await getTranslations("TravelerHub");
+type Props = { params: Promise<{ locale: string }> };
 
-  return (
-    <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)]">
-      <CardContent className="text-muted-foreground p-6 text-sm leading-relaxed">{t("matchesEmpty")}</CardContent>
-    </Card>
-  );
+export default async function LegacyMatchesListRedirect({ params }: Props) {
+  const { locale } = await params;
+  redirect({ href: "/mypage/matches", locale });
 }
