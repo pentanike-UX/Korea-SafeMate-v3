@@ -83,7 +83,7 @@ export function SiteHeader() {
           : "border-border/70 bg-background/93 shadow-[var(--shadow-sm)] supports-[backdrop-filter]:bg-background/86",
       )}
     >
-      <div className="mx-auto flex min-h-14 h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:h-16 sm:min-h-16 sm:gap-4 sm:px-6">
+      <div className="flex min-h-14 h-14 w-full items-center justify-between gap-3 px-4 sm:h-16 sm:min-h-16 sm:gap-4 sm:px-6 md:px-8 xl:px-10">
         <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 rounded-lg active:opacity-90">
           <span
             className={cn(

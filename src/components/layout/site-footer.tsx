@@ -32,7 +32,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="border-t border-border/80 bg-[var(--bg-surface-subtle)]">
-      <div className="page-container py-10 sm:py-12 md:py-14">
+      <div className="w-full px-4 py-10 sm:px-6 sm:py-12 md:px-8 md:py-14 xl:px-10">
         <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between md:gap-16">
           <div className="max-w-md">
             <p className="text-text-strong text-base font-semibold tracking-tight">{BRAND.name}</p>
