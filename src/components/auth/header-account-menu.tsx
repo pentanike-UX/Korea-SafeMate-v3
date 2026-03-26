@@ -8,6 +8,7 @@ import { useRouter as useNextRouter } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import { isPrivilegedAppRole } from "@/lib/auth/app-role";
+import { sameOriginApiUrl } from "@/lib/api-origin";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser-client";
 import {
   DropdownMenu,
@@ -116,7 +117,7 @@ export function HeaderAccountMenu({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/account/me", { credentials: "include" });
+      const res = await fetch(sameOriginApiUrl("/api/account/me"), { credentials: "include" });
       if (res.ok) setMe((await res.json()) as MeResponse);
     } finally {
       setLoading(false);

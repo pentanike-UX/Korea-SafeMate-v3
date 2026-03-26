@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { mockContentPosts } from "@/data/mock";
@@ -13,11 +13,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrustBadgeRow } from "@/components/forty-two/trust-badges";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
-import { TextActionSecondary } from "@/components/ui/text-action";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
 import { ExplorationFilterSummaryBar, type ExplorationSummaryChip } from "@/components/listing/exploration-filter-summary-bar";
 import { StickyListingFiltersBar } from "@/components/listing/sticky-listing-filters-bar";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { SubpageHero } from "@/components/layout/subpage-hero";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
   ArrowDownWideNarrow,
@@ -60,6 +60,15 @@ export function GuardiansDiscoverClient() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sort, setSort] = useState<SortMode>("recommended");
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [desktopFilterDrawer, setDesktopFilterDrawer] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setDesktopFilterDrawer(mql.matches);
+    apply();
+    mql.addEventListener("change", apply);
+    return () => mql.removeEventListener("change", apply);
+  }, []);
 
   const all = listPublicGuardians();
 
@@ -372,15 +381,7 @@ export function GuardiansDiscoverClient() {
 
   return (
     <div className="bg-[var(--bg-page)]">
-      <section className="relative overflow-hidden border-b border-border/60 bg-card">
-        <div className="absolute inset-0 bg-hero-42 opacity-90" />
-        <div className="page-container relative py-14 sm:py-16 md:py-20">
-          <h1 className="text-text-strong max-w-3xl text-[1.65rem] font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-            {t("heroTitle")}
-          </h1>
-          <p className="text-muted-foreground mt-5 max-w-2xl text-[15px] leading-relaxed sm:mt-6 sm:text-base">{t("heroBody")}</p>
-        </div>
-      </section>
+      <SubpageHero title={t("heroTitle")} description={t("heroBody")} />
 
       <StickyListingFiltersBar innerClassName="py-2 sm:py-2.5">
         <ExplorationFilterSummaryBar
@@ -400,9 +401,13 @@ export function GuardiansDiscoverClient() {
 
       <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
         <SheetContent
-          side="bottom"
+          side={desktopFilterDrawer ? "right" : "bottom"}
           showCloseButton
-          className="max-h-[min(92dvh,720px)] gap-0 overflow-hidden rounded-t-2xl px-0 pt-2 pb-6 sm:max-h-[min(85dvh,800px)]"
+          className={
+            desktopFilterDrawer
+              ? "h-dvh w-full max-w-[34rem] gap-0 overflow-hidden px-0 pt-2 pb-0 sm:max-w-[36rem]"
+              : "max-h-[min(92dvh,720px)] gap-0 overflow-hidden rounded-t-2xl px-0 pt-2 pb-6 sm:max-h-[min(85dvh,800px)]"
+          }
         >
           <SheetHeader className="border-border/60 shrink-0 border-b px-5 pb-4 text-left sm:px-6">
             <SheetTitle>{t("filterSheetTitle")}</SheetTitle>
@@ -417,6 +422,19 @@ export function GuardiansDiscoverClient() {
             </div>
             {filterPanel}
           </div>
+          <SheetFooter className="border-border/60 shrink-0 border-t px-5 py-3 sm:px-6">
+            <div className="flex w-full items-center justify-end gap-2">
+              <Button type="button" variant="ghost" className="h-10" onClick={clearFilters}>
+                {t("clear")}
+              </Button>
+              <Button type="button" variant="outline" className="h-10" onClick={() => setFilterSheetOpen(false)}>
+                {t("filterClose")}
+              </Button>
+              <Button type="button" className="h-10" onClick={() => setFilterSheetOpen(false)}>
+                {t("filterApply")}
+              </Button>
+            </div>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
 
@@ -430,93 +448,83 @@ export function GuardiansDiscoverClient() {
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed sm:text-[15px]">{t("emptyBody")}</p>
           </div>
         ) : (
-          <ul className="grid gap-7 lg:grid-cols-2 lg:gap-8">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5 2xl:grid-cols-4">
             {filtered.map((g) => {
               const rep = repPostFor(g);
               const areaName = (tLaunch.raw(g.launch_area_slug) as { name: string }).name;
               const imgs = guardianProfileImageUrls(g);
+              const styleSummary = g.companion_style_slugs
+                .slice(0, 2)
+                .map((slug) => tStyles(slug))
+                .join(" · ");
+              const expertiseSummary = g.expertise_tags.slice(0, 2).join(" · ");
               return (
                 <li key={g.user_id}>
-                  <Card className="border-border/70 h-full overflow-hidden rounded-[var(--radius-md)] py-0 shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-md)]">
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="relative aspect-[5/4] w-full sm:aspect-auto sm:h-auto sm:w-[42%] sm:min-h-[220px]">
+                  <Card className="border-border/70 h-full overflow-hidden rounded-[var(--radius-md)] py-0 shadow-[var(--shadow-sm)] transition-all hover:border-[color-mix(in_srgb,var(--brand-trust-blue)_30%,var(--border))] hover:shadow-[var(--shadow-md)]">
+                    <div className="relative aspect-[4/3] w-full">
+                      <div className="absolute inset-0">
                         <Image src={imgs.default} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="(max-width:640px) 100vw, 40vw" />
                       </div>
-                      <CardContent className="flex flex-1 flex-col gap-4 p-6 sm:p-7">
-                        <div>
-                          <p className="text-foreground text-lg font-semibold">{g.display_name}</p>
-                          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                            <Badge variant={guardianTierBadgeVariant(g.guardian_tier)} className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME)}>
-                              {tTier(g.guardian_tier)}
-                            </Badge>
-                          </div>
-                          <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">{pos(g)}</p>
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent" />
+                    </div>
+                    <CardContent className="flex h-full flex-col gap-3.5 p-4">
+                      <div>
+                        <p className="text-foreground truncate text-[17px] font-semibold">{g.display_name}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                          <Badge variant={guardianTierBadgeVariant(g.guardian_tier)} className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME)}>
+                            {tTier(g.guardian_tier)}
+                          </Badge>
                         </div>
-                        <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-                          <MapPin className="size-3.5 shrink-0" aria-hidden />
-                          <span>{areaName}</span>
-                          <span aria-hidden>·</span>
-                          <span>
-                            {g.languages.map((l) => l.language_code.toUpperCase()).join(" · ")}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {g.expertise_tags.slice(0, 5).map((tag) => (
-                            <span
-                              key={tag}
-                              className="border-border/70 text-muted-foreground rounded-full border bg-muted/30 px-3 py-1.5 text-xs font-medium"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                        <TrustBadgeRow ids={g.trust_badge_ids} size="xs" />
-                        {g.avg_traveler_rating != null ? (
-                          <p className="flex items-center gap-1 text-sm font-medium">
-                            <Star className="size-4 fill-amber-400 text-amber-400" aria-hidden />
-                            {g.avg_traveler_rating.toFixed(1)}
-                            <span className="text-muted-foreground font-normal">
-                              ({g.review_count_display} {t("reviewsWord")})
-                            </span>
+                        <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">{pos(g)}</p>
+                      </div>
+
+                      <div className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-xs">
+                        <MapPin className="size-3.5 shrink-0" aria-hidden />
+                        <span className="truncate">{areaName}</span>
+                        <span aria-hidden>·</span>
+                        <span className="truncate">{g.languages.map((l) => l.language_code.toUpperCase()).join(" · ")}</span>
+                      </div>
+
+                      <div className="space-y-1.5 text-xs">
+                        {styleSummary ? (
+                          <p className="text-muted-foreground line-clamp-1">
+                            <span className="text-foreground font-semibold">{t("filterStyle")}</span> · {styleSummary}
                           </p>
                         ) : null}
-                        <p className="text-muted-foreground text-[11px] font-semibold tracking-wide uppercase">{t("tripTypes")}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {g.trip_type_labels.map((trip, i) => (
-                            <Badge key={i} variant="outline" className="font-normal">
-                              {isKo ? trip.ko : trip.en}
-                            </Badge>
-                          ))}
-                        </div>
-                        {rep ? (
-                          <div className="border-border/60 bg-muted/20 rounded-xl border p-3">
-                            <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">{t("repPost")}</p>
-                            <p className="text-foreground mt-1 line-clamp-2 text-sm font-medium leading-snug">{rep.title}</p>
-                            <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">{rep.summary}</p>
-                          </div>
+                        {expertiseSummary ? (
+                          <p className="text-muted-foreground line-clamp-1">
+                            <span className="text-foreground font-semibold">{t("filterTheme")}</span> · {expertiseSummary}
+                          </p>
                         ) : null}
-                        <div className="border-border/60 mt-auto space-y-3 border-t border-dashed pt-5">
-                          <Button asChild className="h-11 w-full rounded-[var(--radius-md)] font-semibold">
-                            <Link href={`/guardians/${g.user_id}`}>{t("cardCtaPrimary")}</Link>
-                          </Button>
-                          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-                            <div className="[&_button]:h-11 [&_button]:w-full">
-                              <SaveGuardianButton guardianUserId={g.user_id} compact />
-                            </div>
-                            <Button asChild variant="outline" className="h-11 w-full rounded-[var(--radius-md)] font-medium">
-                              <Link href={`/book?guardian=${g.user_id}`}>{t("cardCtaSecondary")}</Link>
-                            </Button>
-                          </div>
-                          <TextActionSecondary
-                            href="/mypage/saved-guardians"
-                            showArrow={false}
-                            className="mx-auto flex w-full justify-center py-1 text-sm"
-                          >
-                            {t("saveViewList")}
-                          </TextActionSecondary>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2">
+                        <TrustBadgeRow ids={g.trust_badge_ids} size="xs" />
+                        {g.avg_traveler_rating != null ? (
+                          <p className="flex shrink-0 items-center gap-1 text-sm font-semibold">
+                            <Star className="size-4 fill-amber-400 text-amber-400" aria-hidden />
+                            {g.avg_traveler_rating.toFixed(1)}
+                            <span className="text-muted-foreground text-xs font-normal">({g.review_count_display})</span>
+                          </p>
+                        ) : null}
+                      </div>
+
+                      {rep ? (
+                        <div className="border-border/60 bg-muted/20 rounded-xl border p-2.5">
+                          <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">{t("repPost")}</p>
+                          <p className="text-foreground mt-1 line-clamp-2 text-sm font-medium leading-snug">{rep.title}</p>
                         </div>
-                      </CardContent>
-                    </div>
+                      ) : null}
+
+                      <div className="mt-auto grid grid-cols-2 gap-2">
+                        <Button asChild className="h-10 w-full rounded-[var(--radius-md)] font-semibold">
+                          <Link href={`/guardians/${g.user_id}`}>{t("cardCtaPrimary")}</Link>
+                        </Button>
+                        <div className="[&_button]:h-10 [&_button]:w-full">
+                          <SaveGuardianButton guardianUserId={g.user_id} compact />
+                        </div>
+                      </div>
+                    </CardContent>
                   </Card>
                 </li>
               );

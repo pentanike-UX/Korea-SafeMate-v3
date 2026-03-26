@@ -156,6 +156,16 @@ export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const { locale, pathname: pathWo } = stripLocaleFromPathname(pathname);
 
+  // Route handlers live only at `/api/*`. Requests like `/ko/api/...` (relative fetch from localized pages) must rewrite here or they 404.
+  if (pathWo.startsWith("/api")) {
+    if (pathname !== pathWo) {
+      const url = request.nextUrl.clone();
+      url.pathname = pathWo;
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/auth")) {
     const res = NextResponse.next();
     await loadAccessContext(request, res);

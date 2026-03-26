@@ -471,12 +471,30 @@
     }
   },
   "ExperienceThemes": {
-    "k_drama_romance": { "title": "K-드라마 로맨스 산책", "subtitle": "촬영지 무드, 천천히" },
-    "seoul_night": { "title": "서울 나이트 씬", "subtitle": "야경·카페·네온" },
-    "k_pop_day": { "title": "K-Pop 핫스팟 데이", "subtitle": "굿즈·팝업 한 바퀴" },
-    "movie_location": { "title": "영화 로케이션 워크", "subtitle": "스크린 속 그 길" },
-    "safe_solo": { "title": "안심 솔로 저니", "subtitle": "혼행도 여유 있게" },
-    "photo_route": { "title": "포토 퍼스트 루트", "subtitle": "한 컷 나오는 동선" }
+    "k_drama_romance": {
+      "title": "K-드라마 로맨스 산책",
+      "subtitle": "촬영지 무드, 천천히"
+    },
+    "seoul_night": {
+      "title": "서울 나이트 씬",
+      "subtitle": "야경·카페·네온"
+    },
+    "k_pop_day": {
+      "title": "K-Pop 핫스팟 데이",
+      "subtitle": "굿즈·팝업 한 바퀴"
+    },
+    "movie_location": {
+      "title": "영화 로케이션 워크",
+      "subtitle": "스크린 속 그 길"
+    },
+    "safe_solo": {
+      "title": "안심 솔로 저니",
+      "subtitle": "혼행도 여유 있게"
+    },
+    "photo_route": {
+      "title": "포토 퍼스트 루트",
+      "subtitle": "한 컷 나오는 동선"
+    }
   },
   "ExploreJourney": {
     "metaTitle": "탐색",
@@ -667,7 +685,9 @@
     "saveAdded": "저장했어요. 목록에서 확인할 수 있어요.",
     "saveRemoved": "저장을 해제했어요.",
     "saveError": "잠시 후 다시 시도해 주세요.",
-    "saveViewList": "저장 목록 보기"
+    "saveViewList": "저장 목록 보기",
+    "filterApply": "적용",
+    "filterClose": "닫기"
   },
   "GuardianDetail": {
     "metaTitle": "가디언 프로필",
@@ -794,7 +814,9 @@
       "busan": "부산",
       "jeju": "제주",
       "all": "전체"
-    }
+    },
+    "filterApply": "적용",
+    "filterClose": "닫기"
   },
   "RoutePosts": {
     "routeEyebrow": "추천 루트",

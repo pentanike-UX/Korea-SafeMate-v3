@@ -9,12 +9,13 @@ import type { ContentPost } from "@/types/domain";
 import { getPostHeroImageAlt, getPostHeroImageUrl, postHasRouteJourney } from "@/lib/content-post-route";
 import { ExplorationFilterSummaryBar, type ExplorationSummaryChip } from "@/components/listing/exploration-filter-summary-bar";
 import { StickyListingFiltersBar } from "@/components/listing/sticky-listing-filters-bar";
+import { SubpageHero } from "@/components/layout/subpage-hero";
 import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { RoutePostCard } from "@/components/route-posts/route-post-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import Image from "next/image";
 import { ArrowDownWideNarrow, FileQuestion, Heart, Layers, MapPin, Search, Sparkles, Tag } from "lucide-react";
 
@@ -43,12 +44,21 @@ export function PostsListClient({
   const [sort, setSort] = useState<SortMode>("recommended");
   const [contentFilter, setContentFilter] = useState<ContentFilter>("all");
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [desktopFilterDrawer, setDesktopFilterDrawer] = useState(false);
 
   useEffect(() => {
     const c = searchParams.get("content");
     if (c === "route") setContentFilter("route");
     else if (c === "article") setContentFilter("article");
   }, [searchParams]);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setDesktopFilterDrawer(mql.matches);
+    apply();
+    mql.addEventListener("change", apply);
+    return () => mql.removeEventListener("change", apply);
+  }, []);
 
   const hasActiveFilters =
     q.trim().length > 0 ||
@@ -262,19 +272,16 @@ export function PostsListClient({
 
   return (
     <div className="bg-[var(--bg-page)] min-h-screen">
-      <section className="relative overflow-hidden border-b border-border/60 bg-card">
-        <div className="absolute inset-0 bg-hero-42 opacity-95" />
-        <div className="page-container relative py-14 sm:py-16 md:py-20">
+      <SubpageHero
+        title={t("heroTitle")}
+        description={t("heroBody")}
+        eyebrow={
           <p className="text-[var(--brand-trust-blue)] inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] uppercase">
             <Sparkles className="size-3.5" aria-hidden />
             42 Guardians
           </p>
-          <h1 className="text-text-strong mt-4 max-w-2xl text-[1.65rem] font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-            {t("heroTitle")}
-          </h1>
-          <p className="text-muted-foreground mt-5 max-w-xl text-[15px] leading-relaxed sm:mt-6 sm:text-base">{t("heroBody")}</p>
-        </div>
-      </section>
+        }
+      />
 
       <StickyListingFiltersBar innerClassName="py-2 sm:py-2.5">
         <ExplorationFilterSummaryBar
@@ -294,15 +301,32 @@ export function PostsListClient({
 
       <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
         <SheetContent
-          side="bottom"
+          side={desktopFilterDrawer ? "right" : "bottom"}
           showCloseButton
-          className="max-h-[min(90dvh,720px)] gap-0 overflow-hidden rounded-t-2xl px-0 pt-2 pb-6 sm:max-h-[min(85dvh,800px)]"
+          className={
+            desktopFilterDrawer
+              ? "h-dvh w-full max-w-[34rem] gap-0 overflow-hidden px-0 pt-2 pb-0 sm:max-w-[36rem]"
+              : "max-h-[min(90dvh,720px)] gap-0 overflow-hidden rounded-t-2xl px-0 pt-2 pb-6 sm:max-h-[min(85dvh,800px)]"
+          }
         >
           <SheetHeader className="border-border/60 shrink-0 border-b px-5 pb-4 text-left sm:px-6">
             <SheetTitle>{t("filterSheetTitle")}</SheetTitle>
             <p className="text-muted-foreground text-sm tabular-nums">{t("listResultsCount", { count: filtered.length })}</p>
           </SheetHeader>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6">{filterPanel}</div>
+          <SheetFooter className="border-border/60 shrink-0 border-t px-5 py-3 sm:px-6">
+            <div className="flex w-full items-center justify-end gap-2">
+              <Button type="button" variant="ghost" className="h-10" onClick={resetFilters}>
+                {t("resetFilters")}
+              </Button>
+              <Button type="button" variant="outline" className="h-10" onClick={() => setFilterSheetOpen(false)}>
+                {t("filterClose")}
+              </Button>
+              <Button type="button" className="h-10" onClick={() => setFilterSheetOpen(false)}>
+                {t("filterApply")}
+              </Button>
+            </div>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
 

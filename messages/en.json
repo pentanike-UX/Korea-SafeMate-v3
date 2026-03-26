@@ -471,12 +471,30 @@
     }
   },
   "ExperienceThemes": {
-    "k_drama_romance": { "title": "K-drama romance walk", "subtitle": "Set-jetting mood, easy pace" },
-    "seoul_night": { "title": "Seoul night scene", "subtitle": "Skyline, cafés, neon" },
-    "k_pop_day": { "title": "K-pop hotspot day", "subtitle": "Merch and pop-ups in one loop" },
-    "movie_location": { "title": "Movie location walk", "subtitle": "The streets from the screen" },
-    "safe_solo": { "title": "Safe solo journey", "subtitle": "Solo-friendly rhythm" },
-    "photo_route": { "title": "Photo-first route", "subtitle": "Angles that actually read on camera" }
+    "k_drama_romance": {
+      "title": "K-drama romance walk",
+      "subtitle": "Set-jetting mood, easy pace"
+    },
+    "seoul_night": {
+      "title": "Seoul night scene",
+      "subtitle": "Skyline, cafés, neon"
+    },
+    "k_pop_day": {
+      "title": "K-pop hotspot day",
+      "subtitle": "Merch and pop-ups in one loop"
+    },
+    "movie_location": {
+      "title": "Movie location walk",
+      "subtitle": "The streets from the screen"
+    },
+    "safe_solo": {
+      "title": "Safe solo journey",
+      "subtitle": "Solo-friendly rhythm"
+    },
+    "photo_route": {
+      "title": "Photo-first route",
+      "subtitle": "Angles that actually read on camera"
+    }
   },
   "ExploreJourney": {
     "metaTitle": "Explore",
@@ -667,7 +685,9 @@
     "saveAdded": "Saved — open your list anytime.",
     "saveRemoved": "Removed from saved.",
     "saveError": "Something went wrong. Try again.",
-    "saveViewList": "View saved list"
+    "saveViewList": "View saved list",
+    "filterApply": "Apply",
+    "filterClose": "Close"
   },
   "GuardianDetail": {
     "metaTitle": "Guardian profile",
@@ -794,7 +814,9 @@
       "busan": "Busan",
       "jeju": "Jeju",
       "all": "All"
-    }
+    },
+    "filterApply": "Apply",
+    "filterClose": "Close"
   },
   "RoutePosts": {
     "routeEyebrow": "Curated route",
