@@ -478,7 +478,8 @@ function pushPosts(
       popular_score: sc.popular_score,
       recommended_score: sc.recommended_score,
       featured: false,
-      cover_image_url: guardianSeedPostCoverUrl(g),
+      /** 커버 없음 → `getPostHeroImageUrl`이 제목·본문·태그 기준으로 보강(샘플 포스트는 오버레이에서 별도 커버). */
+      cover_image_url: null,
     });
   }
 }
