@@ -202,6 +202,7 @@ export interface RouteSpot {
   address_line?: string;
   short_description: string;
   body: string;
+  /** Editor uploads (`/...` paths). Empty or legacy `https://` → UI maps `public/mock/posts` by 텍스트. */
   image_urls: string[];
   recommend_reason: string;
   stay_duration_minutes: number;
@@ -243,8 +244,8 @@ export interface ContentPost {
   /** Omitted or `article` for legacy text-only posts. */
   post_format?: ContentPostFormat;
   /**
-   * List/detail hero when set. Route posts may also use the first spot `image_urls` entry.
-   * If absent and no spot images, UI fills via `getPostHeroImageUrl` (curated, keyword-matched stills).
+   * List/detail hero when set (로컬 경로 권장). `https://` 는 표시에서 무시되고 `public/mock/posts` 매핑을 씁니다.
+   * 루트 포스트는 스팟 `image_urls`도 동일 규칙.
    */
   cover_image_url?: string | null;
   route_journey?: RouteJourney;

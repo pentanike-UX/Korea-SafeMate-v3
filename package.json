@@ -15,6 +15,8 @@
     "node": "20.x"
   },
   "scripts": {
+    "posts:scan-images": "node scripts/scan-post-local-images.mjs",
+    "prebuild": "node scripts/scan-post-local-images.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

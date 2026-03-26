@@ -1,5 +1,10 @@
 import type { ContentPost, ContentPostFormat, MapLatLng, RouteJourney, RouteSpot } from "@/types/domain";
-import { resolveEnrichedPostVisuals, resolveEnrichedSpotVisual } from "@/lib/post-visual-enrichment";
+import {
+  buildLocalPostVisualPlan,
+  isExternalPostImageUrl,
+  localHeroAlt,
+  localSpotAlt,
+} from "@/lib/post-local-images";
 
 export function getContentPostFormat(post: ContentPost): ContentPostFormat {
   return post.post_format ?? "article";
@@ -19,58 +24,72 @@ export function routeJourneyPoints(journey: RouteJourney): MapLatLng[] {
   return journey.spots.map((s) => ({ lat: s.lat, lng: s.lng }));
 }
 
-/** True when the post has an uploaded/assigned cover or any spot still. */
+/** True when editor supplied non-external cover or spot uploads (paths under / or relative). */
 export function postHasOwnVisualMedia(post: ContentPost): boolean {
-  if (post.cover_image_url?.trim()) return true;
-  return Boolean(post.route_journey?.spots.some((s) => s.image_urls.some((x) => x?.trim())));
+  if (post.cover_image_url?.trim() && !isExternalPostImageUrl(post.cover_image_url)) return true;
+  return Boolean(
+    post.route_journey?.spots.some((s) => s.image_urls.some((x) => x?.trim() && !isExternalPostImageUrl(x))),
+  );
 }
 
-/** Cover or first spot image only — no automatic enrichment. */
+/** Editor cover or first non-external spot image only (no auto mapping). */
 export function postCoverImageUrl(post: ContentPost): string | null {
   const c = post.cover_image_url?.trim();
-  if (c) return c;
-  const first = post.route_journey?.spots.find((s) => s.image_urls.find((x) => x?.trim()))?.image_urls.find((x) => x?.trim());
+  if (c && !isExternalPostImageUrl(c)) return c;
+  const first = post.route_journey?.spots
+    .find((s) => s.image_urls.find((x) => x?.trim() && !isExternalPostImageUrl(x)))
+    ?.image_urls.find((x) => x?.trim() && !isExternalPostImageUrl(x));
   return first?.trim() ?? null;
 }
 
-/** Hero for cards and headers: own media, else keyword-enriched curated stills. */
+export { buildLocalPostVisualPlan };
+
+/** List/cards + detail hero — `/mock/posts` 매핑 (외부 URL 무시). */
 export function getPostHeroImageUrl(post: ContentPost): string {
   const own = postCoverImageUrl(post);
   if (own) return own;
-  return resolveEnrichedPostVisuals(post).heroUrl;
+  return buildLocalPostVisualPlan(post).hero;
 }
 
-/** Second still when enriching (e.g. cafe exterior + interior); undefined if post has own media. */
+/** 아티클 상세 보조 이미지 (루트 포스트는 보통 미사용). */
 export function getPostSecondaryImageUrl(post: ContentPost): string | undefined {
-  if (postHasOwnVisualMedia(post)) return undefined;
-  return resolveEnrichedPostVisuals(post).secondaryUrl;
+  if (postCoverImageUrl(post)) return undefined;
+  if (postHasRouteJourney(post)) return undefined;
+  return buildLocalPostVisualPlan(post).secondary;
 }
 
 export function getPostHeroImageAlt(post: ContentPost): string {
   if (postCoverImageUrl(post)) return post.title;
-  return resolveEnrichedPostVisuals(post).alt;
+  return localHeroAlt(post, buildLocalPostVisualPlan(post));
 }
 
 export function getPostSecondaryImageAlt(post: ContentPost): string | undefined {
-  if (postHasOwnVisualMedia(post)) return undefined;
-  const v = resolveEnrichedPostVisuals(post);
-  return v.altSecondary;
+  if (postCoverImageUrl(post) || postHasRouteJourney(post)) return undefined;
+  const plan = buildLocalPostVisualPlan(post);
+  if (!plan.secondary) return undefined;
+  return `${post.title} — 추가 장면`;
 }
 
-/** Spot gallery: first upload, else text-aligned enrichment for that stop. */
-export function getSpotDisplayImageUrl(spot: RouteSpot, post: ContentPost): string {
-  const u = spot.image_urls.find((x) => x?.trim());
-  if (u) return u.trim();
-  return resolveEnrichedSpotVisual(spot, post).heroUrl;
+export type SpotImageOpts = {
+  /** When provided (e.g. route detail), avoids 재계산·스팟 간 중복 일관성. */
+  plan?: ReturnType<typeof buildLocalPostVisualPlan>;
+};
+
+/** 스팟 이미지: 로컬 업로드 우선, 아니면 plan 기반 매핑. */
+export function getSpotDisplayImageUrl(spot: RouteSpot, post: ContentPost, opts?: SpotImageOpts): string {
+  const own = spot.image_urls.find((u) => u?.trim() && !isExternalPostImageUrl(u));
+  if (own) return own.trim();
+  const plan = opts?.plan ?? buildLocalPostVisualPlan(post);
+  return plan.spotImages.get(spot.id) ?? plan.hero;
 }
 
-export function getSpotDisplayImageAlt(spot: RouteSpot, post: ContentPost): string {
-  const u = spot.image_urls.find((x) => x?.trim());
-  if (u) return `${spot.title} — ${spot.place_name}`;
-  return resolveEnrichedSpotVisual(spot, post).alt;
+export function getSpotDisplayImageAlt(spot: RouteSpot, post: ContentPost, opts?: SpotImageOpts): string {
+  const own = spot.image_urls.find((u) => u?.trim() && !isExternalPostImageUrl(u));
+  if (own) return `${spot.title} — ${spot.place_name}`;
+  const plan = opts?.plan ?? buildLocalPostVisualPlan(post);
+  return localSpotAlt(spot, plan);
 }
 
-/** For analytics / QA: posts that rely on enrichment (no cover and no spot uploads). */
 export function countPostsWithoutOwnMedia(posts: ContentPost[]): number {
   return posts.filter((p) => !postHasOwnVisualMedia(p)).length;
 }

@@ -13,33 +13,31 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PostSampleBadge } from "@/components/posts/post-sample-badge";
-import {
-  getPostHeroImageAlt,
-  getPostHeroImageUrl,
-  getSpotDisplayImageAlt,
-  getSpotDisplayImageUrl,
-} from "@/lib/content-post-route";
+import { postCoverImageUrl, getSpotDisplayImageAlt, getSpotDisplayImageUrl } from "@/lib/content-post-route";
+import { buildLocalPostVisualPlan, localHeroAlt, type LocalPostVisualPlan } from "@/lib/post-local-images";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Calendar, Heart, MapPin } from "lucide-react";
 
 function SpotDetailBody({
   spot,
   post,
+  visualPlan,
   isLast,
   onNext,
 }: {
   spot: RouteSpot;
   post: ContentPost;
+  visualPlan: LocalPostVisualPlan;
   isLast: boolean;
   onNext?: () => void;
 }) {
   const t = useTranslations("RoutePosts");
-  const img = getSpotDisplayImageUrl(spot, post);
-  const imgAlt = getSpotDisplayImageAlt(spot, post);
+  const img = getSpotDisplayImageUrl(spot, post, { plan: visualPlan });
+  const imgAlt = getSpotDisplayImageAlt(spot, post, { plan: visualPlan });
 
   return (
     <div className="space-y-4">
-      <div className="border-border/60 relative aspect-[16/10] overflow-hidden rounded-xl border">
+      <div className="border-border/60 relative aspect-[16/10] overflow-hidden rounded-xl border sm:rounded-2xl">
         <Image src={img} alt={imgAlt} fill className="object-cover" sizes="(max-width:768px) 100vw, 640px" />
       </div>
       <div>
@@ -188,8 +186,9 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
 
   const selectedSpot = spots.find((s) => s.id === activeSpotId) ?? null;
 
-  const cover = getPostHeroImageUrl(post);
-  const coverAlt = getPostHeroImageAlt(post);
+  const visualPlan = useMemo(() => buildLocalPostVisualPlan(post), [post]);
+  const cover = postCoverImageUrl(post) ?? visualPlan.hero;
+  const coverAlt = postCoverImageUrl(post) ? post.title : localHeroAlt(post, visualPlan);
   const date = new Date(post.created_at).toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
@@ -243,7 +242,7 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
         </div>
       </header>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 space-y-5 sm:space-y-6">
         <Card ref={mapCardRef} className="overflow-hidden rounded-2xl border-border/60 py-0 shadow-[var(--shadow-md)]">
           <div className="border-border/50 flex items-center justify-between border-b bg-white/90 px-5 py-4">
             <div>
@@ -289,7 +288,7 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
         ) : null}
       </div>
 
-      <section className="mt-12 space-y-6">
+      <section className="mt-12 space-y-7 sm:space-y-8">
         <h2 className="text-text-strong text-lg font-semibold">{t("spotsTitle")}</h2>
         {spots.map((spot, index) => {
           const isLast = index === spots.length - 1;
@@ -298,7 +297,7 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
               key={spot.id}
               id={`route-spot-${spot.id}`}
               className={cn(
-                "rounded-2xl border border-border/60 bg-white/95 p-5 shadow-[var(--shadow-sm)] transition-[box-shadow] sm:p-7",
+                "rounded-2xl border border-border/60 bg-white/95 p-5 shadow-[var(--shadow-sm)] transition-[box-shadow] sm:p-7 sm:pb-8",
                 showStickyNav ? "scroll-mt-36 sm:scroll-mt-40" : "scroll-mt-28",
                 flashId === spot.id ? "ring-primary ring-2 ring-offset-2" : "",
                 activeSpotId === spot.id && showStickyNav ? "border-primary/25" : "",
@@ -338,6 +337,7 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
                 <SpotDetailBody
                   spot={spot}
                   post={post}
+                  visualPlan={visualPlan}
                   isLast={isLast}
                   onNext={isLast ? undefined : () => goNextFrom(spot.id)}
                 />
@@ -371,6 +371,7 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
                 <SpotDetailBody
                   spot={selectedSpot}
                   post={post}
+                  visualPlan={visualPlan}
                   isLast={selectedSpot.id === spots[spots.length - 1]?.id}
                   onNext={() => goNextFrom(selectedSpot.id)}
                 />
