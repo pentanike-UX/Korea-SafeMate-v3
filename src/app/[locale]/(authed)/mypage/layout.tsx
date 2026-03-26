@@ -3,6 +3,7 @@ import type { AppAccountRole } from "@/lib/auth/app-role";
 import { guardianStatusFromRow, type GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { buildMockAccountMePayload } from "@/lib/dev/mock-guardian-auth";
 import { getMockGuardianIdFromCookies } from "@/lib/dev/mock-guardian-cookies.server";
+import { getMypageHubSnapshot } from "@/lib/mypage-hub-snapshot.server";
 import { getServerSupabaseForUser } from "@/lib/supabase/server-user";
 
 export default async function MypageLayout({ children }: { children: React.ReactNode }) {
@@ -18,6 +19,7 @@ export default async function MypageLayout({ children }: { children: React.React
   if (mockId) {
     const mock = buildMockAccountMePayload(mockId);
     if (mock) {
+      const snapshot = await getMypageHubSnapshot(mock.auth.id, "guardian", mock.guardian_status);
       return (
         <MypageHubShell
           appRole="guardian"
@@ -27,6 +29,7 @@ export default async function MypageLayout({ children }: { children: React.React
           accountAvatarUrl={mock.profile.profile_image_url}
           memberSinceIso={mock.user.created_at}
           accountUserId={mock.auth.id}
+          snapshot={snapshot}
         >
           {children}
         </MypageHubShell>
@@ -76,6 +79,8 @@ export default async function MypageLayout({ children }: { children: React.React
     }
   }
 
+  const snapshot = await getMypageHubSnapshot(accountUserId, appRole, guardianStatus);
+
   return (
     <MypageHubShell
       appRole={appRole}
@@ -85,6 +90,7 @@ export default async function MypageLayout({ children }: { children: React.React
       accountAvatarUrl={accountAvatarUrl}
       memberSinceIso={memberSinceIso}
       accountUserId={accountUserId}
+      snapshot={snapshot}
     >
       {children}
     </MypageHubShell>
