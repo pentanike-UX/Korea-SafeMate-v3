@@ -246,6 +246,10 @@ export interface ContentPost {
   route_journey?: RouteJourney;
   /** Short bullets for traveler “insight” strip on route detail. */
   route_highlights?: string[];
+  /** Service intro mock — not real UGC; show subtle “(샘플)” in UI. */
+  is_sample?: boolean;
+  /** Denormalized flag for filtering (true when `route_journey` is present). */
+  has_route?: boolean;
 }
 
 export interface ServiceType {

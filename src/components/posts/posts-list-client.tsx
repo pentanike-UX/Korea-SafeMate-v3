@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import type { ContentCategory } from "@/types/domain";
 import type { ContentPost } from "@/types/domain";
 import { postCoverImageUrl, postHasRouteJourney } from "@/lib/content-post-route";
+import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { RoutePostCard } from "@/components/route-posts/route-post-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -236,22 +237,26 @@ export function PostsListClient({
                         <div className="absolute inset-0 z-0" style={{ background: postVisualSeed(p.id) }} />
                       )}
                       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-[#0e1b3d]/45 to-transparent" />
-                      {p.featured ? (
-                        <div className="absolute top-3 left-3 z-10">
+                      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-1.5">
+                        {p.is_sample ? <PostSampleBadge /> : null}
+                        {p.featured ? (
                           <Badge className="rounded-full bg-card/95 text-[10px] font-semibold text-[var(--brand-primary)] shadow-sm backdrop-blur-sm">
                             {t("featured")}
                           </Badge>
-                        </div>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
                     <div className="flex flex-1 flex-col p-5 sm:p-6">
                       <p className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase">
                         <Tag className="text-[var(--brand-trust-blue)] size-3 shrink-0" aria-hidden />
                         {p.tags.slice(0, 3).join(" · ")}
                       </p>
-                      <h2 className="text-foreground mt-3 line-clamp-2 text-[17px] font-semibold leading-snug group-hover:text-[var(--link-color)] sm:text-lg">
-                        {p.title}
-                      </h2>
+                      <div className="mt-3 flex flex-wrap items-start gap-2 gap-y-1">
+                        <h2 className="text-foreground line-clamp-2 min-w-0 flex-1 text-[17px] font-semibold leading-snug group-hover:text-[var(--link-color)] sm:text-lg">
+                          {p.title}
+                        </h2>
+                        {p.is_sample ? <PostSampleBadge className="mt-0.5 sm:hidden" /> : null}
+                      </div>
                       <p className="text-muted-foreground mt-3 line-clamp-2 flex-1 text-sm leading-relaxed sm:text-[15px]">{p.summary}</p>
                       <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-xs">
                         <span>{p.author_display_name}</span>

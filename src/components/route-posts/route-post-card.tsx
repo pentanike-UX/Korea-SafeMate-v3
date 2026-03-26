@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
 import { getContentPostFormat, postCoverImageUrl } from "@/lib/content-post-route";
+import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -52,6 +53,7 @@ export function RoutePostCard({ post, regionLabel, className }: { post: ContentP
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b3d]/60 via-transparent to-transparent" />
           <div className="absolute top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5">
+            {post.is_sample ? <PostSampleBadge className="bg-white/90" /> : null}
             <Badge className="rounded-full bg-white/95 text-[10px] font-bold text-[var(--brand-primary)] shadow-sm">{formatLabel}</Badge>
             {showRouteIncludedBadge ? (
               <Badge variant="secondary" className="rounded-full border-0 bg-black/55 text-[10px] font-semibold text-white shadow-sm backdrop-blur-sm">

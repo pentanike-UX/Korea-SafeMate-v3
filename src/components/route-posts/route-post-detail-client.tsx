@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { postCoverImageUrl } from "@/lib/content-post-route";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Calendar, Heart, MapPin } from "lucide-react";
@@ -201,7 +202,8 @@ export function RoutePostDetailClient({ post }: { post: ContentPost }) {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b3d]/80 via-[#0e1b3d]/35 to-transparent" />
           <div className="absolute right-0 bottom-0 left-0 space-y-3 p-6 sm:p-10">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {post.is_sample ? <PostSampleBadge className="border-white/30 bg-black/35 text-white" /> : null}
               {post.tags.map((tag) => (
                 <Badge key={tag} variant="secondary" className="rounded-full border-white/20 bg-white/15 font-medium text-white">
                   {tag}
