@@ -1,12 +1,8 @@
 /**
- * 홈 하단 듀얼 CTA 인물 컷.
- * 운영 시 `/public/images/home/` 정적 파일로 바꾸려면 이 URL을 교체하면 됩니다.
+ * 홈 하단 듀얼 CTA 인물 컷 — 시드 프로필 에셋과 고정 매핑.
+ * 가디언 찾기: profile_12 · 가디언 지원: profile_02
  */
 export const HOME_CTA_IMAGES = {
-  /** 여행자 배너 — 단정한 남성 프로필 톤 (교체: 동일 키에 로컬 `/images/home/...` 지정 가능) */
-  travelerPortrait:
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=960&q=82",
-  /** 가디언 지원 배너 — 단정한 여성 프로필 톤 */
-  guardianPortrait:
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=960&q=82",
+  travelerPortrait: "/mock/profiles/profile_12.jpg",
+  guardianPortrait: "/mock/profiles/profile_02.jpg",
 } as const;

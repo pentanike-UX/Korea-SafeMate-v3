@@ -6,15 +6,7 @@ import { TextActionLink } from "@/components/ui/text-action";
 import { HomeHeroCarousel } from "@/components/home/home-hero-carousel";
 import { HomeDualCtaSection } from "@/components/home/home-dual-cta-section";
 import { HomeExploreBundle } from "@/components/home/home-explore-bundle";
-import {
-  Construction,
-  FileText,
-  Languages,
-  MessageCircle,
-  ShieldCheck,
-  Star,
-  Zap,
-} from "lucide-react";
+import { FileText, Languages, MessageCircle, ShieldCheck, Star, Zap } from "lucide-react";
 
 export async function HomeFortyTwoPage() {
   const t = await getTranslations("Home");
@@ -134,23 +126,6 @@ export async function HomeFortyTwoPage() {
             <div className="mt-8 flex justify-center">
               <TextActionLink href="/about">{isKo ? "자세히 보기" : "Learn more"}</TextActionLink>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Coming soon cities */}
-      <section id="coming-cities" className="bg-muted/30 scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-14">
-          <div className="border-border/70 bg-card max-w-xl rounded-[var(--radius-md)] border p-4 ring-1 ring-border/40 sm:p-5">
-            <p className="text-muted-foreground flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase">
-              <span className="bg-muted inline-flex size-7 items-center justify-center rounded-[var(--radius-sm)]" aria-hidden>
-                <Construction className="text-[var(--brand-trust-blue)] size-3.5" strokeWidth={2} />
-              </span>
-              {t("comingSectionBadge")}
-            </p>
-            <h2 className="text-text-strong mt-3 text-lg font-semibold tracking-tight sm:text-xl">{t("comingSectionTitle")}</h2>
-            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{t("comingSectionLead")}</p>
-            <p className="text-muted-foreground mt-3 text-xs leading-relaxed">{t("comingSectionNote")}</p>
           </div>
         </div>
       </section>
