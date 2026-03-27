@@ -2,9 +2,9 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
-import { getPublicGuardianById } from "@/lib/guardian-public";
+import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { getPostHeroImageUrl } from "@/lib/content-post-route";
-import { listPostsForGuardian } from "@/lib/posts-public";
+import { listPostsForGuardianMerged } from "@/lib/posts-public-merged.server";
 import { GuardianPostsExplorerSheet } from "@/components/guardians/guardian-posts-explorer-sheet";
 import { PostAuthorRequestCta } from "@/components/posts/post-author-request-cta";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,9 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
   const t = await getTranslations("Posts");
   const tReq = await getTranslations("GuardianRequest");
   const tTier = await getTranslations("GuardianTier");
-  const guardian = getPublicGuardianById(post.author_user_id);
+  const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const imgs = guardian ? guardianProfileImageUrls(guardian) : null;
-  const authorApprovedPosts = guardian
-    ? listPostsForGuardian(guardian.user_id).filter((gp) => gp.status === "approved")
-    : [];
+  const authorApprovedPosts = guardian ? await listPostsForGuardianMerged(guardian.user_id) : [];
   const postSheetItems = authorApprovedPosts.map((gp) => ({
     id: gp.id,
     title: gp.title,

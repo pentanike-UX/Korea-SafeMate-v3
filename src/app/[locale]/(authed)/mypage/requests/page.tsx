@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { BRAND } from "@/lib/constants";
+import { isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
+import { getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
+import { getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
 
 export async function generateMetadata() {
   const t = await getTranslations("TravelerHub");
@@ -15,6 +18,28 @@ export async function generateMetadata() {
 export default async function TravelerRequestsPage() {
   const t = await getTranslations("TravelerHub");
   const tThemes = await getTranslations("ExperienceThemes");
+  const travelerId = await getSupabaseAuthUserIdOnly();
+  const useMock = !travelerId || isMockGuardianId(travelerId);
+  const matchRows = travelerId && !useMock ? await getMatchRequestsForTraveler(travelerId) : [];
+  const rows = useMock
+    ? mockTravelerTripRequests.map((r) => ({
+        id: r.id,
+        status: r.status,
+        region_label_key: r.region_label_key,
+        theme_slug: r.theme_slug,
+        note: r.note,
+        guardian_user_id: r.guardian_user_id,
+        guardian_name: r.guardian_name,
+      }))
+    : matchRows.map((m) => ({
+        id: m.id,
+        status: m.status === "accepted" ? "matched" : m.status === "completed" ? "matched" : "requested",
+        region_label_key: "gwanghwamun" as const,
+        theme_slug: "safe_solo",
+        note: t("matchesPageLead"),
+        guardian_user_id: m.guardian_user_id,
+        guardian_name: m.guardian_display_name,
+      }));
 
   return (
     <div className="space-y-6">
@@ -23,7 +48,7 @@ export default async function TravelerRequestsPage() {
         <p className="text-muted-foreground mt-2 text-sm">{t("requestsLead")}</p>
       </div>
       <ul className="space-y-4">
-        {mockTravelerTripRequests.map((r) => {
+        {rows.map((r) => {
           const g = r.guardian_user_id ? mockGuardians.find((x) => x.user_id === r.guardian_user_id) : null;
           const theme = tThemes.raw(r.theme_slug) as { title: string } | undefined;
           return (

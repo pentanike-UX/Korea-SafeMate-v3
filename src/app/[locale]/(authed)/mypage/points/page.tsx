@@ -4,6 +4,7 @@ import { getMockGuardianSeedPoints } from "@/lib/dev/mock-guardian-auth";
 import { fetchBalanceSnapshot, fetchLedgerForUser } from "@/lib/points/point-ledger-service";
 import { BRAND } from "@/lib/constants";
 import { getSessionUserId } from "@/lib/supabase/server-user";
+import { PointsHistoryHeading } from "@/components/mypage/mypage-points-history-heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Coins, Info } from "lucide-react";
@@ -113,7 +114,7 @@ export default async function TravelerPointsPage() {
       </Card>
 
       <div>
-        <h3 className="text-text-strong mb-4 text-base font-semibold tracking-tight">{t("historyTitle")}</h3>
+        <PointsHistoryHeading />
         {ledger.length === 0 ? (
           <Card className="border-border/60 rounded-2xl border-dashed py-0 shadow-none">
             <CardContent className="space-y-4 p-6">

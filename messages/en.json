@@ -44,7 +44,8 @@
     "accountGuardianHub": "Guardian hub",
     "accountGuardianApply": "Start as guardian",
     "accountAdminConsole": "Admin console",
-    "accountSuperInvites": "Invite admins"
+    "accountSuperInvites": "Invite admins",
+    "attentionDotAria": "You have My Page updates to review"
   },
   "LanguageSwitcher": {
     "label": "Language",
@@ -1102,6 +1103,17 @@
     "modeSegmentGuardianStart": "Start",
     "segmentBadgeTravelerAria": "Traveler updates count",
     "segmentBadgeGuardianAria": "Guardian updates count",
+    "attentionNavBadgeAria": "New updates in {menu}",
+    "attentionBlockOpenTrips": "Open trip requests",
+    "attentionBlockMatchesPending": "Match responses pending",
+    "attentionBlockMatchesReview": "Matches awaiting your review",
+    "attentionBlockMatchesActive": "Matches in progress",
+    "attentionBlockPointsRecent": "Recent point ledger entries",
+    "attentionGuardianPostsPending": "Posts pending review",
+    "attentionGuardianPostsDraft": "Draft posts",
+    "attentionGuardianMatchIncoming": "New match requests",
+    "attentionGuardianBookingsReview": "Bookings to review",
+    "attentionGuardianPool": "Open pool signal",
     "hubRoleSummaryTravelerOnly": "Traveler hub — manage saves, requests, and matches in one place.",
     "hubRoleSummaryTravelerPlusGuardian": "Traveler hub plus a guardian application. (Guardian: {status})",
     "hubRoleSummaryAccountGuardian": "Guardian account. You can still use the traveler tab for saves and matches. (Guardian: {status})",

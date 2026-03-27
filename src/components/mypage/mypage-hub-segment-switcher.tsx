@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { MypageHubSnapshot } from "@/types/mypage-hub";
 
 function SegmentCountBadge({ count, ariaLabel }: { count: number; ariaLabel: string }) {
   if (count <= 0) return null;
@@ -20,12 +19,14 @@ function SegmentCountBadge({ count, ariaLabel }: { count: number; ariaLabel: str
 export function MypageHubSegmentSwitcher({
   hubMode,
   setHubMode,
-  snapshot,
+  travelerBadgeCount,
+  guardianBadgeCount,
   guardianTabMuted,
 }: {
   hubMode: "traveler" | "guardian";
   setHubMode: (m: "traveler" | "guardian") => void;
-  snapshot: MypageHubSnapshot;
+  travelerBadgeCount: number;
+  guardianBadgeCount: number;
   guardianTabMuted: boolean;
 }) {
   const t = useTranslations("TravelerHub");
@@ -51,7 +52,7 @@ export function MypageHubSegmentSwitcher({
           )}
         >
           <span className="truncate">{t("modeSegmentTraveler")}</span>
-          <SegmentCountBadge count={snapshot.travelerBadgeCount} ariaLabel={t("segmentBadgeTravelerAria")} />
+          <SegmentCountBadge count={travelerBadgeCount} ariaLabel={t("segmentBadgeTravelerAria")} />
         </button>
         <button
           type="button"
@@ -72,7 +73,7 @@ export function MypageHubSegmentSwitcher({
               {t("modeSegmentGuardianStart")}
             </span>
           ) : null}
-          <SegmentCountBadge count={snapshot.guardianBadgeCount} ariaLabel={t("segmentBadgeGuardianAria")} />
+          <SegmentCountBadge count={guardianBadgeCount} ariaLabel={t("segmentBadgeGuardianAria")} />
         </button>
       </div>
       <p className="text-muted-foreground mt-2.5 text-[11px] leading-relaxed">{t("modeSegmentHint")}</p>

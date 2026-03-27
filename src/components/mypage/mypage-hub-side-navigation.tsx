@@ -14,6 +14,8 @@ import {
   resolveActiveNavLabel,
   type HubNavItem,
 } from "@/components/mypage/mypage-hub-nav-items";
+import { MypageMenuCountBadge } from "@/components/mypage/mypage-attention-primitives";
+import type { GuardianWorkspaceNavBadgeKey, TravelerNavBadgeKey } from "@/types/mypage-hub";
 import { ChevronDown } from "lucide-react";
 
 type GuardianCtaLabel =
@@ -48,18 +50,34 @@ function mobileTriggerLabel(
   return t("mobileNavFallback");
 }
 
+function lnbBadgeCount(
+  travelerNavBadges: Record<TravelerNavBadgeKey, number>,
+  guardianWorkspaceNavBadges: Record<GuardianWorkspaceNavBadgeKey, number>,
+  item: HubNavItem,
+  section: "traveler" | "guardianWorkspace",
+): number {
+  if (section === "traveler") {
+    return travelerNavBadges[item.labelKey as TravelerNavBadgeKey] ?? 0;
+  }
+  return guardianWorkspaceNavBadges[item.labelKey as GuardianWorkspaceNavBadgeKey] ?? 0;
+}
+
 export function MypageHubSideNavigation({
   hubMode,
   setHubMode,
   approved,
   guardianStatus,
   primary,
+  travelerNavBadges,
+  guardianWorkspaceNavBadges,
 }: {
   hubMode: "traveler" | "guardian";
   setHubMode: (m: "traveler" | "guardian") => void;
   approved: boolean;
   guardianStatus: GuardianProfileStatus;
   primary: { href: string; labelKey: GuardianCtaLabel };
+  travelerNavBadges: Record<TravelerNavBadgeKey, number>;
+  guardianWorkspaceNavBadges: Record<GuardianWorkspaceNavBadgeKey, number>;
 }) {
   const pathname = usePathname();
   const t = useTranslations("TravelerHub");
@@ -71,13 +89,19 @@ export function MypageHubSideNavigation({
   const linkClass = (active: boolean) =>
     cn(
       segmentNavItem,
+      "w-full justify-between",
       active
         ? "bg-[var(--brand-trust-blue-soft)] text-[var(--brand-trust-blue)] ring-1 ring-[color-mix(in_srgb,var(--brand-trust-blue)_22%,transparent)]"
         : "text-muted-foreground hover:bg-muted hover:text-foreground",
     );
 
-  const renderNavRow = (item: HubNavItem, onNavigate?: () => void) => {
+  const renderNavRow = (
+    item: HubNavItem,
+    section: "traveler" | "guardianWorkspace",
+    onNavigate?: () => void,
+  ) => {
     const active = item.match(pathname);
+    const badge = lnbBadgeCount(travelerNavBadges, guardianWorkspaceNavBadges, item, section);
     return (
       <li key={item.href + item.labelKey}>
         <Link
@@ -88,7 +112,8 @@ export function MypageHubSideNavigation({
           }}
         >
           <item.Icon className="size-5 shrink-0 opacity-90" strokeWidth={1.75} aria-hidden />
-          {t(item.labelKey)}
+          <span className="min-w-0 flex-1">{t(item.labelKey)}</span>
+          <MypageMenuCountBadge count={badge} ariaLabel={t("attentionNavBadgeAria", { menu: t(item.labelKey) })} />
         </Link>
       </li>
     );
@@ -128,7 +153,7 @@ export function MypageHubSideNavigation({
               ) : null}
               <ul className="flex flex-col gap-1">
                 {hubMode === "guardian" && !approved ? (
-                  TRAVELER_HUB_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))
+                  TRAVELER_HUB_NAV.map((item) => renderNavRow(item, "traveler", () => setSheetOpen(false)))
                 ) : hubMode === "guardian" && approved ? (
                   <>
                     <li className="px-2 pb-1 pt-2">
@@ -136,16 +161,16 @@ export function MypageHubSideNavigation({
                         {t("navSectionTraveler")}
                       </p>
                     </li>
-                    {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))}
+                    {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, "traveler", () => setSheetOpen(false)))}
                     <li className="px-2 pb-1 pt-4">
                       <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
                         {t("navSectionGuardian")}
                       </p>
                     </li>
-                    {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))}
+                    {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, "guardianWorkspace", () => setSheetOpen(false)))}
                   </>
                 ) : (
-                  pool.map((item) => renderNavRow(item, () => setSheetOpen(false)))
+                  pool.map((item) => renderNavRow(item, "traveler", () => setSheetOpen(false)))
                 )}
               </ul>
             </nav>
@@ -182,17 +207,21 @@ export function MypageHubSideNavigation({
                 <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
                   {t("navSectionTraveler")}
                 </p>
-                <ul className="flex flex-col gap-1.5">{TRAVELER_HUB_NAV.map((item) => renderNavRow(item))}</ul>
+                <ul className="flex flex-col gap-1.5">
+                  {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, "traveler"))}
+                </ul>
               </div>
               <div>
                 <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
                   {t("navSectionGuardian")}
                 </p>
-                <ul className="flex flex-col gap-1.5">{GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item))}</ul>
+                <ul className="flex flex-col gap-1.5">
+                  {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, "guardianWorkspace"))}
+                </ul>
               </div>
             </div>
           ) : (
-            <ul className="flex flex-col gap-1.5">{pool.map((item) => renderNavRow(item))}</ul>
+            <ul className="flex flex-col gap-1.5">{pool.map((item) => renderNavRow(item, "traveler"))}</ul>
           )}
         </nav>
       ) : null}

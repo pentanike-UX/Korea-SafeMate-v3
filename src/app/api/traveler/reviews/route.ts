@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getMatchRequestsForTraveler, cookieOpts } from "@/lib/traveler-match-requests.server";
 import { getServerSupabaseForUser } from "@/lib/supabase/server-user";
+import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import {
   parseSubmittedTravelerReviews,
   serializeSubmittedTravelerReviews,
@@ -97,6 +98,26 @@ export async function POST(req: Request) {
     time_label_en: "Just now",
     time_label_ja: "さきほど",
   };
+
+  const svc = createServiceRoleSupabase();
+  if (svc) {
+    await svc.from("traveler_reviews").insert({
+      id: row.id,
+      booking_id: row.booking_id,
+      traveler_user_id: row.traveler_user_id,
+      guardian_user_id: row.guardian_user_id,
+      rating: row.rating,
+      comment: row.comment,
+      comment_en: row.comment_en,
+      created_at: row.created_at,
+      reviewer_display_name: row.reviewer_display_name,
+      image_url: row.image_url,
+      help_tag_ids: row.help_tag_ids,
+      time_label_ko: row.time_label_ko,
+      time_label_en: row.time_label_en,
+      time_label_ja: row.time_label_ja,
+    });
+  }
 
   const next = [...existing, row];
   const res = NextResponse.json({ ok: true, reviewId: row.id });

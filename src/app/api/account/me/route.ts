@@ -3,6 +3,9 @@ import type { AppAccountRole } from "@/lib/auth/app-role";
 import { guardianStatusFromRow, type GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { buildMockAccountMePayload } from "@/lib/dev/mock-guardian-auth";
 import { getMockGuardianIdFromCookies } from "@/lib/dev/mock-guardian-cookies.server";
+import { computeMypageAttentionViewFromSnapshot } from "@/lib/mypage-attention-unread";
+import { getSeenMapForUser } from "@/lib/mypage-attention-seen.server";
+import { getMypageHubSnapshot } from "@/lib/mypage-hub-snapshot.server";
 import { getServerSupabaseForUser } from "@/lib/supabase/server-user";
 
 export async function GET() {
@@ -10,7 +13,19 @@ export async function GET() {
   if (mockId) {
     const mock = buildMockAccountMePayload(mockId);
     if (mock) {
-      return NextResponse.json(mock);
+      const snapshot = await getMypageHubSnapshot(mock.auth.id, "guardian", mock.guardian_status);
+      const seen = await getSeenMapForUser(mock.auth.id);
+      const attentionView = computeMypageAttentionViewFromSnapshot(snapshot, seen);
+      return NextResponse.json({
+        ...mock,
+        attention: {
+          globalAttentionDot: attentionView.unreadGlobalAttentionDot,
+          travelerNavBadges: snapshot.travelerNavBadges,
+          travelerNavSignatures: snapshot.travelerNavSignatures,
+          guardianWorkspaceNavBadges: snapshot.guardianWorkspaceNavBadges,
+          guardianWorkspaceNavSignatures: snapshot.guardianWorkspaceNavSignatures,
+        },
+      });
     }
   }
 
@@ -58,6 +73,11 @@ export async function GET() {
     gpRow as { profile_status?: string | null; approval_status?: string | null } | null,
   );
 
+  const appRole = (appUser?.app_role as AppAccountRole | undefined) ?? "traveler";
+  const snapshot = await getMypageHubSnapshot(user.id, appRole, guardian_status);
+  const seen = await getSeenMapForUser(user.id);
+  const attentionView = computeMypageAttentionViewFromSnapshot(snapshot, seen);
+
   return NextResponse.json({
     auth: {
       id: user.id,
@@ -66,8 +86,15 @@ export async function GET() {
       sessionName,
     },
     user: appUser,
-    app_role: (appUser?.app_role as AppAccountRole | undefined) ?? "traveler",
+    app_role: appRole,
     profile: profile ?? null,
     guardian_status,
+    attention: {
+      globalAttentionDot: attentionView.unreadGlobalAttentionDot,
+      travelerNavBadges: snapshot.travelerNavBadges,
+      travelerNavSignatures: snapshot.travelerNavSignatures,
+      guardianWorkspaceNavBadges: snapshot.guardianWorkspaceNavBadges,
+      guardianWorkspaceNavSignatures: snapshot.guardianWorkspaceNavSignatures,
+    },
   });
 }

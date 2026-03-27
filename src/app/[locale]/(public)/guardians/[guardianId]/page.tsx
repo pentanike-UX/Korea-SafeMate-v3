@@ -1,23 +1,23 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { mockGuardians } from "@/data/mock";
 import { mockTravelerReviews } from "@/data/mock/traveler-reviews";
 import { GuardianDetailView } from "@/components/guardians/guardian-detail-view";
 import { getIntroGalleryResolutionFromDb } from "@/lib/guardian-intro-gallery-db.server";
-import { getPublicGuardianById } from "@/lib/guardian-public";
+import { getPublicGuardianByIdMerged, listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 import { payloadToTravelerReview } from "@/lib/traveler-submitted-reviews";
 import { getSubmittedTravelerReviewsFromCookie } from "@/lib/traveler-submitted-reviews.server";
 import { BRAND } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string; guardianId: string }> };
 
-export function generateStaticParams() {
-  return mockGuardians.map((g) => ({ guardianId: g.user_id }));
+export async function generateStaticParams() {
+  const guardians = await listPublicGuardiansMerged();
+  return guardians.map((g) => ({ guardianId: g.user_id }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { guardianId } = await params;
-  const g = getPublicGuardianById(guardianId);
+  const g = await getPublicGuardianByIdMerged(guardianId);
   const t = await getTranslations("GuardianDetail");
   if (!g) {
     return { title: `${t("notFound")} | ${BRAND.name}` };
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function GuardianDetailPage({ params }: Props) {
   const { guardianId } = await params;
-  const g = getPublicGuardianById(guardianId);
+  const g = await getPublicGuardianByIdMerged(guardianId);
   if (!g) notFound();
 
   const introRes = await getIntroGalleryResolutionFromDb(guardianId);

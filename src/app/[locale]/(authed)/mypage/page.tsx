@@ -3,12 +3,14 @@ import { Link } from "@/i18n/navigation";
 import { mockTravelerSavedPostIds, mockTravelerTripRequests } from "@/data/mock";
 import { getTravelerSavedGuardianIds } from "@/lib/traveler-saved-guardians-cookie";
 import { mockGuardians } from "@/data/mock";
+import { isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
+import { TravelerOverviewStatGrid } from "@/components/mypage/mypage-traveler-overview-stat-grid";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BRAND } from "@/lib/constants";
 import { getServerSupabaseForUser, getSessionUserId, getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
 import { getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
-import { ArrowRight, HeartHandshake, Sparkles, UserRound, Users, Wallet } from "lucide-react";
+import { ArrowRight, HeartHandshake, Sparkles, UserRound, Users } from "lucide-react";
 
 export async function generateMetadata() {
   const t = await getTranslations("TravelerHub");
@@ -41,6 +43,8 @@ export default async function TravelerOverviewPage() {
   const savedP = mockTravelerSavedPostIds.length;
 
   const travelerAuthId = await getSupabaseAuthUserIdOnly();
+  const useMockTrips = !travelerAuthId || isMockGuardianId(travelerAuthId);
+  const openRequestsCount = useMockTrips ? openRequests.length : 0;
   const matchRows = travelerAuthId ? await getMatchRequestsForTraveler(travelerAuthId) : [];
   const matchActive = matchRows.filter((m) => m.status === "accepted").length;
   const matchPending = matchRows.filter((m) => m.status === "requested").length;
@@ -63,62 +67,14 @@ export default async function TravelerOverviewPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("statRequests")}</p>
-            <p className="text-text-strong mt-2 text-3xl font-semibold tabular-nums">{openRequests.length}</p>
-            <Button asChild variant="link" className="mt-2 h-auto px-0 text-sm font-semibold">
-              <Link href="/mypage/requests">{t("viewAll")}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("statSavedGuardians")}</p>
-            <p className="text-text-strong mt-2 text-3xl font-semibold tabular-nums">{savedG}</p>
-            <Button asChild variant="link" className="mt-2 h-auto px-0 text-sm font-semibold">
-              <Link href="/mypage/journeys">{t("hubQuickJourneys")}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("statSavedPosts")}</p>
-            <p className="text-text-strong mt-2 text-3xl font-semibold tabular-nums">{savedP}</p>
-            <Button asChild variant="link" className="mt-2 h-auto px-0 text-sm font-semibold">
-              <Link href="/mypage/journeys">{t("hubQuickJourneys")}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <p className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-              <HeartHandshake className="size-3.5 opacity-80" aria-hidden />
-              {t("hubMatchStatLabel")}
-            </p>
-            <p className="text-text-strong mt-2 text-3xl font-semibold tabular-nums">{matchActive}</p>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {t("hubMatchStatPending")}: {matchPending}
-            </p>
-            <Button asChild variant="link" className="mt-2 h-auto px-0 text-sm font-semibold">
-              <Link href="/mypage/matches">{t("hubQuickMatches")}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
-          <CardContent className="p-5">
-            <p className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-              <Wallet className="size-3.5 opacity-80" aria-hidden />
-              {t("statPointsSummary")}
-            </p>
-            <p className="text-text-strong mt-2 text-3xl font-semibold tabular-nums">{t("statPointsPlaceholder")}</p>
-            <Button asChild variant="link" className="mt-2 h-auto px-0 text-sm font-semibold">
-              <Link href="/mypage/points">{t("viewAll")}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <TravelerOverviewStatGrid
+        openRequestsCount={openRequestsCount}
+        savedG={savedG}
+        savedP={savedP}
+        matchActive={matchActive}
+        matchPending={matchPending}
+        pointsLabel={t("statPointsPlaceholder")}
+      />
 
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" size="sm" className="h-10 rounded-xl font-medium">
@@ -187,7 +143,7 @@ export default async function TravelerOverviewPage() {
           <h2 className="text-lg font-semibold">{t("snapshotTitle")}</h2>
         </div>
         <ul className="space-y-3">
-          {mockTravelerTripRequests.slice(0, 2).map((r) => {
+          {(useMockTrips ? mockTravelerTripRequests.slice(0, 2) : []).map((r) => {
             const g = r.guardian_user_id ? mockGuardians.find((x) => x.user_id === r.guardian_user_id) : null;
             return (
               <li key={r.id}>

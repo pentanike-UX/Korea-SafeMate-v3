@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
 import { PostSampleBadge } from "@/components/posts/post-sample-badge";
-import { relatedPostsFor } from "@/lib/posts-public";
+import { relatedPostsForMerged } from "@/lib/posts-public-merged.server";
 import {
   getPostHeroImageAlt,
   getPostHeroImageUrl,
@@ -17,7 +17,7 @@ import { GuardianRequestSheetHost } from "@/components/guardians/guardian-reques
 import { PostAuthorAside } from "@/components/posts/post-author-aside";
 import { PostDetailStickyAside } from "@/components/posts/post-detail-sticky-aside";
 import { RoutePostDetailView } from "@/components/posts/route-post-detail-view";
-import { getPublicGuardianById } from "@/lib/guardian-public";
+import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
 import { ArrowLeft, Calendar, Heart, MapPin } from "lucide-react";
@@ -33,10 +33,10 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
   }
 
   const t = await getTranslations("Posts");
-  const related = relatedPostsFor(post, 4);
+  const related = await relatedPostsForMerged(post, 4);
   const heroCover = getPostHeroImageUrl(post);
   const heroAlt = getPostHeroImageAlt(post);
-  const guardian = getPublicGuardianById(post.author_user_id);
+  const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const sheetAvatar = guardian ? guardianProfileImageUrls(guardian).avatar : heroCover;
   const sheetHeadline = guardian?.headline ?? post.summary;
   const sheetName = guardian?.display_name ?? post.author_display_name;

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { listPublicGuardians } from "@/lib/guardian-public";
+import type { PublicGuardian } from "@/lib/guardian-public";
+import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
 import { getTravelerSavedGuardianIds } from "@/lib/traveler-saved-guardians-cookie";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
@@ -21,11 +22,9 @@ export async function generateMetadata() {
 export default async function TravelerSavedGuardiansPage() {
   const t = await getTranslations("TravelerHub");
   const tTier = await getTranslations("GuardianTier");
-  const all = listPublicGuardians();
+  const all = await listPublicGuardiansMerged();
   const cookieIds = await getTravelerSavedGuardianIds();
-  const saved = cookieIds.map((id) => all.find((g) => g.user_id === id)).filter(Boolean) as ReturnType<
-    typeof listPublicGuardians
-  >;
+  const saved = cookieIds.map((id) => all.find((g) => g.user_id === id)).filter(Boolean) as PublicGuardian[];
 
   return (
     <div className="space-y-6">

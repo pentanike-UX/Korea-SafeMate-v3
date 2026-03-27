@@ -10,13 +10,17 @@ export default async function MypageMatchesPage() {
   const hasTravelerSession = !!travelerId;
   const items = travelerId ? await getMatchRequestsForTraveler(travelerId) : [];
   const submitted = await getSubmittedTravelerReviewsFromCookie();
-  const reviewedMatchIds = submitted.map((r) => r.booking_id);
+  const reviewedMatchIds = new Set<string>();
+  for (const s of submitted) {
+    if (s.booking_id) reviewedMatchIds.add(s.booking_id);
+    if (s.id) reviewedMatchIds.add(s.id);
+  }
   return (
     <MypageMatchesView
       appRole={appRole}
       items={items}
       hasTravelerSession={hasTravelerSession}
-      reviewedMatchIds={reviewedMatchIds}
+      reviewedMatchIds={Array.from(reviewedMatchIds)}
     />
   );
 }

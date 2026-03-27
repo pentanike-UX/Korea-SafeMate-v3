@@ -2,10 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
 import { getPostHeroImageUrl } from "@/lib/content-post-route";
-import { getPublicGuardianById } from "@/lib/guardian-public";
+import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
-import { relatedPostsFor } from "@/lib/posts-public";
+import { relatedPostsForMerged } from "@/lib/posts-public-merged.server";
 import { PostAuthorAside } from "@/components/posts/post-author-aside";
 import { PostDetailStickyAside } from "@/components/posts/post-detail-sticky-aside";
 import { RoutePostDetailClient } from "@/components/route-posts/route-post-detail-client";
@@ -13,8 +13,8 @@ import { ArrowLeft } from "lucide-react";
 
 export async function RoutePostDetailView({ post }: { post: ContentPost }) {
   const t = await getTranslations("Posts");
-  const related = relatedPostsFor(post, 4);
-  const guardian = getPublicGuardianById(post.author_user_id);
+  const related = await relatedPostsForMerged(post, 4);
+  const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const sheetAvatar = guardian ? guardianProfileImageUrls(guardian).avatar : getPostHeroImageUrl(post);
   const sheetHeadline = guardian?.headline ?? post.summary;
   const sheetName = guardian?.display_name ?? post.author_display_name;

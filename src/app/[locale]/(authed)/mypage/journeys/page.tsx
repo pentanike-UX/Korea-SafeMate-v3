@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { BRAND } from "@/lib/constants";
 import { getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
 import { getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
+import { MypageJourneysMatchHubBadge, MypageJourneysOpenTripBadge } from "@/components/mypage/mypage-journeys-attention-badges";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bookmark, Heart, HeartHandshake, Plane } from "lucide-react";
@@ -29,7 +30,10 @@ export default async function MypageJourneysPage() {
         <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)]">
           <CardHeader className="pb-2">
             <Plane className="text-primary size-8" strokeWidth={1.5} aria-hidden />
-            <CardTitle className="text-lg">{t("navRequests")}</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle className="text-lg">{t("navRequests")}</CardTitle>
+              <MypageJourneysOpenTripBadge />
+            </div>
             <CardDescription>{t("journeysCardRequests")}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -65,7 +69,10 @@ export default async function MypageJourneysPage() {
         <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)] sm:col-span-2 lg:col-span-1">
           <CardHeader className="pb-2">
             <HeartHandshake className="text-primary size-8" strokeWidth={1.5} aria-hidden />
-            <CardTitle className="text-lg">{t("navMatches")}</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle className="text-lg">{t("navMatches")}</CardTitle>
+              <MypageJourneysMatchHubBadge />
+            </div>
             <CardDescription>{t("journeysCardMatches")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

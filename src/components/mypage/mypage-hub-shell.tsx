@@ -11,6 +11,7 @@ import { MypageHubProfileHero } from "@/components/mypage/mypage-hub-profile-her
 import { MypageHubProvider } from "@/components/mypage/mypage-hub-context";
 import { MypageHubSegmentSwitcher } from "@/components/mypage/mypage-hub-segment-switcher";
 import { MypageHubSideNavigation } from "@/components/mypage/mypage-hub-side-navigation";
+import { useMypageAttentionView } from "@/lib/mypage-attention-read-state";
 import { useTranslations } from "next-intl";
 import type { MypageHubSnapshot } from "@/types/mypage-hub";
 
@@ -125,6 +126,7 @@ export function MypageHubShell({
     pathname.startsWith("/mypage/guardian/posts") || pathname.startsWith("/mypage/guardian/matches");
   const guardianTabMuted = !snapshot.guardianSegmentUnlocked;
   const showIdentityHero = shouldShowMypageIdentityHero(pathname, hubMode);
+  const attention = useMypageAttentionView(snapshot, pathname, accountUserId);
 
   const mainPadding = cn(
     "w-full min-w-0 flex-1",
@@ -132,7 +134,7 @@ export function MypageHubShell({
   );
 
   return (
-    <MypageHubProvider value={{ appRole, guardianStatus, accountUserId, snapshot }}>
+    <MypageHubProvider value={{ appRole, guardianStatus, accountUserId, snapshot, attention }}>
       <div className="bg-[var(--bg-page)] flex min-h-screen w-full max-w-[100vw] flex-col md:flex-row">
         <aside
           className={cn(
@@ -144,7 +146,8 @@ export function MypageHubShell({
             <MypageHubSegmentSwitcher
               hubMode={hubMode}
               setHubMode={setHubMode}
-              snapshot={snapshot}
+              travelerBadgeCount={attention.unreadTravelerBadgeCount}
+              guardianBadgeCount={attention.unreadGuardianBadgeCount}
               guardianTabMuted={guardianTabMuted}
             />
           </div>
@@ -156,6 +159,8 @@ export function MypageHubShell({
               approved={approved}
               guardianStatus={guardianStatus}
               primary={primary}
+              travelerNavBadges={attention.unreadTravelerNavBadges}
+              guardianWorkspaceNavBadges={attention.unreadGuardianWorkspaceNavBadges}
             />
             {hubMode === "traveler" ? (
               <div className="border-border/60 mt-auto rounded-xl border border-dashed bg-muted/25 p-4">

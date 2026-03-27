@@ -1,5 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import {
+  GuardianMatchesActiveBadge,
+  GuardianMatchesPendingBadge,
+} from "@/components/mypage/mypage-guardian-matches-attention-badges";
 import { GuardianMatchAcceptButton } from "@/components/mypage/match-request-row-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,13 +36,19 @@ export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: str
       <div className="grid gap-3 sm:grid-cols-3">
         <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)]">
           <CardContent className="p-5 pt-6">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("matchesSummaryPending")}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("matchesSummaryPending")}</p>
+              <GuardianMatchesPendingBadge count={pending.length} />
+            </div>
             <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{pending.length}</p>
           </CardContent>
         </Card>
         <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)]">
           <CardContent className="p-5 pt-6">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("matchesSummaryActive")}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("matchesSummaryActive")}</p>
+              <GuardianMatchesActiveBadge count={active.length} />
+            </div>
             <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{active.length}</p>
           </CardContent>
         </Card>

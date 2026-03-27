@@ -44,7 +44,8 @@
     "accountGuardianHub": "ガーディアンハブ",
     "accountGuardianApply": "ガーディアンを始める",
     "accountAdminConsole": "管理コンソール",
-    "accountSuperInvites": "管理者招待"
+    "accountSuperInvites": "管理者招待",
+    "attentionDotAria": "マイページに未確認の更新があります"
   },
   "LanguageSwitcher": {
     "label": "言語",
@@ -1102,6 +1103,17 @@
     "modeSegmentGuardianStart": "開始",
     "segmentBadgeTravelerAria": "旅行者の更新件数",
     "segmentBadgeGuardianAria": "Guardianの更新件数",
+    "attentionNavBadgeAria": "{menu}の新規更新件数",
+    "attentionBlockOpenTrips": "進行中の旅程リクエスト数",
+    "attentionBlockMatchesPending": "返答待ちのマッチ数",
+    "attentionBlockMatchesReview": "レビュー待ちのマッチ数",
+    "attentionBlockMatchesActive": "進行中のマッチ数",
+    "attentionBlockPointsRecent": "直近のポイント変動件数",
+    "attentionGuardianPostsPending": "審査待ちの投稿数",
+    "attentionGuardianPostsDraft": "下書きの投稿数",
+    "attentionGuardianMatchIncoming": "新規マッチリクエスト数",
+    "attentionGuardianBookingsReview": "確認が必要な予約数",
+    "attentionGuardianPool": "オープンプールの通知",
     "hubRoleSummaryTravelerOnly": "旅行者ハブ — 保存・リクエスト・マッチをまとめて管理します。",
     "hubRoleSummaryTravelerPlusGuardian": "旅行者ハブに加えGuardian申請があります。（Guardian: {status}）",
     "hubRoleSummaryAccountGuardian": "Guardianアカウントです。旅行者タブでも保存・マッチを利用できます。（Guardian: {status}）",

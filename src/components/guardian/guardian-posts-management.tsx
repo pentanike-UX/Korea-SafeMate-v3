@@ -1,7 +1,10 @@
+import { GuardianPostsAttentionStrip } from "@/components/guardian/guardian-posts-attention-strip";
 import { Link } from "@/i18n/navigation";
 import { listPostsForGuardian } from "@/lib/posts-public";
 import { getContentPostFormat, postHasRouteJourney } from "@/lib/content-post-route";
+import { isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
+import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -19,7 +22,47 @@ export async function GuardianPostsManagement({
   sessionUserId: string;
   savedBanner?: boolean;
 }) {
-  const posts = listPostsForGuardian(sessionUserId);
+  const sb = createServiceRoleSupabase();
+  let posts = listPostsForGuardian(sessionUserId);
+  if (sb && !isMockGuardianId(sessionUserId)) {
+    const { data } = await sb
+      .from("content_posts")
+      .select("id, author_user_id, title, summary, status, created_at, post_format, route_journey")
+      .eq("author_user_id", sessionUserId)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) {
+      posts = data.map((p) => ({
+        id: p.id,
+        author_user_id: p.author_user_id,
+        author_display_name: "",
+        region_slug: "gwanghwamun",
+        category_slug: "culture",
+        kind: "practical",
+        title: p.title ?? "",
+        body: "",
+        summary: p.summary ?? "",
+        status:
+          p.status === "approved" || p.status === "pending" || p.status === "draft"
+            ? p.status
+            : "rejected",
+        created_at: p.created_at ?? new Date().toISOString(),
+        tags: [],
+        usefulness_votes: 0,
+        helpful_rating: null,
+        popular_score: 0,
+        recommended_score: 0,
+        featured: false,
+        post_format:
+          p.post_format === "article" || p.post_format === "spot" || p.post_format === "route" || p.post_format === "hybrid"
+            ? p.post_format
+            : undefined,
+        route_journey: undefined,
+        route_highlights: [],
+        is_sample: false,
+      }));
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -28,6 +71,7 @@ export async function GuardianPostsManagement({
           게시 흐름이 기록되었습니다. (MVP: 실제 저장 API는 연결 예정)
         </p>
       ) : null}
+      <GuardianPostsAttentionStrip />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-primary text-[10px] font-bold tracking-widest uppercase">Content</p>

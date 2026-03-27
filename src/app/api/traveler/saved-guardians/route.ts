@@ -5,7 +5,7 @@ import {
   parseSavedGuardianIds,
   serializeSavedGuardianIds,
 } from "@/lib/traveler-saved-guardians-cookie";
-import { listPublicGuardians } from "@/lib/guardian-public";
+import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -34,7 +34,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "guardian_user_id required" }, { status: 400 });
   }
 
-  const validIds = new Set(listPublicGuardians().map((g) => g.user_id));
+  const publicGuardians = await listPublicGuardiansMerged();
+  const validIds = new Set(publicGuardians.map((g) => g.user_id));
   if (!validIds.has(id)) {
     return NextResponse.json({ error: "Unknown guardian" }, { status: 404 });
   }

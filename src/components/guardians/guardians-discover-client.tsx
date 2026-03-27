@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { mockContentPosts } from "@/data/mock";
-import { isActiveLaunchArea, listPublicGuardians, type PublicGuardian } from "@/lib/guardian-public";
+import type { ContentPost } from "@/types/domain";
+import { isActiveLaunchArea, type PublicGuardian } from "@/lib/guardian-public";
 import type { LaunchAreaSlug } from "@/types/launch-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,13 +36,19 @@ const LANGS = ["en", "ko", "ja", "es"] as const;
 const THEMES = ["k_drama_romance", "k_pop_day", "seoul_night", "movie_location", "safe_solo", "photo_route"] as const;
 const STYLES = ["calm", "planner", "energetic", "trendy", "friendly", "flexible"] as const;
 
-function repPostFor(g: PublicGuardian) {
+function repPostFor(g: PublicGuardian, approvedPosts: ContentPost[]) {
   const id = g.representative_post_ids[0];
   if (!id) return null;
-  return mockContentPosts.find((p) => p.id === id) ?? null;
+  return approvedPosts.find((p) => p.id === id) ?? null;
 }
 
-export function GuardiansDiscoverClient() {
+export function GuardiansDiscoverClient({
+  guardians,
+  approvedPosts,
+}: {
+  guardians: PublicGuardian[];
+  approvedPosts: ContentPost[];
+}) {
   const t = useTranslations("GuardiansDiscover");
   const tExplore = useTranslations("ListingExploration");
   const tLaunch = useTranslations("LaunchAreas");
@@ -70,7 +76,7 @@ export function GuardiansDiscoverClient() {
     return () => mql.removeEventListener("change", apply);
   }, []);
 
-  const all = listPublicGuardians();
+  const all = guardians;
 
   const filtered = useMemo(() => {
     let g = [...all];
@@ -450,7 +456,7 @@ export function GuardiansDiscoverClient() {
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 2xl:gap-5">
             {filtered.map((g) => {
-              const rep = repPostFor(g);
+              const rep = repPostFor(g, approvedPosts);
               const areaName = (tLaunch.raw(g.launch_area_slug) as { name: string }).name;
               const imgs = guardianProfileImageUrls(g);
               const styleSummary = g.companion_style_slugs

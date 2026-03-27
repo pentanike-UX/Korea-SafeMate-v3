@@ -20,6 +20,8 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { HeaderAttentionDot } from "@/components/mypage/mypage-attention-primitives";
+import type { GuardianWorkspaceNavBadgeKey, TravelerNavBadgeKey } from "@/types/mypage-hub";
 import { ChevronDown, Coins, FileText, Heart, LayoutDashboard, Plane, Shield, UserRound, Users } from "lucide-react";
 
 type MeResponse = {
@@ -39,6 +41,13 @@ type MeResponse = {
     profile_image_url: string | null;
     intro: string | null;
   } | null;
+  attention?: {
+    globalAttentionDot: boolean;
+    travelerNavBadges: Record<TravelerNavBadgeKey, number>;
+    travelerNavSignatures: Record<TravelerNavBadgeKey, string>;
+    guardianWorkspaceNavBadges: Record<GuardianWorkspaceNavBadgeKey, number>;
+    guardianWorkspaceNavSignatures: Record<GuardianWorkspaceNavBadgeKey, string>;
+  };
 };
 
 function initials(name: string, email: string) {
@@ -220,12 +229,21 @@ export function HeaderAccountMenu({
   const deskLabel = desktopTriggerLabel(display, email);
   const mobLabel = mobileTriggerLabel(display, email);
 
+  const showAttentionDot = Boolean(me?.attention?.globalAttentionDot);
+
   const triggerInnerDesktop = (
     <>
-      <Avatar size="sm">
-        {avatarSrc ? <AvatarImage src={avatarSrc} alt="" /> : null}
-        <AvatarFallback className="text-[10px]">{initials(display, email)}</AvatarFallback>
-      </Avatar>
+      <span className="relative shrink-0">
+        <Avatar size="sm">
+          {avatarSrc ? <AvatarImage src={avatarSrc} alt="" /> : null}
+          <AvatarFallback className="text-[10px]">{initials(display, email)}</AvatarFallback>
+        </Avatar>
+        {showAttentionDot ? (
+          <span className="absolute -top-0.5 -right-0.5">
+            <HeaderAttentionDot />
+          </span>
+        ) : null}
+      </span>
       <span className={cn("min-w-0 flex-1 truncate", onDarkSurface ? "text-white" : "text-foreground")} title={deskLabel}>
         {deskLabel}
       </span>
@@ -235,10 +253,17 @@ export function HeaderAccountMenu({
 
   const triggerInnerMobile = (
     <>
-      <Avatar size="sm">
-        {avatarSrc ? <AvatarImage src={avatarSrc} alt="" /> : null}
-        <AvatarFallback className="text-[10px]">{initials(display, email)}</AvatarFallback>
-      </Avatar>
+      <span className="relative shrink-0">
+        <Avatar size="sm">
+          {avatarSrc ? <AvatarImage src={avatarSrc} alt="" /> : null}
+          <AvatarFallback className="text-[10px]">{initials(display, email)}</AvatarFallback>
+        </Avatar>
+        {showAttentionDot ? (
+          <span className="absolute -top-0.5 -right-0.5">
+            <HeaderAttentionDot />
+          </span>
+        ) : null}
+      </span>
       <span
         className={cn(
           "min-w-0 flex-1 truncate text-xs max-[360px]:hidden",
@@ -497,7 +522,14 @@ export function HeaderAccountMenu({
             aria-expanded={desktopOpen}
             aria-haspopup="menu"
           >
-            {loading ? <span className="text-muted-foreground px-2 text-xs">…</span> : triggerInnerDesktop}
+            {loading ? (
+              <span className="text-muted-foreground px-2 text-xs">…</span>
+            ) : (
+              <>
+                {showAttentionDot ? <span className="sr-only">{t("attentionDotAria")}</span> : null}
+                {triggerInnerDesktop}
+              </>
+            )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[min(calc(100vw-2rem),20rem)] p-0" sideOffset={6}>
             <AccountSummary me={me} authUser={authUser} onDarkSurface={false} />
@@ -509,7 +541,14 @@ export function HeaderAccountMenu({
       <div className="sm:hidden">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger className={triggerClassMobile} aria-label={t("accountMenuAria")} aria-expanded={mobileOpen}>
-            {loading ? <span className="text-muted-foreground px-2 text-xs">…</span> : triggerInnerMobile}
+            {loading ? (
+              <span className="text-muted-foreground px-2 text-xs">…</span>
+            ) : (
+              <>
+                {showAttentionDot ? <span className="sr-only">{t("attentionDotAria")}</span> : null}
+                {triggerInnerMobile}
+              </>
+            )}
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[min(85vh,32rem)] rounded-t-2xl px-0 pt-4 pb-6">
             <SheetHeader className="sr-only">

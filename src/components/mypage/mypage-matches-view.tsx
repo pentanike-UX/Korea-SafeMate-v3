@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { StoredMatchRequest } from "@/lib/traveler-match-requests";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BlockAttentionBadge } from "@/components/mypage/mypage-attention-primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MypageMatchesEmpty } from "@/components/mypage/mypage-matches-empty";
@@ -30,6 +31,8 @@ export async function MypageMatchesView({
   const pending = items.filter((r) => r.status === "requested");
   const active = items.filter((r) => r.status === "accepted");
   const done = items.filter((r) => r.status === "completed");
+  const reviewedSet = new Set(reviewedMatchIds);
+  const reviewDue = done.filter((r) => !reviewedSet.has(r.id)).length;
 
   if (!hasTravelerSession) {
     if (appRole === "guardian") {
@@ -109,6 +112,8 @@ export async function MypageMatchesView({
         <div className="space-y-8">
           <MatchSection
             title={t("matchesSectionActive")}
+            attentionCount={active.length}
+            attentionAria={t("attentionBlockMatchesActive")}
             rows={active}
             t={t}
             showComplete
@@ -117,6 +122,8 @@ export async function MypageMatchesView({
           />
           <MatchSection
             title={t("matchesSectionPending")}
+            attentionCount={pending.length}
+            attentionAria={t("attentionBlockMatchesPending")}
             rows={pending}
             t={t}
             showComplete={false}
@@ -125,6 +132,8 @@ export async function MypageMatchesView({
           />
           <MatchSection
             title={t("matchesSectionCompleted")}
+            attentionCount={reviewDue}
+            attentionAria={t("attentionBlockMatchesReview")}
             rows={done}
             t={t}
             showComplete={false}
@@ -139,6 +148,8 @@ export async function MypageMatchesView({
 
 function MatchSection({
   title,
+  attentionCount,
+  attentionAria,
   rows,
   t,
   showComplete,
@@ -146,6 +157,8 @@ function MatchSection({
   canWriteTravelerReview,
 }: {
   title: string;
+  attentionCount: number;
+  attentionAria: string;
   rows: StoredMatchRequest[];
   t: Awaited<ReturnType<typeof getTranslations>>;
   showComplete: boolean;
@@ -155,7 +168,10 @@ function MatchSection({
   if (rows.length === 0) return null;
   return (
     <section className="space-y-3">
-      <h3 className="text-foreground text-sm font-semibold">{title}</h3>
+      <h3 className="text-foreground flex flex-wrap items-center gap-2 text-sm font-semibold">
+        {title}
+        <BlockAttentionBadge count={attentionCount} ariaLabel={attentionAria} />
+      </h3>
       <ul className="space-y-2">
         {rows.map((r) => (
           <li key={r.id}>

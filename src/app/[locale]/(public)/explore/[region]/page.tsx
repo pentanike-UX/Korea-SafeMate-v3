@@ -1,11 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import {
-  mockContentCategories,
-  mockContentPosts,
-  mockGuardians,
-  mockRegions,
-} from "@/data/mock";
+import { mockContentCategories, mockRegions } from "@/data/mock";
+import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
+import { listApprovedPostsMerged } from "@/lib/posts-public-merged.server";
 import { enrichInsight } from "@/lib/explore-utils";
 import { ExploreCtas } from "@/components/explore/explore-ctas";
 import { ExploreDiscoveryClient } from "@/components/explore/explore-discovery-client";
@@ -38,23 +35,24 @@ export default async function ExploreRegionPage({ params }: Props) {
   const meta = mockRegions.find((r) => r.slug === region);
   if (!meta) notFound();
 
-  const posts = mockContentPosts.filter((p) => p.region_slug === region);
+  const [allPosts, allGuardians] = await Promise.all([listApprovedPostsMerged(), listPublicGuardiansMerged()]);
+  const posts = allPosts.filter((p) => p.region_slug === region);
   const approved = posts.filter((p) => p.status === "approved");
   const pending = posts.filter((p) => p.status === "pending");
 
   const insights = approved.map((p) =>
-    enrichInsight(p, mockRegions, mockContentCategories, mockGuardians),
+    enrichInsight(p, mockRegions, mockContentCategories, allGuardians),
   );
 
   const pendingInsights = pending.map((p) =>
-    enrichInsight(p, mockRegions, mockContentCategories, mockGuardians),
+    enrichInsight(p, mockRegions, mockContentCategories, allGuardians),
   );
 
   return (
     <>
       <ExploreRegionHero region={meta} />
 
-      <ExploreRegionGuardians regionSlug={region} guardians={mockGuardians} />
+      <ExploreRegionGuardians regionSlug={region} guardians={allGuardians} />
 
       <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <Card className="border-primary/10 bg-muted/20">

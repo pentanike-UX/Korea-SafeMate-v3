@@ -300,6 +300,17 @@ create table public.admin_notes (
 
 create index admin_notes_entity_idx on public.admin_notes (entity_type, entity_id);
 
+-- ——— Mypage attention (cross-device seen signatures) ———
+create table public.mypage_menu_attention_seen (
+  user_id text not null,
+  menu_key text not null,
+  seen_signature text not null,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, menu_key)
+);
+
+create index mypage_menu_attention_seen_user_updated_idx on public.mypage_menu_attention_seen (user_id, updated_at desc);
+
 -- ——— Tier rules (reference; enforce in application or cron) ———
 -- Active Guardian (example): >= 12 approved posts in rolling 30 days AND >= 3 approved posts/week (rolling 7d).
 -- Verified Guardian: manual review + policy checks; `matching_enabled` true only after ops approval.

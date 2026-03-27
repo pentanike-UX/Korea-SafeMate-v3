@@ -44,7 +44,8 @@
     "accountGuardianHub": "가디언 허브",
     "accountGuardianApply": "가디언 시작하기",
     "accountAdminConsole": "관리자 콘솔",
-    "accountSuperInvites": "관리자 초대"
+    "accountSuperInvites": "관리자 초대",
+    "attentionDotAria": "확인할 마이페이지 업데이트가 있습니다"
   },
   "LanguageSwitcher": {
     "label": "언어",
@@ -1102,6 +1103,17 @@
     "modeSegmentGuardianStart": "시작",
     "segmentBadgeTravelerAria": "여행자 업데이트 수",
     "segmentBadgeGuardianAria": "가디언 업데이트 수",
+    "attentionNavBadgeAria": "{menu} 메뉴의 새 업데이트 수",
+    "attentionBlockOpenTrips": "진행 중인 여정 요청 수",
+    "attentionBlockMatchesPending": "응답 대기 매칭 수",
+    "attentionBlockMatchesReview": "리뷰 작성 가능 매칭 수",
+    "attentionBlockMatchesActive": "진행 중 매칭 수",
+    "attentionBlockPointsRecent": "최근 포인트 변동 건수",
+    "attentionGuardianPostsPending": "검토 대기 포스트 수",
+    "attentionGuardianPostsDraft": "작성 중 초안 수",
+    "attentionGuardianMatchIncoming": "신규 매칭 요청 수",
+    "attentionGuardianBookingsReview": "확인 필요 부킹 수",
+    "attentionGuardianPool": "오픈 풀 매칭 알림",
     "hubRoleSummaryTravelerOnly": "여행자 허브 — 저장·요청·매칭을 한곳에서 관리합니다.",
     "hubRoleSummaryTravelerPlusGuardian": "여행자 허브와 가디언 신청이 함께 있습니다. (가디언: {status})",
     "hubRoleSummaryAccountGuardian": "가디언 계정입니다. 여행자 탭에서도 저장·매칭을 이용할 수 있습니다. (가디언: {status})",

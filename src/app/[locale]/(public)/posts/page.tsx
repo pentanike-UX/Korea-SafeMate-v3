@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { PostsListClient } from "@/components/posts/posts-list-client";
 import { mockContentCategories } from "@/data/mock";
-import { listApprovedPosts } from "@/lib/posts-public";
+import { listApprovedPostsMerged } from "@/lib/posts-public-merged.server";
 import { BRAND } from "@/lib/constants";
 
 export async function generateMetadata() {
@@ -20,7 +20,7 @@ function PostsListFallback() {
 }
 
 export default async function PostsPage() {
-  const approved = listApprovedPosts();
+  const approved = await listApprovedPostsMerged();
   return (
     <Suspense fallback={<PostsListFallback />}>
       <PostsListClient posts={approved} categories={mockContentCategories} />
