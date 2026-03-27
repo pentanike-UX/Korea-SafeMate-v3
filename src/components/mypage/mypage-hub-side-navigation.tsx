@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { cn } from "@/lib/utils";
 import {
   GUARDIAN_APPROVED_HUB_NAV,
+  GUARDIAN_WORKSPACE_NAV,
   TRAVELER_HUB_NAV,
   resolveActiveNavLabel,
   type HubNavItem,
@@ -42,7 +43,7 @@ function mobileTriggerLabel(
   const pool = navPool(hubMode, approved);
   const hit = resolveActiveNavLabel(pathname, pool);
   if (hit) return t(hit.labelKey);
-  if (hubMode === "guardian" && pathname.startsWith("/guardian")) {
+  if (hubMode === "guardian" && pathname.startsWith("/mypage/guardian")) {
     return t("mobileNavFallbackGuardian");
   }
   return t("mobileNavFallback");
@@ -127,9 +128,26 @@ export function MypageHubSideNavigation({
                 </div>
               ) : null}
               <ul className="flex flex-col gap-1">
-                {hubMode === "guardian" && !approved
-                  ? TRAVELER_HUB_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))
-                  : pool.map((item) => renderNavRow(item, () => setSheetOpen(false)))}
+                {hubMode === "guardian" && !approved ? (
+                  TRAVELER_HUB_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))
+                ) : hubMode === "guardian" && approved ? (
+                  <>
+                    <li className="px-2 pb-1 pt-2">
+                      <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                        {t("navSectionTraveler")}
+                      </p>
+                    </li>
+                    {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))}
+                    <li className="px-2 pb-1 pt-4">
+                      <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                        {t("navSectionGuardian")}
+                      </p>
+                    </li>
+                    {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, () => setSheetOpen(false)))}
+                  </>
+                ) : (
+                  pool.map((item) => renderNavRow(item, () => setSheetOpen(false)))
+                )}
               </ul>
             </nav>
           </SheetContent>
@@ -159,9 +177,24 @@ export function MypageHubSideNavigation({
 
       {hubMode === "traveler" || approved ? (
         <nav className="hidden lg:block" aria-label={hubMode === "traveler" ? t("navAria") : t("guardianModeNavAria")}>
-          <ul className="flex flex-col gap-1.5">
-            {pool.map((item) => renderNavRow(item))}
-          </ul>
+          {hubMode === "guardian" && approved ? (
+            <div className="space-y-5">
+              <div>
+                <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
+                  {t("navSectionTraveler")}
+                </p>
+                <ul className="flex flex-col gap-1.5">{TRAVELER_HUB_NAV.map((item) => renderNavRow(item))}</ul>
+              </div>
+              <div>
+                <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
+                  {t("navSectionGuardian")}
+                </p>
+                <ul className="flex flex-col gap-1.5">{GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item))}</ul>
+              </div>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-1.5">{pool.map((item) => renderNavRow(item))}</ul>
+          )}
         </nav>
       ) : null}
 

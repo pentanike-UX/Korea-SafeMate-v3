@@ -136,6 +136,8 @@ export interface GuardianProfile {
   avatar_image_url?: string | null;
   list_card_image_url?: string | null;
   detail_hero_image_url?: string | null;
+  /** 상세 본문 소개 갤러리 — 공개 페이지·관리자에서 동일 필드 사용 */
+  intro_gallery_image_urls?: string[];
   languages: GuardianLanguage[];
   primary_region_slug: string;
   /** Rolling MVP metrics — TODO(prod): compute from `content_posts` + `guardian_activity_logs`. */
@@ -308,6 +310,17 @@ export interface TravelerReview {
   rating: number;
   comment: string | null;
   created_at: string;
+  /** Mock / display: English body when `comment` is Korean-first */
+  comment_en?: string | null;
+  /** Pseudonym on public profile */
+  reviewer_display_name?: string;
+  time_label_ko?: string;
+  time_label_en?: string;
+  time_label_ja?: string;
+  /** Optional traveler photo (mock paths under /mock/...) */
+  image_url?: string | null;
+  /** i18n keys under TravelerHub.reviewHelpTag.* */
+  help_tag_ids?: string[];
 }
 
 /** Guardian → Traveler (mutual trust / behavior quality). */

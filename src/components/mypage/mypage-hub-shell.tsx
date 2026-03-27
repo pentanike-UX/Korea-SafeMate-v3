@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { MypageGuardianDashboard } from "@/components/mypage/mypage-guardian-dashboard";
@@ -127,7 +128,7 @@ export function MypageHubShell({
       case "submitted":
         return { href: "/guardian/profile", labelKey: "guardianCtaSubmitted" };
       case "approved":
-        return { href: "/guardian/posts", labelKey: "guardianCtaApproved" };
+        return { href: GUARDIAN_WORKSPACE.posts, labelKey: "guardianCtaApproved" };
       case "rejected":
         return { href: "/guardian/profile", labelKey: "guardianCtaRejected" };
       case "suspended":
@@ -141,6 +142,8 @@ export function MypageHubShell({
   const primary = guardianPrimaryCta();
   const memberSince = formatMemberSince(memberSinceIso, locale);
   const showGuardianDashboard = hubMode === "guardian" && (pathname === "/mypage" || pathname === "/mypage/");
+  const guardianWorkspaceWide =
+    pathname.startsWith("/mypage/guardian/posts") || pathname.startsWith("/mypage/guardian/matches");
   const initial = (accountDisplayName || accountEmail || "?").slice(0, 1).toUpperCase();
   const guardianTabMuted = !snapshot.guardianSegmentUnlocked;
 
@@ -246,7 +249,12 @@ export function MypageHubShell({
           </Card>
         </div>
 
-        <div className="page-container flex flex-col gap-10 py-8 sm:py-10 md:gap-12 lg:flex-row lg:gap-14">
+        <div
+          className={cn(
+            "flex flex-col gap-10 py-8 sm:py-10 md:gap-12 lg:flex-row lg:gap-14",
+            guardianWorkspaceWide ? "mx-auto w-full max-w-none px-10" : "page-container",
+          )}
+        >
           <div className="lg:w-64 lg:shrink-0">
             <MypageHubSideNavigation
               hubMode={hubMode}

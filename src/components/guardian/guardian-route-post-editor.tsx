@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { ContentPost, ContentPostFormat, RouteJourney, RouteSpot } from "@/types/domain";
 import { saveGuardianRoutePostAction } from "@/app/[locale]/(authed)/guardian/posts/actions";
 import { signGuardianPostPreviewTokenAction } from "@/app/[locale]/(authed)/guardian/posts/preview-token-action";
+import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import type { GuardianPostSavePayload } from "@/lib/guardian-posts-api";
 import { isUuidString } from "@/lib/guardian-posts-api";
 import { RouteMapPreview } from "@/components/maps/route-map-preview";
@@ -259,7 +260,7 @@ export function GuardianRoutePostEditor({
         setSaveError(r.error);
         return;
       }
-      const url = `/guardian/posts/${persistedPostId}/preview?t=${encodeURIComponent(r.token)}`;
+      const url = GUARDIAN_WORKSPACE.postPreview(persistedPostId, r.token);
       window.open(url, "_blank", "noopener,noreferrer");
     } finally {
       setPreviewBusy(false);
@@ -309,7 +310,7 @@ export function GuardianRoutePostEditor({
       setPersistedPostId(result.id);
       setPost((p) => ({ ...p, id: result.id, status: "pending" }));
       setSaveNotice(COPY.savedPending);
-      router.push("/guardian/posts?saved=1");
+      router.push(`${GUARDIAN_WORKSPACE.posts}?saved=1`);
     } else {
       setSaveNotice(result.message ?? "Supabase 미설정: DB에 쓰지 않았습니다.");
     }
@@ -372,11 +373,11 @@ export function GuardianRoutePostEditor({
   const format = post.post_format ?? "hybrid";
 
   return (
-    <div className="grid min-h-[calc(100vh-8rem)] gap-8 lg:grid-cols-2 lg:gap-10">
+    <div className="mx-auto grid min-h-[calc(100vh-8rem)] w-full max-w-[min(100%,96rem)] gap-8 lg:grid-cols-2 lg:gap-10">
       <div className="space-y-10 pb-16">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
-            <Link href="/guardian/posts">{COPY.back}</Link>
+            <Link href={GUARDIAN_WORKSPACE.posts}>{COPY.back}</Link>
           </Button>
           <p className="text-muted-foreground text-xs">
             {mode === "create" ? "새 루트 포스트" : `편집 · ${post.id}`}

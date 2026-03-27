@@ -32,10 +32,10 @@ export function MypageMatchesEmpty({ appRole }: { appRole: AppAccountRole }) {
           {guardian ? (
             <>
               <Button asChild className="h-11 flex-1 rounded-xl font-semibold sm:flex-initial sm:min-w-[9rem]">
-                <Link href="/guardian/posts">{t("emptyMatchesGuardianCtaPosts")}</Link>
+                <Link href="/mypage/guardian/posts">{t("emptyMatchesGuardianCtaPosts")}</Link>
               </Button>
               <Button asChild variant="outline" className="h-11 flex-1 rounded-xl font-medium sm:flex-initial sm:min-w-[9rem]">
-                <Link href="/guardian/posts/new">{t("emptyMatchesGuardianCtaNewPost")}</Link>
+                <Link href="/mypage/guardian/posts/new">{t("emptyMatchesGuardianCtaNewPost")}</Link>
               </Button>
             </>
           ) : (

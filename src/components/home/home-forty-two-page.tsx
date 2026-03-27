@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { mockContentPosts, mockTravelerReviews, mockTravelerReviewQuotes } from "@/data/mock";
+import { mockContentPosts, mockTravelerReviewsHomeSpotlight } from "@/data/mock";
 import { Card, CardContent } from "@/components/ui/card";
 import { TextActionLink } from "@/components/ui/text-action";
 import { HomeHeroCarousel } from "@/components/home/home-hero-carousel";
@@ -10,6 +10,7 @@ import { FileText, Languages, MessageCircle, ShieldCheck, Star, Zap } from "luci
 
 export async function HomeFortyTwoPage() {
   const t = await getTranslations("Home");
+  const tHub = await getTranslations("TravelerHub");
   const locale = await getLocale();
   const isKo = locale === "ko";
 
@@ -18,7 +19,7 @@ export async function HomeFortyTwoPage() {
     .sort((a, b) => b.popular_score - a.popular_score)
     .slice(0, 6);
 
-  const reviews = mockTravelerReviews.slice(0, 3);
+  const reviews = mockTravelerReviewsHomeSpotlight();
 
   return (
     <div className="bg-[var(--bg-page)]">
@@ -96,8 +97,15 @@ export async function HomeFortyTwoPage() {
           </div>
           <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
             {reviews.map((r) => {
-              const q = mockTravelerReviewQuotes[r.id];
-              const text = q ? (isKo ? q.ko : q.en) : r.comment ?? "";
+              const text = isKo ? (r.comment ?? "") : (r.comment_en ?? r.comment ?? "");
+              const timeLabel =
+                locale === "ko"
+                  ? r.time_label_ko
+                  : locale === "ja"
+                    ? (r.time_label_ja ?? r.time_label_en ?? r.time_label_ko)
+                    : r.time_label_en;
+              const who = r.reviewer_display_name ?? tHub("reviewsAnonymous");
+              const meta = [who, timeLabel].filter(Boolean).join(" · ");
               return (
                 <Card key={r.id} className="border-border/70 rounded-[var(--radius-md)] border bg-card/95">
                   <CardContent className="flex flex-col gap-3 p-5 sm:p-6">
@@ -107,7 +115,7 @@ export async function HomeFortyTwoPage() {
                       ))}
                     </div>
                     <p className="text-foreground text-sm leading-relaxed">&ldquo;{text}&rdquo;</p>
-                    <p className="text-muted-foreground text-xs font-medium">42 Guardians traveler</p>
+                    <p className="text-muted-foreground text-xs font-medium">{meta}</p>
                   </CardContent>
                 </Card>
               );

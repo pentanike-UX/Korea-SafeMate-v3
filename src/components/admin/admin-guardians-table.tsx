@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { GuardianProfile, GuardianTier } from "@/types/domain";
 import { guardianApprovalLabel, guardianApprovalVariant } from "@/lib/booking-ui";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant, guardianTierLabel } from "@/lib/guardian-tier-ui";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AdminFilterBar, AdminFilterField, AdminSearchInput } from "@/components/admin/admin-filter-bar";
 import { Badge } from "@/components/ui/badge";
@@ -95,7 +96,7 @@ export function AdminGuardiansTable({ guardians }: { guardians: GuardianProfile[
                 Approval
               </TableHead>
               <TableHead className="text-muted-foreground h-11 px-4 text-right text-[11px] font-semibold tracking-wide uppercase">
-                Actions
+                Media / Actions
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -131,9 +132,14 @@ export function AdminGuardiansTable({ guardians }: { guardians: GuardianProfile[
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
-                  <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled>
-                    Review
-                  </Button>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button size="sm" variant="secondary" className="h-8 rounded-lg text-xs" asChild>
+                      <Link href={`/admin/guardians/${g.user_id}/media`}>Media</Link>
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled>
+                      Review
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

@@ -87,10 +87,10 @@ export function GuardianContributionSection({
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
             <Button asChild className="rounded-xl">
-              <Link href="/guardian/posts/new">Create route post</Link>
+              <Link href="/mypage/guardian/posts/new">Create route post</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/guardian/posts">My posts</Link>
+              <Link href="/mypage/guardian/posts">My posts</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl">
               <Link href={exploreHref}>Explore regions</Link>

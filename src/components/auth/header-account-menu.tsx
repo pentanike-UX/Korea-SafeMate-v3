@@ -312,11 +312,11 @@ export function HeaderAccountMenu({
             <Users className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianProfile")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardian/posts")}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/guardian/posts")}>
             <FileText className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianPosts")}
           </DropdownMenuItem>
-          <DropdownMenuItem className="min-h-11" onClick={itemClick("/guardian/matches")}>
+          <DropdownMenuItem className="min-h-11" onClick={itemClick("/mypage/guardian/matches")}>
             <Heart className="size-4 opacity-80" aria-hidden />
             {t("accountGuardianMatches")}
           </DropdownMenuItem>
@@ -430,11 +430,11 @@ export function HeaderAccountMenu({
             <Users className="size-5 shrink-0 opacity-80" aria-hidden />
             {t("accountGuardianProfile")}
           </button>
-          <button type="button" className={row} onClick={() => go("/guardian/posts", close)}>
+          <button type="button" className={row} onClick={() => go("/mypage/guardian/posts", close)}>
             <FileText className="size-5 shrink-0 opacity-80" aria-hidden />
             {t("accountGuardianPosts")}
           </button>
-          <button type="button" className={row} onClick={() => go("/guardian/matches", close)}>
+          <button type="button" className={row} onClick={() => go("/mypage/guardian/matches", close)}>
             <Heart className="size-5 shrink-0 opacity-80" aria-hidden />
             {t("accountGuardianMatches")}
           </button>

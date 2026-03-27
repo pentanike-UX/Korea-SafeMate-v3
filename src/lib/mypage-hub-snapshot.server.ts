@@ -59,6 +59,15 @@ export async function getMypageHubSnapshot(
     ).length;
     const openPoolCount = mockBookings.filter((b) => b.guardian_user_id == null && b.status === "reviewing").length;
     const points = bundle.pointsByAuthorId[userId] ?? null;
+    const recentPosts = [...posts]
+      .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0))
+      .slice(0, 5)
+      .map((p) => ({
+        id: p.id,
+        title: p.title?.trim() || "",
+        status: p.status,
+        updatedAt: p.created_at,
+      }));
 
     guardianOps = {
       pendingPosts,
@@ -68,6 +77,7 @@ export async function getMypageHubSnapshot(
       completedBookings,
       openPoolCount,
       points,
+      recentPosts,
     };
 
     const poolSignal = openPoolCount > 0 ? 1 : 0;

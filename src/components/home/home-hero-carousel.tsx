@@ -135,7 +135,7 @@ export function HomeHeroCarousel() {
             >
               <Link
                 href={
-                  heroGuest ? "/guardians" : heroGuardian ? "/guardian/posts" : "/guardians"
+                  heroGuest ? "/guardians" : heroGuardian ? "/mypage/guardian/posts" : "/guardians"
                 }
                 className="gap-2.5"
               >
@@ -159,7 +159,7 @@ export function HomeHeroCarousel() {
             >
               <Link
                 href={
-                  heroGuest ? "/posts" : heroGuardian ? "/guardian/matches" : "/mypage/saved-guardians"
+                  heroGuest ? "/posts" : heroGuardian ? "/mypage/guardian/matches" : "/mypage/saved-guardians"
                 }
                 className="gap-2 whitespace-nowrap"
               >

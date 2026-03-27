@@ -1,13 +1,7 @@
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  mockContentCategories,
-  mockContentPosts,
-  mockRegions,
-  mockTravelerReviews,
-  mockTravelerReviewQuotes,
-} from "@/data/mock";
+import { mockContentCategories, mockContentPosts, mockRegions } from "@/data/mock";
 import {
   getContentPostFormat,
   getPostHeroImageUrl,
@@ -21,9 +15,13 @@ import { TrustBadgesServer } from "@/components/forty-two/trust-badges-server";
 import { GuardianPostsExplorerSheet } from "@/components/guardians/guardian-posts-explorer-sheet";
 import { GuardianRequestOpenTrigger, GuardianRequestSheetHost } from "@/components/guardians/guardian-request-sheet";
 import { GuardianStickyCta } from "@/components/guardians/guardian-sticky-cta";
+import { GuardianTravelerReviewsList } from "@/components/guardians/guardian-traveler-reviews-list";
+import { filterIntroGalleryExcludingHero } from "@/lib/guardian-intro-gallery";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import { GuardianIntroGallery } from "@/components/guardians/guardian-intro-gallery";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import type { GuardianTrustBadgeId, LocalizedCopy } from "@/types/guardian-marketing";
+import type { TravelerReview } from "@/types/domain";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, CheckCircle2, Globe2, MessageCircleHeart, Sparkles, Star, Zap } from "lucide-react";
 
@@ -38,7 +36,13 @@ const TRUST_ICONS: Record<GuardianTrustBadgeId, typeof CheckCircle2> = {
   fast_response: Zap,
 };
 
-export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuardian }) {
+export async function GuardianDetailView({
+  guardian: g,
+  mergedReviews,
+}: {
+  guardian: PublicGuardian;
+  mergedReviews: TravelerReview[];
+}) {
   const t = await getTranslations("GuardianDetail");
   const tReq = await getTranslations("GuardianRequest");
   const tLaunch = await getTranslations("LaunchAreas");
@@ -61,10 +65,19 @@ export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuar
     imageUrl: getPostHeroImageUrl(p),
   }));
 
-  const reviews = mockTravelerReviews.filter((r) => r.guardian_user_id === g.user_id);
+  const reviews = mergedReviews;
+  const displayCount = reviews.length > 0 ? reviews.length : g.review_count_display;
+  const displayAvg =
+    reviews.length > 0
+      ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+      : g.avg_traveler_rating;
+  const showHeroReviews = displayAvg != null && displayCount > 0;
+  const listAvg =
+    reviews.length > 0 ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10 : 0;
   const areaName = (tLaunch.raw(g.launch_area_slug) as { name: string }).name;
 
   const imgs = guardianProfileImageUrls(g);
+  const introGalleryUrls = filterIntroGalleryExcludingHero(imgs.landscape, g.intro_gallery_image_urls);
   const sheetRegion = mockRegions.some((r) => r.slug === g.primary_region_slug) ? g.primary_region_slug : null;
 
   const heroOneLiner = line(g.short_bio ?? g.positioning);
@@ -125,24 +138,13 @@ export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuar
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-base">
                   {heroOneLiner}
                 </p>
-                {g.avg_traveler_rating != null ? (
+                {showHeroReviews ? (
                   <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:mt-3">
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-black/30 px-2.5 py-1 text-sm text-white shadow-inner backdrop-blur-sm">
                       <Star className="size-4 shrink-0 fill-amber-300 text-amber-200 drop-shadow-sm" aria-hidden />
-                      <span className="font-semibold tabular-nums drop-shadow-sm">{g.avg_traveler_rating.toFixed(1)}</span>
-                      <span className="text-white/75 text-xs font-medium drop-shadow-sm">
-                        ({g.review_count_display})
-                      </span>
+                      <span className="font-semibold tabular-nums drop-shadow-sm">{displayAvg!.toFixed(1)}</span>
+                      <span className="text-white/75 text-xs font-medium drop-shadow-sm">({displayCount})</span>
                     </span>
-                    <a
-                      href="#guardian-traveler-reviews"
-                      className="text-xs font-medium text-white/80 underline-offset-4 transition-colors drop-shadow-sm hover:text-white hover:underline"
-                    >
-                      {t("heroReviewsLink")}
-                    </a>
-                  </div>
-                ) : reviews.length > 0 ? (
-                  <div className="mt-3 sm:mt-3">
                     <a
                       href="#guardian-traveler-reviews"
                       className="text-xs font-medium text-white/80 underline-offset-4 transition-colors drop-shadow-sm hover:text-white hover:underline"
@@ -187,6 +189,13 @@ export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuar
             </p>
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed">{line(g.response_note)}</p>
           </section>
+
+          <GuardianIntroGallery
+            displayName={g.display_name}
+            urls={introGalleryUrls}
+            title={t("introGalleryTitle")}
+            lead={t("introGalleryLead")}
+          />
 
           <section>
             <h2 className="text-text-strong text-lg font-semibold">{t("expertiseTitle")}</h2>
@@ -339,34 +348,16 @@ export async function GuardianDetailView({ guardian: g }: { guardian: PublicGuar
             </ul>
           </section>
 
-          <section
-            id="guardian-traveler-reviews"
-            className="scroll-mt-[4.75rem] sm:scroll-mt-[5.5rem]"
-            aria-labelledby="guardian-traveler-reviews-heading"
-          >
-            <h2 id="guardian-traveler-reviews-heading" className="text-text-strong text-lg font-semibold">
-              {t("reviewsTitle")}
-            </h2>
-            <p className="text-muted-foreground mt-2 text-sm">{t("reviewSample")}</p>
-            <div className="mt-4 space-y-3">
-              {reviews.map((r) => {
-                const q = mockTravelerReviewQuotes[r.id];
-                const text = q ? (isKo ? q.ko : q.en) : r.comment ?? "";
-                return (
-                  <Card key={r.id} className="rounded-2xl border-border/60">
-                    <CardContent className="p-5">
-                      <div className="flex gap-1 text-amber-500">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={i < r.rating ? "size-4 fill-current" : "size-4"} aria-hidden />
-                        ))}
-                      </div>
-                      <p className="text-foreground mt-3 text-sm leading-relaxed">&ldquo;{text}&rdquo;</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </section>
+          <GuardianTravelerReviewsList
+            reviews={reviews}
+            locale={locale}
+            avg={listAvg}
+            sectionTitle={t("reviewsTitle")}
+            lead={t("reviewsLead")}
+            avgAria={t("reviewsAvgAria", { avg: listAvg.toFixed(1) })}
+            showMore={t("reviewsShowMore")}
+            showLess={t("reviewsShowLess")}
+          />
         </div>
 
         <aside className="lg:col-span-5">

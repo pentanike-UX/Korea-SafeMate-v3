@@ -1,17 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { mockContentPosts, mockExperienceThemes, mockLaunchAreas } from "@/data/mock";
+import { mockContentPosts, mockExperienceThemes } from "@/data/mock";
 import { listLaunchReadyGuardians, type PublicGuardian } from "@/lib/guardian-public";
 import type { ContentPost } from "@/types/domain";
 import type { LaunchAreaSlug } from "@/types/launch-area";
+import { isLaunchAreaSelectable } from "@/lib/launch-area-selectable";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ExploreJourneySummaryBar } from "@/components/explore/explore-journey-summary-bar";
+import { ExploreRegionStep } from "@/components/explore/explore-region-step";
+import { ExploreThemeStep } from "@/components/explore/explore-theme-step";
 import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 import {
   companionSlugsForStyle,
@@ -34,8 +35,6 @@ type Pace = "calm" | "balanced" | "packed";
 
 export function ExploreJourneyClient() {
   const t = useTranslations("ExploreJourney");
-  const tLaunch = useTranslations("LaunchAreas");
-  const tThemes = useTranslations("ExperienceThemes");
   const tG = useTranslations("GuardiansDiscover");
   const locale = useLocale();
   const isKo = locale === "ko";
@@ -65,7 +64,7 @@ export function ExploreJourneyClient() {
   useEffect(() => {
     const a = searchParams.get("area");
     const th = searchParams.get("theme");
-    const validArea = Boolean(a && mockLaunchAreas.some((x) => x.slug === a && x.active));
+    const validArea = Boolean(a && isLaunchAreaSelectable(a as LaunchAreaSlug));
     const validTheme = Boolean(th && mockExperienceThemes.some((x) => x.slug === th));
 
     if (validArea && a) setRegion(a as LaunchAreaSlug);
@@ -198,22 +197,6 @@ export function ExploreJourneyClient() {
           showMobileStickyCta && "pb-28 sm:pb-10",
         )}
       >
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
-          <Button asChild variant="outline" size="sm" className="rounded-full">
-            <Link href="/guardians">{t("btnGuardiansFirst")}</Link>
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="rounded-full"
-            onClick={() => {
-              setEnteredExploreViaPreset(false);
-              setStep(0);
-            }}
-          >
-            {t("btnStart")}
-          </Button>
-        </div>
         <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
           {Array.from({ length: STEPS }).map((_, i) => (
             <button
@@ -237,99 +220,29 @@ export function ExploreJourneyClient() {
           ))}
         </div>
 
-        {step >= 2 && region && theme ? (
-          <div className="border-primary/20 bg-primary/5 mb-8 rounded-2xl border px-4 py-3 sm:px-5">
-            <p className="text-muted-foreground text-[11px] font-medium sm:text-xs">
-              {enteredExploreViaPreset ? t("presetFromHome") : t("summaryLabel")}
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="rounded-full px-3 py-1 font-medium">
-                {(tLaunch.raw(region) as { name: string }).name}
-              </Badge>
-              <Badge variant="secondary" className="rounded-full px-3 py-1 font-medium">
-                {(tThemes.raw(theme) as { title: string }).title}
-              </Badge>
-              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => setStep(0)}>
-                {t("editAreaTheme")}
-              </Button>
-            </div>
-          </div>
+        {enteredExploreViaPreset && step >= 2 && region && theme ? (
+          <p className="text-muted-foreground mb-2 text-center text-[11px] font-medium">{t("presetFromHome")}</p>
         ) : null}
 
-        {step === 0 && (
-          <div className="space-y-6 animate-in fade-in duration-300">
-            <h2 className="text-text-strong text-xl font-semibold">{t("stepRegion")}</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {mockLaunchAreas.map((a) => {
-                const copy = tLaunch.raw(a.slug) as {
-                  name: string;
-                  blurb: string;
-                  landmark: string;
-                  imageAlt: string;
-                };
-                const selected = region === a.slug;
-                return (
-                  <button
-                    key={a.slug}
-                    type="button"
-                    onClick={() => setRegion(a.slug)}
-                    className={cn(
-                      "border-border/80 relative flex flex-col overflow-hidden rounded-2xl border text-left shadow-[var(--shadow-sm)] transition-all",
-                      selected ? "border-primary ring-primary/25 ring-2" : "hover:border-primary/30",
-                    )}
-                  >
-                    <div className="relative aspect-[16/9]">
-                      <Image src={a.imageUrl} alt={copy.imageAlt} fill className="object-cover" sizes="400px" />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
-                      <div className="absolute right-2 bottom-2 left-2">
-                        <p className="line-clamp-2 text-left text-xs font-semibold text-white drop-shadow-sm">
-                          {copy.landmark}
-                        </p>
-                      </div>
-                      {!a.active ? (
-                        <span className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
-                          Soon
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="p-4">
-                      <p className="font-semibold">{copy.name}</p>
-                      <p className="text-primary mt-0.5 text-xs font-medium">{copy.landmark}</p>
-                      <p className="text-muted-foreground mt-1 text-sm">{copy.blurb}</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <ExploreJourneySummaryBar
+          step={step}
+          region={region}
+          theme={theme}
+          days={days}
+          partySize={partySize}
+          pace={pace}
+          langPref={langPref}
+          tripWhenPreset={tripWhenPreset}
+          sceneMoods={sceneMoods}
+          guardianStylePrefs={guardianStylePrefs}
+          workTokens={workTokens}
+          artistTokens={artistTokens}
+          onEditBasics={step >= 2 ? () => setStep(0) : undefined}
+        />
 
-        {step === 1 && (
-          <div className="space-y-6 animate-in fade-in duration-300">
-            <h2 className="text-text-strong text-xl font-semibold">{t("stepTheme")}</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {mockExperienceThemes.map((th) => {
-                const copy = tThemes.raw(th.slug) as { title: string; subtitle: string };
-                const selected = theme === th.slug;
-                return (
-                  <button
-                    key={th.slug}
-                    type="button"
-                    onClick={() => setTheme(th.slug)}
-                    className={cn(
-                      "rounded-2xl border p-4 text-left transition-all",
-                      selected ? "border-primary bg-primary/5 ring-primary/20 ring-2" : "border-border/80 hover:border-primary/25",
-                    )}
-                  >
-                    <div className="mb-3 h-1.5 w-full rounded-full" style={{ background: th.gradient }} />
-                    <p className="font-semibold">{copy.title}</p>
-                    <p className="text-muted-foreground mt-1 text-sm">{copy.subtitle}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {step === 0 ? <ExploreRegionStep value={region} onChange={(slug) => setRegion(slug)} /> : null}
+
+        {step === 1 ? <ExploreThemeStep value={theme} onChange={setTheme} /> : null}
 
         {step === 2 ? (
           <ExploreTripSetupStep
@@ -423,7 +336,9 @@ export function ExploreJourneyClient() {
               <Button
                 type="button"
                 className="rounded-xl max-sm:hidden"
-                disabled={step === 0 && !region}
+                disabled={
+                  (step === 0 && !isLaunchAreaSelectable(region)) || (step === 1 && !theme)
+                }
                 onClick={() => setStep((s) => s + 1)}
               >
                 {t("next")}

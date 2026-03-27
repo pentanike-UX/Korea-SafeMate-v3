@@ -27,7 +27,6 @@ export { GUARDIAN_SEED_USE_LOCAL_POST_COVERS } from "./guardian-seed-types";
 export { mockGuardianMarketingById } from "./guardian-marketing";
 export { mockExperienceThemes } from "./experience-themes";
 export { mockLaunchAreas } from "./launch-areas";
-export { mockTravelerReviewQuotes } from "./traveler-review-display";
 export {
   mockTravelerSavedGuardianIds,
   mockTravelerSavedPostIds,
@@ -35,4 +34,4 @@ export {
 } from "./traveler-hub";
 export { mockRegions } from "./regions";
 export { mockServiceTypes } from "./service-types";
-export { mockTravelerReviews } from "./traveler-reviews";
+export { mockTravelerReviews, mockTravelerReviewsHomeSpotlight } from "./traveler-reviews";

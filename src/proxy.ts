@@ -185,6 +185,39 @@ export default async function proxy(request: NextRequest) {
   const intlResponse = intlMiddleware(request);
   const ctx = await loadAccessContext(request, intlResponse);
 
+  if (pathWo.startsWith("/mypage/guardian")) {
+    if (!ctx.user) {
+      return redirectWithSession(
+        request,
+        intlResponse,
+        loginPathWithNext(request.nextUrl.pathname, request.nextUrl.search, locale),
+      );
+    }
+    if (isPrivilegedAppRole(ctx.appRole ?? undefined)) {
+      return redirectWithSession(request, intlResponse, "/admin/dashboard");
+    }
+    const canUseGuardianAuthoring = ctx.appRole === "guardian" || ctx.guardianStatus === "approved";
+    const isMypageGuardianProfilePath =
+      pathWo === "/mypage/guardian/profile" || pathWo.startsWith("/mypage/guardian/profile/");
+    if (!canUseGuardianAuthoring && !isMypageGuardianProfilePath) {
+      return redirectWithSession(request, intlResponse, withLocalePath(locale, "/guardians/apply"));
+    }
+    if (guardianPathRequiresApproved(pathWo)) {
+      if (ctx.guardianStatus !== "approved") {
+        const fallback =
+          ctx.guardianStatus === "rejected" || ctx.guardianStatus === "suspended"
+            ? withLocalePath(locale, "/guardian/profile")
+            : withLocalePath(locale, "/guardian");
+        return redirectWithSession(request, intlResponse, fallback);
+      }
+    } else if (!guardianPathIsAlwaysAllowed(pathWo)) {
+      if (ctx.guardianStatus !== "approved") {
+        return redirectWithSession(request, intlResponse, withLocalePath(locale, "/guardian"));
+      }
+    }
+    return intlResponse;
+  }
+
   if (isGuardianContributorPath(pathWo)) {
     if (!ctx.user) {
       return redirectWithSession(

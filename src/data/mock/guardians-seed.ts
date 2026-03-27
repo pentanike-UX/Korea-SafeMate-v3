@@ -407,7 +407,7 @@ export const GUARDIAN_SEED_ROWS: readonly GuardianSeedRow[] = [
     seed_points_available: 2680,
     featured: true,
     matching_enabled: true,
-    avg_traveler_rating: 4.95,
+    avg_traveler_rating: 4.9,
     expertise_tags: ["동행", "큐레이션", "전시", "쇼핑"],
     posts_approved_last_30d: 15,
     posts_approved_last_7d: 5,

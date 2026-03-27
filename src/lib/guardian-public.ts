@@ -4,6 +4,8 @@ import type { LaunchAreaSlug } from "@/types/launch-area";
 import { defaultMarketingFromGuardian } from "@/lib/dev/mock-guardian-auth";
 import { mockGuardianMarketingById } from "@/data/mock/guardian-marketing";
 import { mockGuardians } from "@/data/mock/guardians";
+import { mockTravelerReviews } from "@/data/mock/traveler-reviews";
+import { getIntroGalleriesSeedMap } from "@/lib/guardian-intro-gallery";
 
 export type PublicGuardian = GuardianProfile & GuardianMarketingProfile;
 
@@ -13,8 +15,18 @@ export function getGuardianMarketing(userId: string): GuardianMarketingProfile |
 
 export function mergePublicGuardian(g: GuardianProfile): PublicGuardian {
   const m = getGuardianMarketing(g.user_id);
-  if (m) return { ...g, ...m };
-  return { ...g, ...defaultMarketingFromGuardian(g) };
+  const fileIntro = getIntroGalleriesSeedMap()[g.user_id];
+  const dbIntro = (g.intro_gallery_image_urls ?? []).map((u) => u.trim()).filter(Boolean);
+  const fileList = Array.isArray(fileIntro) ? fileIntro.map((u) => u.trim()).filter(Boolean) : [];
+  const introGallery = dbIntro.length > 0 ? dbIntro : fileList;
+  const base: PublicGuardian = m
+    ? { ...g, ...m, intro_gallery_image_urls: introGallery }
+    : { ...g, ...defaultMarketingFromGuardian(g), intro_gallery_image_urls: introGallery };
+  const rows = mockTravelerReviews.filter((r) => r.guardian_user_id === g.user_id);
+  if (rows.length === 0) return base;
+  const sum = rows.reduce((s, r) => s + r.rating, 0);
+  const avg = Math.round((sum / rows.length) * 10) / 10;
+  return { ...base, review_count_display: rows.length, avg_traveler_rating: avg };
 }
 
 export function listPublicGuardians(): PublicGuardian[] {

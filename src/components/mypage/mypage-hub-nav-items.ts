@@ -1,5 +1,15 @@
 import type { LucideIcon } from "lucide-react";
-import { Coins, FileText, Heart, LayoutDashboard, Plane, Settings, Users } from "lucide-react";
+import {
+  Coins,
+  FolderOpen,
+  HeartHandshake,
+  Images,
+  LayoutDashboard,
+  PenSquare,
+  Plane,
+  Settings,
+  Users,
+} from "lucide-react";
 
 export type HubNavLabelKey =
   | "navOverview"
@@ -49,25 +59,37 @@ export const TRAVELER_HUB_NAV: HubNavItem[] = [
 ];
 
 function guardianProfileMatch(p: string) {
-  return p.startsWith("/guardian/profile");
+  return p.startsWith("/mypage/guardian/profile");
 }
 
 function guardianPostsMatch(p: string) {
-  return p.startsWith("/guardian/posts");
+  return p.startsWith("/mypage/guardian/posts");
 }
 
 function guardianMatchesMatch(p: string) {
-  return p === "/guardian/matches" || p.startsWith("/guardian/matches/");
+  return p.startsWith("/mypage/guardian/matches");
 }
 
-/** 승인된 가디언: 공통 여행자 허브 + 가디언 운영 링크 */
-export const GUARDIAN_APPROVED_HUB_NAV: HubNavItem[] = [
-  ...TRAVELER_HUB_NAV,
-  { href: "/guardian/profile/edit", labelKey: "guardianNavProfile", Icon: Users, match: guardianProfileMatch },
-  { href: "/guardian/posts/new", labelKey: "guardianNavNewPost", Icon: FileText, match: (p) => p.startsWith("/guardian/posts/new") },
-  { href: "/guardian/posts", labelKey: "guardianNavPosts", Icon: FileText, match: (p) => guardianPostsMatch(p) && !p.startsWith("/guardian/posts/new") },
-  { href: "/guardian/matches", labelKey: "guardianNavMatches", Icon: Heart, match: guardianMatchesMatch },
+/** 가디언 운영 전용 — 마이페이지 허브 안에서만 이동 */
+export const GUARDIAN_WORKSPACE_NAV: HubNavItem[] = [
+  { href: "/mypage/guardian/profile/edit", labelKey: "guardianNavProfile", Icon: Images, match: guardianProfileMatch },
+  {
+    href: "/mypage/guardian/posts/new",
+    labelKey: "guardianNavNewPost",
+    Icon: PenSquare,
+    match: (p) => p.startsWith("/mypage/guardian/posts/new"),
+  },
+  {
+    href: "/mypage/guardian/posts",
+    labelKey: "guardianNavPosts",
+    Icon: FolderOpen,
+    match: (p) => guardianPostsMatch(p) && !p.startsWith("/mypage/guardian/posts/new"),
+  },
+  { href: "/mypage/guardian/matches", labelKey: "guardianNavMatches", Icon: HeartHandshake, match: guardianMatchesMatch },
 ];
+
+/** 승인된 가디언: 공통 여행자 허브 + 가디언 운영 링크 */
+export const GUARDIAN_APPROVED_HUB_NAV: HubNavItem[] = [...TRAVELER_HUB_NAV, ...GUARDIAN_WORKSPACE_NAV];
 
 export function resolveActiveNavLabel(pathname: string, items: HubNavItem[]): HubNavItem | null {
   const hit = items.find((i) => i.match(pathname));

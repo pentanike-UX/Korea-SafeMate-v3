@@ -31,7 +31,7 @@ export default function GuardianHubPage() {
               <Link href="/guardian/profile">View profile</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/guardian/profile/edit">Edit</Link>
+              <Link href="/mypage/guardian/profile/edit">Edit</Link>
             </Button>
           </CardContent>
         </Card>
@@ -44,7 +44,7 @@ export default function GuardianHubPage() {
           </CardHeader>
           <CardContent>
             <Button asChild className="rounded-xl font-semibold">
-              <Link href="/guardian/posts">Open posts</Link>
+              <Link href="/mypage/guardian/posts">Open posts</Link>
             </Button>
           </CardContent>
         </Card>
@@ -57,7 +57,7 @@ export default function GuardianHubPage() {
           </CardHeader>
           <CardContent>
             <Button asChild variant="secondary" className="rounded-xl font-semibold">
-              <Link href="/guardian/matches">Open matches</Link>
+              <Link href="/mypage/guardian/matches">Open matches</Link>
             </Button>
           </CardContent>
         </Card>

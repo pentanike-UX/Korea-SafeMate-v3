@@ -20,8 +20,8 @@ export function HomeDualCtaSection() {
   const guardian = viewer === "guardian";
   const traveler = viewer !== null && viewer !== undefined && !guardian;
 
-  const leftPrimaryHref = guest ? "/guardians" : guardian ? "/guardian/posts" : "/guardians";
-  const leftSecondaryHref = guest ? "/posts" : guardian ? "/guardian/matches" : "/mypage/saved-guardians";
+  const leftPrimaryHref = guest ? "/guardians" : guardian ? "/mypage/guardian/posts" : "/guardians";
+  const leftSecondaryHref = guest ? "/posts" : guardian ? "/mypage/guardian/matches" : "/mypage/saved-guardians";
   const leftPrimaryLabel = guest ? t("dualCtaTravelerPrimary") : guardian ? t("dualPolicyGuardianPrimary") : t("dualPolicyTravelerPrimary");
   const leftSecondaryLabel = guest
     ? t("dualPolicyGuestSecondary")

@@ -24,6 +24,8 @@ export function guardianStatusFromRow(
 export function guardianPathRequiresApproved(pathWithoutLocale: string): boolean {
   if (pathWithoutLocale === "/guardian/posts" || pathWithoutLocale.startsWith("/guardian/posts/")) return true;
   if (pathWithoutLocale === "/guardian/matches" || pathWithoutLocale.startsWith("/guardian/matches/")) return true;
+  if (pathWithoutLocale === "/mypage/guardian/posts" || pathWithoutLocale.startsWith("/mypage/guardian/posts/")) return true;
+  if (pathWithoutLocale === "/mypage/guardian/matches" || pathWithoutLocale.startsWith("/mypage/guardian/matches/")) return true;
   return false;
 }
 
@@ -31,6 +33,7 @@ export function guardianPathIsAlwaysAllowed(pathWithoutLocale: string): boolean 
   if (pathWithoutLocale === "/guardian" || pathWithoutLocale === "/guardian/") return true;
   if (pathWithoutLocale === "/guardian/profile" || pathWithoutLocale.startsWith("/guardian/profile/")) return true;
   if (pathWithoutLocale === "/guardian/onboarding" || pathWithoutLocale.startsWith("/guardian/onboarding/")) return true;
+  if (pathWithoutLocale === "/mypage/guardian/profile" || pathWithoutLocale.startsWith("/mypage/guardian/profile/")) return true;
   // Mock / preview dashboard — allowed before approval for internal demos (`?as=`).
   if (pathWithoutLocale === "/guardian/dashboard" || pathWithoutLocale.startsWith("/guardian/dashboard/")) return true;
   return false;

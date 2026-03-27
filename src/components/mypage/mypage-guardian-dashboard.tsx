@@ -1,19 +1,31 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
+import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import { useMypageHubContext } from "@/components/mypage/mypage-hub-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink, FileText, Heart, Pencil, Shield, Wallet } from "lucide-react";
 
+function formatPostUpdated(iso: string, locale: string) {
+  try {
+    const tag = locale === "ko" ? "ko-KR" : locale === "ja" ? "ja-JP" : "en-US";
+    return new Date(iso).toLocaleDateString(tag, { month: "short", day: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
 export function MypageGuardianDashboard({ status }: { status: GuardianProfileStatus }) {
   const t = useTranslations("TravelerHub");
+  const locale = useLocale();
   const hub = useMypageHubContext();
   const ops = hub?.snapshot.guardianOps;
   const uid = hub?.accountUserId;
+  const recentPosts = ops?.recentPosts ?? [];
 
   const primaryCta = (href: string, label: string) => (
     <Button asChild size="lg" className="mt-4 h-12 w-full max-w-sm rounded-[var(--radius-md)] font-semibold sm:w-auto">
@@ -157,21 +169,21 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
               <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineNew")}</p>
               <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{reviewingBookings}</p>
               <Button asChild variant="link" className="mt-1 h-auto px-0 text-sm font-semibold">
-                <Link href="/guardian/matches">{t("guardianDashPipelineCta")}</Link>
+                <Link href={GUARDIAN_WORKSPACE.matches}>{t("guardianDashPipelineCta")}</Link>
               </Button>
             </div>
             <div className="border-border/60 rounded-xl border bg-card/80 px-4 py-4">
               <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineActive")}</p>
               <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{inProgressBookings}</p>
               <Button asChild variant="link" className="mt-1 h-auto px-0 text-sm font-semibold">
-                <Link href="/guardian/matches">{t("guardianDashPipelineCta")}</Link>
+                <Link href={GUARDIAN_WORKSPACE.matches}>{t("guardianDashPipelineCta")}</Link>
               </Button>
             </div>
             <div className="border-border/60 rounded-xl border bg-card/80 px-4 py-4">
               <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineDone")}</p>
               <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{completedBookings}</p>
               <Button asChild variant="link" className="mt-1 h-auto px-0 text-sm font-semibold">
-                <Link href="/guardian/matches">{t("guardianDashPipelineCta")}</Link>
+                <Link href={GUARDIAN_WORKSPACE.matches}>{t("guardianDashPipelineCta")}</Link>
               </Button>
             </div>
           </CardContent>
@@ -183,13 +195,13 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
           </CardHeader>
           <CardContent className="grid gap-2 sm:grid-cols-2">
             <Button asChild variant="default" className="h-12 justify-start gap-2 rounded-[var(--radius-md)] font-semibold">
-              <Link href="/guardian/posts/new">
+              <Link href={GUARDIAN_WORKSPACE.postsNew}>
                 <FileText className="size-4" aria-hidden />
                 {t("guardianDashActionNewPost")}
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-12 justify-start gap-2 rounded-[var(--radius-md)] font-semibold">
-              <Link href="/guardian/matches">
+              <Link href={GUARDIAN_WORKSPACE.matches}>
                 <Heart className="size-4" aria-hidden />
                 {t("guardianDashActionMatches")}
               </Link>
@@ -201,7 +213,7 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-12 justify-start gap-2 rounded-[var(--radius-md)] font-semibold">
-              <Link href="/guardian/profile/edit">
+              <Link href={GUARDIAN_WORKSPACE.profileEdit}>
                 <Pencil className="size-4" aria-hidden />
                 {t("guardianDashActionEditProfile")}
               </Link>
@@ -212,9 +224,37 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
         <Card className="rounded-2xl border-border/60 border-dashed bg-muted/15 shadow-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-muted-foreground text-base font-medium">{t("guardianDashRecentTitle")}</CardTitle>
+            <p className="text-muted-foreground text-sm font-normal">{t("guardianDashRecentLead")}</p>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">{t("guardianDashRecentEmpty")}</p>
+          <CardContent className="space-y-4">
+            {recentPosts.length === 0 ? (
+              <p className="text-muted-foreground text-sm">{t("guardianDashRecentEmpty")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {recentPosts.map((p) => (
+                  <li
+                    key={p.id}
+                    className="border-border/50 flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-card/60 px-3 py-2.5"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary" className="rounded-full text-[10px] font-semibold capitalize">
+                          {p.status}
+                        </Badge>
+                        <span className="text-muted-foreground text-xs">{formatPostUpdated(p.updatedAt, locale)}</span>
+                      </div>
+                      <p className="text-foreground mt-1 truncate text-sm font-medium">{p.title || t("guardianDashRecentUntitled")}</p>
+                    </div>
+                    <Button asChild size="sm" variant="outline" className="shrink-0 rounded-lg text-xs font-semibold">
+                      <Link href={GUARDIAN_WORKSPACE.postEdit(p.id)}>{t("guardianDashRecentEdit")}</Link>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Button asChild variant="link" className="h-auto px-0 text-sm font-semibold">
+              <Link href={GUARDIAN_WORKSPACE.posts}>{t("guardianDashRecentViewAll")}</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>

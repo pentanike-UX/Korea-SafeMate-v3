@@ -147,6 +147,7 @@ create table public.guardian_profiles (
   avatar_image_url text,
   list_card_image_url text,
   detail_hero_image_url text,
+  intro_gallery_image_urls text[] not null default '{}',
   posts_approved_last_30d int not null default 0,
   posts_approved_last_7d int not null default 0,
   featured boolean not null default false,

@@ -47,7 +47,7 @@ export default async function GuardianProfilePage() {
           <p className="text-foreground text-lg font-semibold">{display}</p>
           <div className="flex flex-wrap gap-2">
             <Button asChild className="rounded-xl font-semibold">
-              <Link href="/guardian/profile/edit">{t("manageImages")}</Link>
+              <Link href="/mypage/guardian/profile/edit">{t("manageImages")}</Link>
             </Button>
             <Button asChild variant="secondary" className="rounded-xl">
               <Link href="/guardian">{t("backToGuardianHub")}</Link>

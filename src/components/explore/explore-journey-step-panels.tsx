@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { TrustBadgeRow } from "@/components/forty-two/trust-badges";
+import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
@@ -624,6 +625,21 @@ export function ExploreResultsDashboard(props: {
     tThemes,
   ]);
 
+  const regionName = region ? (tLaunch.raw(region) as { name: string }).name : "";
+  const themeTitle = theme ? (tThemes.raw(theme) as { title: string }).title : "";
+
+  function matchLineFor(g: PublicGuardian) {
+    const langs =
+      g.languages?.length > 0
+        ? g.languages
+            .map((l) => l.language_code.toUpperCase())
+            .filter(Boolean)
+            .slice(0, 4)
+            .join(" · ")
+        : "—";
+    return t("dashCardMatchLine", { area: regionName || "—", theme: themeTitle || "—", langs });
+  }
+
   return (
     <div className="animate-in fade-in space-y-8 duration-300">
       <div>
@@ -643,6 +659,14 @@ export function ExploreResultsDashboard(props: {
         </Card>
       ) : (
         <>
+          {results.guardians.length > 0 ? (
+            <div className="border-primary/25 from-primary/[0.07] rounded-[1.5rem] border-2 bg-gradient-to-br to-card px-5 py-6 text-center shadow-[var(--shadow-md)] sm:px-8 sm:text-left">
+              <p className="text-primary text-[11px] font-bold tracking-[0.2em] uppercase">{t("dashFinalEyebrow")}</p>
+              <p className="text-text-strong mt-2 text-2xl font-bold tabular-nums sm:text-3xl">{t("dashResultCount", { count: results.guardians.length })}</p>
+              <p className="text-muted-foreground mt-2 max-w-xl text-sm leading-relaxed">{t("dashFinalLead")}</p>
+            </div>
+          ) : null}
+
           {/* Summary */}
           <Card className="from-primary/[0.06] border-primary/15 rounded-[1.35rem] border bg-gradient-to-br to-transparent shadow-[var(--shadow-sm)]">
             <CardContent className="p-5 sm:p-6">
@@ -755,27 +779,33 @@ export function ExploreResultsDashboard(props: {
               {/* Featured */}
               {featured ? (
                 <section className="space-y-3">
-                  <h3 className="text-foreground font-semibold">{t("dashFeaturedTitle")}</h3>
-                  <Card className="border-primary/25 from-primary/[0.07] overflow-hidden rounded-[1.35rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-md)]">
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <h3 className="text-foreground text-lg font-semibold">{t("dashFeaturedTitle")}</h3>
+                    <p className="text-muted-foreground text-xs font-medium">{t("dashTopPickHint")}</p>
+                  </div>
+                  <Card className="border-primary/35 from-primary/[0.09] ring-primary/15 overflow-hidden rounded-[1.5rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-lg)] ring-2">
                     <CardContent className="p-0">
                       <div className="flex flex-col lg:flex-row">
-                        <div className="relative aspect-[5/4] w-full lg:aspect-auto lg:max-w-[280px] lg:min-h-[240px]">
+                        <div className="relative aspect-[5/4] w-full lg:aspect-auto lg:max-w-[300px] lg:min-h-[260px]">
                           <Image
                             src={guardianProfileImageUrls(featured).landscape}
                             alt=""
                             fill
                             className={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
-                            sizes="(max-width:1024px) 100vw, 280px"
+                            sizes="(max-width:1024px) 100vw, 300px"
                           />
-                          <div className="absolute top-3 left-3">
+                          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                            <Badge className="rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
+                              {t("dashRankBadge")}
+                            </Badge>
                             <Badge className="rounded-full bg-card/95 text-[10px] font-bold text-[var(--brand-primary)] shadow-sm backdrop-blur-sm">
                               {t("dashMatchBadge")}
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex flex-1 flex-col justify-center gap-4 p-5 sm:p-6">
+                        <div className="flex flex-1 flex-col justify-center gap-4 p-5 sm:p-7">
                           <div>
-                            <span className="text-lg font-semibold">{featured.display_name}</span>
+                            <span className="text-xl font-bold tracking-tight">{featured.display_name}</span>
                             <div className="mt-1.5 flex flex-wrap items-center gap-2">
                               <Badge
                                 variant={guardianTierBadgeVariant(featured.guardian_tier)}
@@ -783,16 +813,21 @@ export function ExploreResultsDashboard(props: {
                               >
                                 {tTier(featured.guardian_tier)}
                               </Badge>
+                              <Badge variant="outline" className="rounded-full text-[10px] font-medium">
+                                {(tLaunch.raw(featured.launch_area_slug) as { name: string }).name}
+                              </Badge>
                             </div>
+                            <p className="text-primary mt-3 text-sm font-semibold leading-snug">{matchLineFor(featured)}</p>
                             <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">{onPos(featured)}</p>
                             <TrustBadgeRow ids={featured.trust_badge_ids} className="mt-3" size="sm" />
                           </div>
-                          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                            <Button asChild className="h-11 w-full rounded-xl font-semibold sm:w-auto sm:min-w-[8rem]">
-                              <Link href={`/guardians/${featured.user_id}`}>{tG("cardCtaPrimary")}</Link>
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                            <Button asChild className="h-12 w-full rounded-xl text-base font-semibold shadow-[var(--shadow-brand)]">
+                              <Link href={`/guardians/${featured.user_id}`}>{t("dashCtaDetail")}</Link>
                             </Button>
-                            <Button asChild variant="outline" className="h-11 w-full rounded-xl sm:w-auto sm:min-w-[8rem]">
-                              <Link href={`/book?guardian=${featured.user_id}`}>{tG("cardCtaSecondary")}</Link>
+                            <SaveGuardianButton guardianUserId={featured.user_id} compact />
+                            <Button asChild className="h-12 w-full rounded-xl text-base font-semibold">
+                              <Link href={`/book?guardian=${featured.user_id}`}>{t("dashCtaRequest")}</Link>
                             </Button>
                           </div>
                         </div>
@@ -808,16 +843,16 @@ export function ExploreResultsDashboard(props: {
                   <h3 className="text-foreground font-semibold">{t("dashMoreGuardians")}</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {more.map((g) => (
-                      <Card key={g.user_id} className="overflow-hidden rounded-2xl py-0 shadow-[var(--shadow-sm)]">
-                        <CardContent className="p-4">
+                      <Card key={g.user_id} className="overflow-hidden rounded-2xl border-border/70 py-0 shadow-[var(--shadow-sm)]">
+                        <CardContent className="p-4 sm:p-5">
                           <div className="flex gap-4">
-                            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+                            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl sm:size-24">
                               <Image
                                 src={guardianProfileImageUrls(g).avatar}
                                 alt=""
                                 fill
                                 className={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
-                                sizes="80px"
+                                sizes="96px"
                               />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -830,10 +865,16 @@ export function ExploreResultsDashboard(props: {
                                   {tTier(g.guardian_tier)}
                                 </Badge>
                               </div>
+                              <p className="text-primary mt-2 line-clamp-2 text-[11px] font-semibold leading-snug">{matchLineFor(g)}</p>
                               <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">{onPos(g)}</p>
-                              <div className="mt-3">
-                                <Button asChild size="sm" variant="secondary" className="h-9 w-full rounded-lg text-xs sm:w-auto">
-                                  <Link href={`/guardians/${g.user_id}`}>{tG("cardCtaPrimary")}</Link>
+                              <TrustBadgeRow ids={g.trust_badge_ids} className="mt-2" size="sm" />
+                              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                                <Button asChild size="sm" variant="default" className="h-10 w-full rounded-xl text-xs font-semibold">
+                                  <Link href={`/guardians/${g.user_id}`}>{t("dashCtaDetail")}</Link>
+                                </Button>
+                                <SaveGuardianButton guardianUserId={g.user_id} compact />
+                                <Button asChild size="sm" variant="outline" className="h-10 w-full rounded-xl text-xs font-semibold">
+                                  <Link href={`/book?guardian=${g.user_id}`}>{t("dashCtaRequest")}</Link>
                                 </Button>
                               </div>
                             </div>

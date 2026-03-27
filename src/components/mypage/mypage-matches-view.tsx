@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MypageMatchesEmpty } from "@/components/mypage/mypage-matches-empty";
-import { TravelerMatchCompleteButton } from "@/components/mypage/match-request-row-actions";
+import { MypageMatchRowActions } from "@/components/mypage/mypage-match-row-actions";
 
 function statusVariant(s: StoredMatchRequest["status"]): "default" | "secondary" | "outline" {
   if (s === "completed") return "secondary";
@@ -18,10 +18,12 @@ export async function MypageMatchesView({
   appRole,
   items,
   hasTravelerSession,
+  reviewedMatchIds = [],
 }: {
   appRole: AppAccountRole;
   items: StoredMatchRequest[];
   hasTravelerSession: boolean;
+  reviewedMatchIds?: string[];
 }) {
   const t = await getTranslations("TravelerHub");
 
@@ -41,7 +43,7 @@ export async function MypageMatchesView({
             <CardContent className="space-y-4 p-6">
               <p className="text-muted-foreground text-sm leading-relaxed">{t("matchesGuardianOnlySession")}</p>
               <Button asChild className="h-11 rounded-xl font-semibold">
-                <Link href="/guardian/matches">{t("matchesOpenGuardianMatches")}</Link>
+                <Link href="/mypage/guardian/matches">{t("matchesOpenGuardianMatches")}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -65,6 +67,8 @@ export async function MypageMatchesView({
       </div>
     );
   }
+
+  const canWriteTravelerReview = appRole !== "guardian";
 
   return (
     <div className="space-y-8">
@@ -103,9 +107,30 @@ export async function MypageMatchesView({
         <MypageMatchesEmpty appRole={appRole} />
       ) : (
         <div className="space-y-8">
-          <MatchSection title={t("matchesSectionActive")} rows={active} t={t} showComplete />
-          <MatchSection title={t("matchesSectionPending")} rows={pending} t={t} showComplete={false} />
-          <MatchSection title={t("matchesSectionCompleted")} rows={done} t={t} showComplete={false} />
+          <MatchSection
+            title={t("matchesSectionActive")}
+            rows={active}
+            t={t}
+            showComplete
+            reviewedMatchIds={reviewedMatchIds}
+            canWriteTravelerReview={canWriteTravelerReview}
+          />
+          <MatchSection
+            title={t("matchesSectionPending")}
+            rows={pending}
+            t={t}
+            showComplete={false}
+            reviewedMatchIds={reviewedMatchIds}
+            canWriteTravelerReview={canWriteTravelerReview}
+          />
+          <MatchSection
+            title={t("matchesSectionCompleted")}
+            rows={done}
+            t={t}
+            showComplete={false}
+            reviewedMatchIds={reviewedMatchIds}
+            canWriteTravelerReview={canWriteTravelerReview}
+          />
         </div>
       )}
     </div>
@@ -117,11 +142,15 @@ function MatchSection({
   rows,
   t,
   showComplete,
+  reviewedMatchIds,
+  canWriteTravelerReview,
 }: {
   title: string;
   rows: StoredMatchRequest[];
   t: Awaited<ReturnType<typeof getTranslations>>;
   showComplete: boolean;
+  reviewedMatchIds: string[];
+  canWriteTravelerReview: boolean;
 }) {
   if (rows.length === 0) return null;
   return (
@@ -143,12 +172,12 @@ function MatchSection({
                   </div>
                   <p className="text-muted-foreground font-mono text-[11px] break-all">{r.id}</p>
                 </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <Button asChild variant="outline" size="sm" className="h-9 rounded-lg">
-                    <Link href={`/guardians/${r.guardian_user_id}`}>{t("openGuardian")}</Link>
-                  </Button>
-                  {showComplete && r.status === "accepted" ? <TravelerMatchCompleteButton matchId={r.id} /> : null}
-                </div>
+                <MypageMatchRowActions
+                  row={r}
+                  showComplete={showComplete}
+                  reviewedMatchIds={reviewedMatchIds}
+                  canWriteTravelerReview={canWriteTravelerReview}
+                />
               </CardContent>
             </Card>
           </li>
