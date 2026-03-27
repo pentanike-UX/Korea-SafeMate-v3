@@ -23,7 +23,7 @@ export function FooterThemeSwitch({ className }: { className?: string }) {
       aria-label={dark ? t("themeSwitchToLight") : t("themeSwitchToDark")}
       onClick={toggleTheme}
       className={cn(
-        "relative inline-flex h-11 w-[6.1rem] shrink-0 items-center rounded-[var(--radius-md)] border border-white/25 bg-white/10 px-1 shadow-inner outline-none transition-colors",
+        "relative inline-flex h-11 w-[6.1rem] shrink-0 items-center rounded-[var(--radius-md)] border border-white/22 bg-white/[0.07] px-1 shadow-inner outline-none transition-colors",
         "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
         "disabled:opacity-60",
         className,
@@ -31,12 +31,12 @@ export function FooterThemeSwitch({ className }: { className?: string }) {
     >
       <span className="pointer-events-none flex w-full items-center justify-between px-1.5">
         <Sun
-          className={cn("size-4 transition-colors", dark ? "text-amber-200/55" : "text-amber-200")}
+          className={cn("size-4 transition-colors", dark ? "text-amber-200/80" : "text-amber-100/75")}
           strokeWidth={1.9}
           aria-hidden
         />
         <Moon
-          className={cn("size-4 transition-colors", dark ? "text-sky-100" : "text-sky-100/55")}
+          className={cn("size-4 transition-colors", dark ? "text-sky-100/70" : "text-sky-100/90")}
           strokeWidth={1.9}
           aria-hidden
         />
@@ -44,7 +44,7 @@ export function FooterThemeSwitch({ className }: { className?: string }) {
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute top-1 bottom-1 w-8 rounded-[calc(var(--radius-md)-4px)] bg-white shadow-md ring-1 ring-black/10 transition-[left] duration-200 ease-out",
+          "pointer-events-none absolute top-1 bottom-1 w-8 rounded-[calc(var(--radius-md)-4px)] bg-white/95 shadow-md ring-1 ring-black/15 transition-[left] duration-200 ease-out",
           dark ? "left-[calc(100%-2.25rem)]" : "left-1",
         )}
       />

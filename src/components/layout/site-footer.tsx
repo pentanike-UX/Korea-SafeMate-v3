@@ -89,11 +89,11 @@ export async function SiteFooter() {
               </div>
             </nav>
 
-            <div className="space-y-3 lg:border-l lg:border-white/12 lg:pl-5">
+            <div className="flex flex-wrap items-center gap-2.5 lg:border-l lg:border-white/12 lg:pl-5">
               <FooterPreferences className="justify-start" />
               <NextLink
                 href="/admin/dashboard"
-                className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-white/20 bg-white/[0.04] px-3.5 text-sm font-medium text-white/82 transition-colors hover:border-white/32 hover:bg-white/[0.08] hover:text-white"
+                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-white/22 bg-white/[0.05] px-3.5 text-sm font-medium text-white/86 transition-colors hover:border-white/34 hover:bg-white/[0.09] hover:text-white"
               >
                 {tFooter("adminConsoleLink")}
               </NextLink>

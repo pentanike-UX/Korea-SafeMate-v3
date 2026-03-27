@@ -217,18 +217,18 @@ export function GuardiansDiscoverClient({
           </Button>
         ) : null}
       </div>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:gap-7">
         <div className="min-w-0">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:mb-3 sm:text-xs">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <MapPin className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterRegion")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               size="sm"
               variant={region === "" ? "default" : "outline"}
-              className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+              className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
               onClick={() => setRegion((p) => (p === "" ? "all" : ""))}
             >
               {t("filterLaunchAreas")}
@@ -237,7 +237,7 @@ export function GuardiansDiscoverClient({
               type="button"
               size="sm"
               variant={region === "all" ? "default" : "outline"}
-              className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+              className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
               onClick={() => setRegion((p) => (p === "all" ? "" : "all"))}
             >
               {t("all")}
@@ -248,7 +248,7 @@ export function GuardiansDiscoverClient({
                 type="button"
                 size="sm"
                 variant={region === slug ? "default" : "outline"}
-                className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
                 onClick={() => setRegion((p) => (p === slug ? "" : slug))}
               >
                 {(tLaunch.raw(slug) as { name: string }).name}
@@ -257,12 +257,12 @@ export function GuardiansDiscoverClient({
           </div>
         </div>
         <div className="min-w-0">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:mb-3 sm:text-xs">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <Languages className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterLanguage")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            <Button type="button" size="sm" variant={language === "" ? "default" : "outline"} className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setLanguage("")}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" size="sm" variant={language === "" ? "default" : "outline"} className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setLanguage("")}>
               {t("all")}
             </Button>
             {LANGS.map((code) => (
@@ -271,7 +271,7 @@ export function GuardiansDiscoverClient({
                 type="button"
                 size="sm"
                 variant={language === code ? "default" : "outline"}
-                className="shrink-0 rounded-full px-3.5 text-xs uppercase sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs uppercase sm:text-sm"
                 onClick={() => setLanguage((p) => (p === code ? "" : code))}
               >
                 {code}
@@ -280,18 +280,18 @@ export function GuardiansDiscoverClient({
           </div>
         </div>
         <div className="min-w-0">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:mb-3 sm:text-xs">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <ArrowDownWideNarrow className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("sort")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             {(["recommended", "rating", "reviews", "fast"] as const).map((m) => (
               <Button
                 key={m}
                 type="button"
                 size="sm"
                 variant={sort === m ? "default" : "outline"}
-                className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
                 onClick={() => setSort((prev) => (prev === m && m !== "recommended" ? "recommended" : m))}
               >
                 {m === "recommended"
@@ -306,12 +306,12 @@ export function GuardiansDiscoverClient({
           </div>
         </div>
         <div className="min-w-0">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:mb-3 sm:text-xs">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:text-xs">
             <Palette className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterTheme")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            <Button type="button" size="sm" variant={theme === "" ? "default" : "outline"} className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setTheme("")}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" size="sm" variant={theme === "" ? "default" : "outline"} className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setTheme("")}>
               {t("all")}
             </Button>
             {THEMES.map((slug) => (
@@ -320,7 +320,7 @@ export function GuardiansDiscoverClient({
                 type="button"
                 size="sm"
                 variant={theme === slug ? "default" : "outline"}
-                className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
                 onClick={() => setTheme((p) => (p === slug ? "" : slug))}
               >
                 {(tThemes.raw(slug) as { title: string }).title}
@@ -329,12 +329,12 @@ export function GuardiansDiscoverClient({
           </div>
         </div>
         <div className="min-w-0">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:mb-3 sm:text-xs">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:text-xs">
             <UserCircle className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterStyle")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            <Button type="button" size="sm" variant={style === "" ? "default" : "outline"} className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setStyle("")}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" size="sm" variant={style === "" ? "default" : "outline"} className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm" onClick={() => setStyle("")}>
               {t("all")}
             </Button>
             {STYLES.map((slug) => (
@@ -343,7 +343,7 @@ export function GuardiansDiscoverClient({
                 type="button"
                 size="sm"
                 variant={style === slug ? "default" : "outline"}
-                className="shrink-0 rounded-full px-3.5 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
                 onClick={() => setStyle((p) => (p === slug ? "" : slug))}
               >
                 {tStyles(slug)}
@@ -351,26 +351,26 @@ export function GuardiansDiscoverClient({
             ))}
           </div>
         </div>
-        <div className="min-w-0 md:col-span-2 lg:col-span-3">
-          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:mb-3 sm:text-xs">
+        <div className="min-w-0">
+          <p className="text-muted-foreground mb-2.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide sm:text-xs">
             <Star className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterRating")}
           </p>
-          <div className="-mx-1 flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             {[0, 4, 4.5].map((r) => (
               <Button
                 key={r}
                 type="button"
                 size="sm"
                 variant={minRating === r ? "default" : "outline"}
-                className="rounded-full px-3.5 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-3.5 text-xs sm:text-sm"
                 onClick={() => setMinRating((p) => (p === r ? 0 : r))}
               >
                 {r === 0 ? t("all") : `${r}+`}
               </Button>
             ))}
           </div>
-          <label className="text-foreground mt-4 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-md)] py-2 text-sm font-medium">
+          <label className="text-foreground mt-4 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-md)] border border-border/60 px-3 py-2 text-sm font-medium">
             <input
               type="checkbox"
               checked={verifiedOnly}

@@ -176,18 +176,18 @@ export function PostsListClient({
           aria-label={t("searchPlaceholder")}
         />
       </div>
-      <div className="flex flex-col gap-6 lg:flex-row lg:flex-wrap lg:items-start lg:justify-between lg:gap-x-8 lg:gap-y-6">
-        <div className="min-w-0 space-y-2 lg:flex-1">
+      <div className="grid gap-6 sm:gap-7">
+        <div className="min-w-0 space-y-2.5">
           <p className="text-muted-foreground flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <Tag className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterCategory")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               size="sm"
               variant={category === "all" ? "default" : "outline"}
-              className="shrink-0 rounded-full px-4 text-xs sm:text-sm"
+              className="h-9 max-w-full whitespace-normal break-words rounded-full px-4 text-xs sm:text-sm"
               onClick={() => pickCategory("all")}
             >
               {t("all")}
@@ -198,7 +198,7 @@ export function PostsListClient({
                 type="button"
                 size="sm"
                 variant={category === c.slug ? "default" : "outline"}
-                className="shrink-0 rounded-full px-4 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-4 text-xs sm:text-sm"
                 onClick={() => pickCategory(c.slug)}
               >
                 {c.name}
@@ -206,19 +206,19 @@ export function PostsListClient({
             ))}
           </div>
         </div>
-        <div className="min-w-0 space-y-2 lg:flex-1">
+        <div className="min-w-0 space-y-2.5">
           <p className="text-muted-foreground flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <MapPin className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterRegion")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             {REGION_SLUGS.map((r) => (
               <Button
                 key={r}
                 type="button"
                 size="sm"
                 variant={region === r ? "default" : "outline"}
-                className="shrink-0 rounded-full px-4 text-xs capitalize sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-4 text-xs capitalize sm:text-sm"
                 onClick={() => pickRegion(r)}
               >
                 {r === "all" ? t("all") : t(`region.${r}` as "region.seoul")}
@@ -226,19 +226,19 @@ export function PostsListClient({
             ))}
           </div>
         </div>
-        <div className="min-w-0 space-y-2 lg:flex-1">
+        <div className="min-w-0 space-y-2.5">
           <p className="text-muted-foreground flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <ArrowDownWideNarrow className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("sort")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             {SORTS.map((m) => (
               <Button
                 key={m}
                 type="button"
                 size="sm"
                 variant={sort === m ? "default" : "outline"}
-                className="shrink-0 rounded-full px-4 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-4 text-xs sm:text-sm"
                 onClick={() => setSort((prev) => (prev === m && m !== "recommended" ? "recommended" : m))}
               >
                 {t(`sort${m.charAt(0).toUpperCase() + m.slice(1)}` as "sortRecommended")}
@@ -246,19 +246,19 @@ export function PostsListClient({
             ))}
           </div>
         </div>
-        <div className="min-w-0 space-y-2 lg:min-w-[200px]">
+        <div className="min-w-0 space-y-2.5">
           <p className="text-muted-foreground flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase sm:text-xs">
             <Layers className="text-[var(--brand-trust-blue)] size-3.5 shrink-0" aria-hidden />
             {t("filterContent")}
           </p>
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             {CONTENT_FILTERS.map((f) => (
               <Button
                 key={f}
                 type="button"
                 size="sm"
                 variant={contentFilter === f ? "default" : "outline"}
-                className="shrink-0 rounded-full px-4 text-xs sm:text-sm"
+                className="h-9 max-w-full whitespace-normal break-words rounded-full px-4 text-xs sm:text-sm"
                 onClick={() => pickContent(f)}
               >
                 {t(`content${f.charAt(0).toUpperCase() + f.slice(1)}` as "contentAll")}
