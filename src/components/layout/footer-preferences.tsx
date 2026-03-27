@@ -9,7 +9,7 @@ export function FooterPreferences({ className }: { className?: string }) {
   const tHeader = useTranslations("Header");
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-5 sm:gap-6", className)}>
+    <div className={cn("flex flex-wrap items-end gap-4 sm:gap-5", className)}>
       <div className="flex flex-col gap-1">
         <span className="text-[11px] font-semibold tracking-wide text-white/55 uppercase">{tHeader("languageLabel")}</span>
         <LanguageSwitcher className="w-fit shrink-0" variant="onDark" />
