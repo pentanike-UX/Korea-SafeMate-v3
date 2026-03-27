@@ -10,6 +10,9 @@ export type ProfileOverviewModel = {
   loginProvider: string;
   intro: string;
   locale: string;
+  preferredRegion: string;
+  interestThemes: string[];
+  spokenLanguages: string[];
 };
 
 function FieldRow({ label, value, emptyHint }: { label: string; value: string; emptyHint: string }) {
@@ -67,8 +70,17 @@ export async function TravelerProfileMypageOverview({ model }: { model: ProfileO
             <FieldRow label={t("fieldIntro")} value={model.intro} emptyHint={th("emptyFieldIntro")} />
             {!model.intro.trim() ? <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">{th("emptyFieldHint")}</p> : null}
           </div>
-          <FieldRow label={th("fieldPreferredRegion")} value="" emptyHint={th("emptyFieldRegion")} />
-          <FieldRow label={th("fieldInterestThemes")} value="" emptyHint={th("emptyFieldTheme")} />
+          <FieldRow label={th("fieldPreferredRegion")} value={model.preferredRegion} emptyHint={th("emptyFieldRegion")} />
+          <FieldRow
+            label={th("fieldInterestThemes")}
+            value={model.interestThemes.join(", ")}
+            emptyHint={th("emptyFieldTheme")}
+          />
+          <FieldRow
+            label="Languages"
+            value={model.spokenLanguages.join(", ")}
+            emptyHint={th("emptyFieldLocale")}
+          />
           <FieldRow label={t("fieldLocale")} value={model.locale} emptyHint={th("emptyFieldLocale")} />
         </CardContent>
       </Card>

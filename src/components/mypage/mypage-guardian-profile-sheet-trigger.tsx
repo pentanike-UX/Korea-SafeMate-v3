@@ -1,19 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { guardianProfileImageUrls, type GuardianImageSource } from "@/lib/guardian-profile-images";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import type { ContentPost } from "@/types/domain";
+import { Star } from "lucide-react";
 
 type ProfilePreview = GuardianImageSource & {
   display_name: string;
   headline?: string | null;
+  long_bio?: { ko: string; en: string } | null;
   primary_region_slug?: string | null;
   guardian_tier?: string | null;
+  languages?: Array<{ language_code: string }>;
+  review_count_display?: number | null;
+  avg_traveler_rating?: number | null;
+  expertise_tags?: string[];
+  companion_style_slugs?: string[];
+  representativePosts?: Pick<ContentPost, "id" | "title" | "summary">[];
 };
 
 export function MypageGuardianProfileSheetTrigger({
@@ -28,6 +37,7 @@ export function MypageGuardianProfileSheetTrigger({
   className?: string;
 }) {
   const t = useTranslations("TravelerHub");
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [side, setSide] = useState<"right" | "bottom">("bottom");
 
@@ -40,6 +50,10 @@ export function MypageGuardianProfileSheetTrigger({
   }, []);
 
   const imgs = guardianProfileImageUrls(guardian);
+  const isKo = locale === "ko";
+  const longBio = guardian.long_bio ? (isKo ? guardian.long_bio.ko : guardian.long_bio.en) : "";
+  const languageList = guardian.languages?.map((l) => l.language_code).filter(Boolean) ?? [];
+  const repPosts = guardian.representativePosts?.slice(0, 3) ?? [];
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -56,16 +70,59 @@ export function MypageGuardianProfileSheetTrigger({
         <SheetHeader>
           <SheetTitle>{guardian.display_name}</SheetTitle>
         </SheetHeader>
-        <div className="space-y-4 px-4 pb-4 sm:px-6 sm:pb-6">
+        <div className="space-y-4 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
           <div className="border-border/60 relative aspect-[16/9] overflow-hidden rounded-xl border bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={imgs.landscape} alt="" className="size-full object-cover" />
           </div>
-          {guardian.headline ? <p className="text-sm leading-relaxed">{guardian.headline}</p> : null}
+          <div className="flex items-start gap-3">
+            <div className="border-border/60 relative size-12 shrink-0 overflow-hidden rounded-full border bg-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imgs.avatar} alt="" className="size-full object-cover" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-foreground text-sm font-semibold">{guardian.display_name}</p>
+              {guardian.headline ? <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{guardian.headline}</p> : null}
+            </div>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             {guardian.primary_region_slug ? <Badge variant="outline">{guardian.primary_region_slug}</Badge> : null}
             {guardian.guardian_tier ? <Badge variant="secondary">{guardian.guardian_tier}</Badge> : null}
+            {languageList.length > 0 ? <Badge variant="outline">언어 {languageList.join(", ")}</Badge> : null}
+            {guardian.avg_traveler_rating != null ? (
+              <Badge variant="outline" className="inline-flex items-center gap-1">
+                <Star className="size-3 fill-amber-400 text-amber-400" aria-hidden />
+                {guardian.avg_traveler_rating.toFixed(1)}
+                {guardian.review_count_display ? ` (${guardian.review_count_display})` : ""}
+              </Badge>
+            ) : null}
           </div>
+          {longBio ? <p className="text-muted-foreground text-sm leading-relaxed">{longBio.split("\n\n")[0]}</p> : null}
+          {guardian.expertise_tags && guardian.expertise_tags.length > 0 ? (
+            <div>
+              <p className="text-muted-foreground mb-1 text-xs font-semibold uppercase">잘하는 경험</p>
+              <div className="flex flex-wrap gap-1.5">
+                {guardian.expertise_tags.slice(0, 5).map((tag) => (
+                  <Badge key={tag} variant="outline">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {repPosts.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-muted-foreground text-xs font-semibold uppercase">주요 포스트</p>
+              <ul className="space-y-1.5">
+                {repPosts.map((p) => (
+                  <li key={p.id} className="rounded-lg border border-border/60 bg-muted/15 px-3 py-2">
+                    <p className="text-sm font-medium">{p.title}</p>
+                    <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">{p.summary}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-2 pt-1">
             <Button asChild className="rounded-xl">
               <Link href={`/guardians/${guardian.user_id}`} onClick={() => setOpen(false)}>

@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { mockTravelerTripRequests } from "@/data/mock";
-import { mockGuardians } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +10,10 @@ import { getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
 import { getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
 import { requestStatusChipClass, type RequestTimelineStatus } from "@/lib/mypage-status-badge";
 import { MypageGuardianProfileSheetTrigger } from "@/components/mypage/mypage-guardian-profile-sheet-trigger";
+import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
+import { listApprovedPostsMerged } from "@/lib/posts-public-merged.server";
+import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
+import { Compass, ExternalLink } from "lucide-react";
 
 function requestTypeFromTheme(themeSlug: string) {
   if (themeSlug.includes("night")) return "half_day";
@@ -43,6 +46,7 @@ export default async function TravelerRequestsPage() {
   const t = await getTranslations("TravelerHub");
   const tThemes = await getTranslations("ExperienceThemes");
   const travelerId = await getSupabaseAuthUserIdOnly();
+  const [guardians, approvedPosts] = await Promise.all([listPublicGuardiansMerged(), listApprovedPostsMerged()]);
   const useMock = !travelerId || isMockGuardianId(travelerId);
   const matchRows = travelerId && !useMock ? await getMatchRequestsForTraveler(travelerId) : [];
   const rows: Array<{
@@ -90,8 +94,12 @@ export default async function TravelerRequestsPage() {
       </div>
       <ul className="space-y-4">
         {rows.map((r) => {
-          const g = r.guardian_user_id ? mockGuardians.find((x) => x.user_id === r.guardian_user_id) : null;
+          const g = r.guardian_user_id ? guardians.find((x) => x.user_id === r.guardian_user_id) : null;
           const theme = tThemes.raw(r.theme_slug) as { title: string } | undefined;
+          const avatar = g ? guardianProfileImageUrls(g).avatar : null;
+          const repPosts = g
+            ? approvedPosts.filter((p) => p.author_user_id === g.user_id).slice(0, 3).map((p) => ({ id: p.id, title: p.title, summary: p.summary }))
+            : [];
           return (
             <li key={r.id}>
               <Card className="rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
@@ -106,11 +114,20 @@ export default async function TravelerRequestsPage() {
                       </Badge>
                       <span className="text-muted-foreground text-xs">{t(`region.${r.region_label_key}`)} · {formatTypeLabel(r.request_type)}</span>
                     </div>
-                    <p className="font-medium">{theme?.title ?? r.theme_slug}</p>
-                    <p className="text-muted-foreground text-sm">{r.note}</p>
-                    <p className="text-muted-foreground text-xs leading-relaxed">
-                      {t("assignedGuardian")}: {g?.display_name ?? r.guardian_name ?? t("noGuardianYet")}
-                    </p>
+                    <p className="font-semibold">{theme?.title ?? r.theme_slug}</p>
+                    <p className="text-muted-foreground line-clamp-2 text-sm">{r.note}</p>
+                    <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2">
+                      {avatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={avatar} alt="" className="size-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="bg-muted-foreground/20 size-8 rounded-full" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("assignedGuardian")}</p>
+                        <p className="truncate text-sm font-medium">{g?.display_name ?? r.guardian_name ?? t("noGuardianYet")}</p>
+                      </div>
+                    </div>
                     <p className="text-muted-foreground text-xs leading-relaxed">
                       요청 시점: {formatDate(r.requested_at)} · 마지막 상태 변경: {formatDate(r.status_changed_at)}
                     </p>
@@ -128,12 +145,23 @@ export default async function TravelerRequestsPage() {
                           avatar_image_url: g.avatar_image_url,
                           list_card_image_url: g.list_card_image_url,
                           detail_hero_image_url: g.detail_hero_image_url,
+                          languages: g.languages,
+                          long_bio: g.long_bio,
+                          review_count_display: g.review_count_display,
+                          avg_traveler_rating: g.avg_traveler_rating,
+                          expertise_tags: g.expertise_tags,
+                          companion_style_slugs: g.companion_style_slugs,
+                          representativePosts: repPosts,
                         }}
                         triggerLabel={t("openGuardian")}
                       />
                     ) : null}
-                    <Button asChild variant="outline" size="sm" className="rounded-xl">
-                      <Link href="/guardians">{t("findGuardian")}</Link>
+                    <Button asChild size="sm" className="rounded-xl">
+                      <Link href="/guardians" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5">
+                        <Compass className="size-4" aria-hidden />
+                        {t("findGuardian")}
+                        <ExternalLink className="size-3.5 opacity-80" aria-hidden />
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>

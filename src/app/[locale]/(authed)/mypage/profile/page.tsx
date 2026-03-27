@@ -29,8 +29,7 @@ export default async function TravelerAccountPage({
 }: {
   searchParams: Promise<{ mode?: string }>;
 }) {
-  const sp = await searchParams;
-  const initialMode = sp.mode === "image" ? "image" : "profile";
+  await searchParams;
   const t = await getTranslations("TravelerAccount");
   const locale = await getLocale();
   const userId = await getSessionUserId();
@@ -60,7 +59,13 @@ export default async function TravelerAccountPage({
 
   const [{ data: appUser }, { data: profile }] = await Promise.all([
     sb.from("users").select("email, created_at, last_login_at, auth_provider").eq("id", userId).maybeSingle(),
-    sb.from("user_profiles").select("display_name, intro, locale, profile_image_url, login_provider").eq("user_id", userId).maybeSingle(),
+    sb
+      .from("user_profiles")
+      .select(
+        "display_name, intro, locale, profile_image_url, login_provider, preferred_region, interest_themes, spoken_languages, profile_note, list_card_image_url, detail_hero_image_url",
+      )
+      .eq("user_id", userId)
+      .maybeSingle(),
   ]);
 
   const email = appUser?.email ?? "";
@@ -69,6 +74,12 @@ export default async function TravelerAccountPage({
     intro: profile?.intro?.trim() ?? "",
     locale: profile?.locale?.trim() ?? "",
     profile_image_url: profile?.profile_image_url?.trim() ?? "",
+    preferred_region: profile?.preferred_region?.trim() ?? "",
+    interest_themes: Array.isArray(profile?.interest_themes) ? profile.interest_themes.filter((x): x is string => typeof x === "string") : [],
+    spoken_languages: Array.isArray(profile?.spoken_languages) ? profile.spoken_languages.filter((x): x is string => typeof x === "string") : [],
+    profile_note: profile?.profile_note?.trim() ?? "",
+    list_card_image_url: profile?.list_card_image_url?.trim() ?? "",
+    detail_hero_image_url: profile?.detail_hero_image_url?.trim() ?? "",
     email,
     login_provider: profile?.login_provider ?? appUser?.auth_provider ?? "google",
     created_at: appUser?.created_at ?? null,
@@ -82,6 +93,9 @@ export default async function TravelerAccountPage({
     loginProvider: String(initial.login_provider || "google"),
     intro: initial.intro,
     locale: initial.locale,
+    preferredRegion: initial.preferred_region,
+    interestThemes: initial.interest_themes,
+    spokenLanguages: initial.spoken_languages,
   };
 
   return (
@@ -101,7 +115,7 @@ export default async function TravelerAccountPage({
           <h3 className="text-foreground text-lg font-semibold">{t("sectionEditProfile")}</h3>
           <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{t("pageLead")}</p>
         </div>
-        <TravelerAccountForm initial={initial} locale={locale} initialMode={initialMode} />
+        <TravelerAccountForm initial={initial} locale={locale} />
       </section>
     </div>
   );
