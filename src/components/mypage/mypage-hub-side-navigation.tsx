@@ -24,7 +24,6 @@ type GuardianCtaLabel =
   | "guardianCtaRejected"
   | "guardianCtaSuspended";
 
-const sideNavWrap = "border-border/60 lg:border-r lg:pr-8";
 const segmentNavItem =
   "flex min-h-11 items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 text-[15px] font-medium transition-colors lg:min-h-12 lg:py-3.5";
 
@@ -99,7 +98,7 @@ export function MypageHubSideNavigation({
     hubMode === "traveler" ? t("mobileNavSheetTitleTraveler") : t("mobileNavSheetTitleGuardian");
 
   return (
-    <div className={sideNavWrap}>
+    <div className="min-w-0 flex-1">
       {/* 모바일: 현재 위치 + 바텀시트 */}
       <div className="lg:hidden">
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
