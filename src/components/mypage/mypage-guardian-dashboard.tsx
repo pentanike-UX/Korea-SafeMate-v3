@@ -207,7 +207,7 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-12 justify-start gap-2 rounded-[var(--radius-md)] font-semibold">
-              <Link href="/mypage/points">
+              <Link href={GUARDIAN_WORKSPACE.points}>
                 <Wallet className="size-4" aria-hidden />
                 {t("guardianDashActionPoints")}
               </Link>
@@ -216,6 +216,12 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
               <Link href={GUARDIAN_WORKSPACE.profileEdit}>
                 <Pencil className="size-4" aria-hidden />
                 {t("guardianDashActionEditProfile")}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-12 justify-start gap-2 rounded-[var(--radius-md)] font-semibold sm:col-span-2">
+              <Link href={GUARDIAN_WORKSPACE.settings}>
+                <Shield className="size-4" aria-hidden />
+                {t("guardianNavSettings")}
               </Link>
             </Button>
           </CardContent>

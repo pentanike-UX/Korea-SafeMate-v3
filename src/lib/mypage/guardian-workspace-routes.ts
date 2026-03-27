@@ -6,5 +6,7 @@ export const GUARDIAN_WORKSPACE = {
   postPreview: (id: string, token: string) =>
     `/mypage/guardian/posts/${id}/preview?t=${encodeURIComponent(token)}`,
   matches: "/mypage/guardian/matches",
+  points: "/mypage/guardian/points",
+  settings: "/mypage/guardian/settings",
   profileEdit: "/mypage/guardian/profile/edit",
 } as const;

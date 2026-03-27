@@ -12,6 +12,7 @@ import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import type { StoredMatchRequest } from "@/lib/traveler-match-requests";
 import { getMatchRequestsForGuardian } from "@/lib/traveler-match-requests.server";
 import { matchStatusChipClass } from "@/lib/mypage-status-badge";
+import { MypageTravelerInfoSheetTrigger } from "@/components/mypage/mypage-traveler-info-sheet-trigger";
 
 export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: string }) {
   const t = await getTranslations("TravelerHub");
@@ -83,6 +84,7 @@ export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: str
                     <p className="text-muted-foreground font-mono text-[11px] break-all">{r.id}</p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
+                    <MypageTravelerInfoSheetTrigger travelerId={r.traveler_user_id} matchId={r.id} />
                     {r.status === "requested" ? <GuardianMatchAcceptButton matchId={r.id} /> : null}
                   </div>
                 </CardContent>

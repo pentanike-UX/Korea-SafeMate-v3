@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  GUARDIAN_APPROVED_HUB_NAV,
   GUARDIAN_WORKSPACE_NAV,
   TRAVELER_HUB_NAV,
   resolveActiveNavLabel,
@@ -31,7 +30,7 @@ const segmentNavItem =
 
 function navPool(hubMode: "traveler" | "guardian", approved: boolean): HubNavItem[] {
   if (hubMode === "traveler") return TRAVELER_HUB_NAV;
-  if (approved) return GUARDIAN_APPROVED_HUB_NAV;
+  if (approved) return GUARDIAN_WORKSPACE_NAV;
   return TRAVELER_HUB_NAV;
 }
 
@@ -58,6 +57,14 @@ function lnbBadgeCount(
 ): number {
   if (section === "traveler") {
     return travelerNavBadges[item.labelKey as TravelerNavBadgeKey] ?? 0;
+  }
+  if (
+    item.labelKey !== "guardianNavProfile" &&
+    item.labelKey !== "guardianNavNewPost" &&
+    item.labelKey !== "guardianNavPosts" &&
+    item.labelKey !== "guardianNavMatches"
+  ) {
+    return 0;
   }
   return guardianWorkspaceNavBadges[item.labelKey as GuardianWorkspaceNavBadgeKey] ?? 0;
 }
@@ -158,12 +165,6 @@ export function MypageHubSideNavigation({
                   <>
                     <li className="px-2 pb-1 pt-2">
                       <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-                        {t("navSectionTraveler")}
-                      </p>
-                    </li>
-                    {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, "traveler", () => setSheetOpen(false)))}
-                    <li className="px-2 pb-1 pt-4">
-                      <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
                         {t("navSectionGuardian")}
                       </p>
                     </li>
@@ -202,23 +203,13 @@ export function MypageHubSideNavigation({
       {hubMode === "traveler" || approved ? (
         <nav className="hidden lg:block" aria-label={hubMode === "traveler" ? t("navAria") : t("guardianModeNavAria")}>
           {hubMode === "guardian" && approved ? (
-            <div className="space-y-5">
-              <div>
-                <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
-                  {t("navSectionTraveler")}
-                </p>
-                <ul className="flex flex-col gap-1.5">
-                  {TRAVELER_HUB_NAV.map((item) => renderNavRow(item, "traveler"))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
-                  {t("navSectionGuardian")}
-                </p>
-                <ul className="flex flex-col gap-1.5">
-                  {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, "guardianWorkspace"))}
-                </ul>
-              </div>
+            <div>
+              <p className="text-muted-foreground mb-2 px-4 text-[10px] font-bold tracking-widest uppercase">
+                {t("navSectionGuardian")}
+              </p>
+              <ul className="flex flex-col gap-1.5">
+                {GUARDIAN_WORKSPACE_NAV.map((item) => renderNavRow(item, "guardianWorkspace"))}
+              </ul>
             </div>
           ) : (
             <ul className="flex flex-col gap-1.5">{pool.map((item) => renderNavRow(item, "traveler"))}</ul>

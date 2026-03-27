@@ -7,6 +7,7 @@ import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MypagePostPreviewSheetTrigger } from "@/components/mypage/mypage-post-preview-sheet-trigger";
 
 function formatLabel(format: ReturnType<typeof getContentPostFormat>) {
   if (format === "hybrid") return "하이브리드";
@@ -115,6 +116,7 @@ export async function GuardianPostsManagement({
                 <p className="text-muted-foreground line-clamp-1 text-sm">{p.summary}</p>
               </div>
               <div className="flex shrink-0 flex-wrap gap-2">
+                <MypagePostPreviewSheetTrigger post={p} triggerLabel="미리보기" />
                 {route ? (
                   <Button asChild size="sm" variant="outline" className="rounded-xl">
                     <Link href={GUARDIAN_WORKSPACE.postEdit(p.id)}>편집</Link>

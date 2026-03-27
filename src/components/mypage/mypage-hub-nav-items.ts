@@ -7,6 +7,9 @@ export type HubNavLabelKey =
   | "navProfile"
   | "navPoints"
   | "navMatches"
+  | "guardianNavHome"
+  | "guardianNavPoints"
+  | "guardianNavSettings"
   | "guardianNavProfile"
   | "guardianNavNewPost"
   | "guardianNavPosts"
@@ -59,8 +62,17 @@ function guardianMatchesMatch(p: string) {
   return p.startsWith("/mypage/guardian/matches");
 }
 
+function guardianPointsMatch(p: string) {
+  return p.startsWith("/mypage/guardian/points") || p.startsWith("/mypage/points");
+}
+
+function guardianSettingsMatch(p: string) {
+  return p.startsWith("/mypage/guardian/settings") || p.startsWith("/mypage/profile");
+}
+
 /** 가디언 운영 전용 — 마이페이지 허브 안에서만 이동 */
 export const GUARDIAN_WORKSPACE_NAV: HubNavItem[] = [
+  { href: "/mypage", labelKey: "guardianNavHome", Icon: Plane, match: travelerOverviewMatch },
   { href: "/mypage/guardian/profile/edit", labelKey: "guardianNavProfile", Icon: Images, match: guardianProfileMatch },
   {
     href: "/mypage/guardian/posts/new",
@@ -75,6 +87,8 @@ export const GUARDIAN_WORKSPACE_NAV: HubNavItem[] = [
     match: (p) => guardianPostsMatch(p) && !p.startsWith("/mypage/guardian/posts/new"),
   },
   { href: "/mypage/guardian/matches", labelKey: "guardianNavMatches", Icon: HeartHandshake, match: guardianMatchesMatch },
+  { href: "/mypage/guardian/points", labelKey: "guardianNavPoints", Icon: Coins, match: guardianPointsMatch },
+  { href: "/mypage/guardian/settings", labelKey: "guardianNavSettings", Icon: Settings, match: guardianSettingsMatch },
 ];
 
 /** 승인된 가디언: 공통 여행자 허브 + 가디언 운영 링크 */
