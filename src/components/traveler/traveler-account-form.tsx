@@ -12,13 +12,10 @@ export type TravelerAccountInitial = {
   display_name: string;
   intro: string;
   locale: string;
-  profile_image_url: string;
   preferred_region: string;
   interest_themes: string[];
   spoken_languages: string[];
   profile_note: string;
-  list_card_image_url: string;
-  detail_hero_image_url: string;
   email: string;
   login_provider: string;
   created_at: string | null;
@@ -52,9 +49,6 @@ export function TravelerAccountForm({
   const [interestThemes, setInterestThemes] = useState(initial.interest_themes.join(", "));
   const [spokenLanguages, setSpokenLanguages] = useState(initial.spoken_languages.join(", "));
   const [profileNote, setProfileNote] = useState(initial.profile_note);
-  const [avatarUrl, setAvatarUrl] = useState(initial.profile_image_url);
-  const [listCardUrl, setListCardUrl] = useState(initial.list_card_image_url);
-  const [detailHeroUrl, setDetailHeroUrl] = useState(initial.detail_hero_image_url);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -73,9 +67,6 @@ export function TravelerAccountForm({
           interest_themes: interestThemes,
           spoken_languages: spokenLanguages,
           profile_note: profileNote,
-          profile_image_url: avatarUrl.trim() || null,
-          list_card_image_url: listCardUrl.trim() || null,
-          detail_hero_image_url: detailHeroUrl.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -195,35 +186,6 @@ export function TravelerAccountForm({
         </CardContent>
       </Card>
 
-      <Card className="border-border/60 rounded-2xl shadow-[var(--shadow-sm)]">
-        <CardHeader>
-          <CardTitle className="text-lg">이미지 관리</CardTitle>
-          <CardDescription>아바타/카드/상세 이미지를 현재 화면에서 바로 교체합니다.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <ImageField
-            label="아바타 이미지"
-            hint="헤더/마이페이지/작은 프로필에 사용"
-            value={avatarUrl}
-            onChange={setAvatarUrl}
-            id="profile_image_url"
-          />
-          <ImageField
-            label="카드 대표 이미지 (세로)"
-            hint="가디언/프로필 카드 목록에서 사용"
-            value={listCardUrl}
-            onChange={setListCardUrl}
-            id="list_card_image_url"
-          />
-          <ImageField
-            label="상세 대표 이미지 (가로)"
-            hint="프로필 상세 상단 히어로에 사용"
-            value={detailHeroUrl}
-            onChange={setDetailHeroUrl}
-            id="detail_hero_image_url"
-          />
-        </CardContent>
-      </Card>
       <div className="flex flex-wrap items-center gap-3 pt-2">
         <Button type="submit" disabled={status === "saving"} className="rounded-xl font-semibold">
           {status === "saving" ? t("saving") : t("save")}
@@ -232,39 +194,5 @@ export function TravelerAccountForm({
         {status === "error" ? <span className="text-destructive text-sm">{t("error")}</span> : null}
       </div>
     </form>
-  );
-}
-
-function ImageField({
-  label,
-  hint,
-  value,
-  onChange,
-  id,
-}: {
-  label: string;
-  hint: string;
-  value: string;
-  onChange: (v: string) => void;
-  id: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-        <div className="border-border/60 relative size-24 overflow-hidden rounded-xl border bg-muted">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" className="size-full object-cover" />
-          ) : (
-            <div className="text-muted-foreground flex size-full items-center justify-center text-xs">미리보기 없음</div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1 space-y-2">
-          <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} className="rounded-xl" />
-          <p className="text-muted-foreground text-xs">{hint}</p>
-        </div>
-      </div>
-    </div>
   );
 }

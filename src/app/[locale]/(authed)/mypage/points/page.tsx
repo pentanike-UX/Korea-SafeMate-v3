@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { getMockGuardianSeedPoints } from "@/lib/dev/mock-guardian-auth";
 import { fetchBalanceSnapshot, fetchLedgerForUser } from "@/lib/points/point-ledger-service";
 import { getActivePointPolicy } from "@/lib/points/point-policy-repository";
+import { buildMockGuardianLedger } from "@/lib/points/mock-guardian-ledger";
 import { BRAND } from "@/lib/constants";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 import { PointsHistoryHeading } from "@/components/mypage/mypage-points-history-heading";
@@ -60,6 +61,7 @@ export default async function TravelerPointsPage() {
   }
 
   const mockSeedPoints = getMockGuardianSeedPoints(userId);
+  const policy = await getActivePointPolicy();
 
   let balance = 0;
   let earned = 0;
@@ -67,36 +69,10 @@ export default async function TravelerPointsPage() {
   let ledger: Awaited<ReturnType<typeof fetchLedgerForUser>> = [];
 
   if (mockSeedPoints !== null) {
-    balance = mockSeedPoints;
-    earned = mockSeedPoints;
-    revoked = 0;
-    const now = Date.now();
-    ledger = [
-      {
-        id: "mock-ledger-profile",
-        amount: 300,
-        event_type: "guardian_profile_reward",
-        reason: "프로필 등록 완료 보너스",
-        policy_version: "mock-v1",
-        occurred_at: new Date(now - 1000 * 60 * 60 * 24 * 13).toISOString(),
-      },
-      {
-        id: "mock-ledger-post",
-        amount: 150,
-        event_type: "post_publish_reward",
-        reason: "포스트 승인 등록",
-        policy_version: "mock-v1",
-        occurred_at: new Date(now - 1000 * 60 * 60 * 24 * 7).toISOString(),
-      },
-      {
-        id: "mock-ledger-match",
-        amount: 200,
-        event_type: "match_complete_reward",
-        reason: "매칭 완료",
-        policy_version: "mock-v1",
-        occurred_at: new Date(now - 1000 * 60 * 60 * 24 * 2).toISOString(),
-      },
-    ] as Awaited<ReturnType<typeof fetchLedgerForUser>>;
+    ledger = buildMockGuardianLedger(userId, policy) as Awaited<ReturnType<typeof fetchLedgerForUser>>;
+    balance = ledger.reduce((s, r) => s + r.amount, 0);
+    earned = ledger.filter((r) => r.amount > 0).reduce((s, r) => s + r.amount, 0);
+    revoked = Math.abs(ledger.filter((r) => r.amount < 0).reduce((s, r) => s + r.amount, 0));
   } else {
     const [snap, ledgerFromDb] = await Promise.all([fetchBalanceSnapshot(userId), fetchLedgerForUser(userId, 100)]);
     balance = snap?.balance ?? 0;
@@ -104,8 +80,6 @@ export default async function TravelerPointsPage() {
     revoked = snap?.lifetime_revoked ?? 0;
     ledger = ledgerFromDb;
   }
-
-  const policy = await getActivePointPolicy();
 
   return (
     <div className="space-y-8">

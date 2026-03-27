@@ -62,7 +62,7 @@ export default async function TravelerAccountPage({
     sb
       .from("user_profiles")
       .select(
-        "display_name, intro, locale, profile_image_url, login_provider, preferred_region, interest_themes, spoken_languages, profile_note, list_card_image_url, detail_hero_image_url",
+        "display_name, intro, locale, login_provider, preferred_region, interest_themes, spoken_languages, profile_note",
       )
       .eq("user_id", userId)
       .maybeSingle(),
@@ -73,13 +73,10 @@ export default async function TravelerAccountPage({
     display_name: profile?.display_name?.trim() ?? "",
     intro: profile?.intro?.trim() ?? "",
     locale: profile?.locale?.trim() ?? "",
-    profile_image_url: profile?.profile_image_url?.trim() ?? "",
     preferred_region: profile?.preferred_region?.trim() ?? "",
     interest_themes: Array.isArray(profile?.interest_themes) ? profile.interest_themes.filter((x): x is string => typeof x === "string") : [],
     spoken_languages: Array.isArray(profile?.spoken_languages) ? profile.spoken_languages.filter((x): x is string => typeof x === "string") : [],
     profile_note: profile?.profile_note?.trim() ?? "",
-    list_card_image_url: profile?.list_card_image_url?.trim() ?? "",
-    detail_hero_image_url: profile?.detail_hero_image_url?.trim() ?? "",
     email,
     login_provider: profile?.login_provider ?? appUser?.auth_provider ?? "google",
     created_at: appUser?.created_at ?? null,

@@ -31,12 +31,12 @@ export function FooterThemeSwitch({ className }: { className?: string }) {
     >
       <span className="pointer-events-none flex w-full items-center justify-between px-1.5">
         <Sun
-          className={cn("size-4 transition-colors", dark ? "text-amber-200/45" : "text-amber-200")}
+          className={cn("size-4 transition-colors", dark ? "text-amber-200/55" : "text-amber-200")}
           strokeWidth={1.9}
           aria-hidden
         />
         <Moon
-          className={cn("size-4 transition-colors", dark ? "text-sky-100" : "text-sky-100/45")}
+          className={cn("size-4 transition-colors", dark ? "text-sky-100" : "text-sky-100/55")}
           strokeWidth={1.9}
           aria-hidden
         />
