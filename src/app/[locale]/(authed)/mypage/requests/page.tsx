@@ -247,7 +247,11 @@ export default async function TravelerRequestsPage() {
                     <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2">
                       {avatar ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={avatar} alt="" className="size-8 rounded-full object-cover" />
+                        <img
+                          src={avatar}
+                          alt=""
+                          className="size-8 rounded-full object-cover object-top sm:object-center"
+                        />
                       ) : (
                         <div className="bg-muted-foreground/20 size-8 rounded-full" />
                       )}

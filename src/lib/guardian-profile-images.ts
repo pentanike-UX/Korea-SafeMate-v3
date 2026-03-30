@@ -1,10 +1,16 @@
 import type { GuardianProfile } from "@/types/domain";
+import { FILL_IMAGE_COVER_ROUTE_HERO } from "@/lib/ui/fill-image";
 
 /**
- * `object-cover`와 함께 쓰세요. 모바일에서 카드 미디어 박스가 낮아질 때 중앙 크롭 대신 상단(얼굴) 우선.
- * `sm` 이상에서는 세로형·와이드 레이아웃에 맞게 중앙으로 복귀.
+ * 아바타·목록 세로 띠 등 — 박스를 항상 꽉 채움(`object-cover`). 모바일에서 얼굴·상단 피사체 우선.
+ * 부모는 `relative overflow-hidden` + `fill` 또는 `absolute inset-0 size-full` 권장.
  */
 export const GUARDIAN_PROFILE_COVER_POSITION_CLASS = "object-cover object-top sm:object-center";
+
+/**
+ * 가디언 상세/시트/사이드바 등 **가로 히어로**용 — 동일하게 cover로 빈틈 없이 채우고, 와이드 컷은 약한 상단 앵커.
+ */
+export const GUARDIAN_PROFILE_HERO_COVER_CLASS = FILL_IMAGE_COVER_ROUTE_HERO;
 
 export type GuardianImageSource = Pick<GuardianProfile, "user_id" | "photo_url"> & {
   avatar_image_url?: string | null;

@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
+import {
+  guardianProfileImageUrls,
+  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_PROFILE_HERO_COVER_CLASS,
+} from "@/lib/guardian-profile-images";
 import type { GuardianProfileSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -53,12 +57,20 @@ export function GuardianProfilePreviewPanel({
       <div className="space-y-4 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
         <div className="border-border/60 relative aspect-[16/9] overflow-hidden rounded-xl border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imgs.landscape} alt="" className="size-full object-cover" />
+          <img
+            src={imgs.landscape}
+            alt=""
+            className={cn("absolute inset-0 size-full min-h-0 min-w-0", GUARDIAN_PROFILE_HERO_COVER_CLASS)}
+          />
         </div>
         <div className="flex items-start gap-3">
           <div className="border-border/60 relative size-12 shrink-0 overflow-hidden rounded-full border bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgs.avatar} alt="" className="size-full object-cover" />
+            <img
+              src={imgs.avatar}
+              alt=""
+              className={cn("absolute inset-0 size-full min-h-0 min-w-0", GUARDIAN_PROFILE_COVER_POSITION_CLASS)}
+            />
           </div>
           <div className="min-w-0">
             <p className="text-foreground text-sm font-semibold">{guardian.display_name}</p>

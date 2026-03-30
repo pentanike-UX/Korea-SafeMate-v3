@@ -21,7 +21,11 @@ import { GuardianTravelerReviewsList } from "@/components/guardians/guardian-tra
 import { clampSheetHeadline } from "@/lib/guardian-sheet-headline";
 import { filterIntroGalleryExcludingHero } from "@/lib/guardian-intro-gallery";
 import { resolveRepresentativeContentPosts } from "@/lib/guardian-representative-post-context";
-import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import {
+  guardianProfileImageUrls,
+  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_PROFILE_HERO_COVER_CLASS,
+} from "@/lib/guardian-profile-images";
 import { GuardianIntroGallery } from "@/components/guardians/guardian-intro-gallery";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import type { GuardianTrustBadgeId, LocalizedCopy } from "@/types/guardian-marketing";
@@ -119,14 +123,14 @@ export async function GuardianDetailView({
         </div>
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="border-border/60 relative aspect-[21/9] overflow-hidden rounded-[1.75rem] border bg-muted shadow-[var(--shadow-md)] sm:aspect-[3/1]">
-            <Image src={imgs.landscape} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} priority sizes="100vw" />
+          <div className="border-border/60 relative aspect-[21/9] min-h-0 overflow-hidden rounded-[1.75rem] border bg-muted shadow-[var(--shadow-md)] sm:aspect-[3/1]">
+            <Image src={imgs.landscape} alt="" fill className={GUARDIAN_PROFILE_HERO_COVER_CLASS} priority sizes="100vw" />
             <div className="pointer-events-none absolute inset-0 bg-black/30" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050a14]/95 via-[#0e1b3d]/55 to-[#0e1b3d]/15" />
             <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-3 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-10">
               <div className="min-w-0 max-w-3xl">
                 <div className="flex flex-wrap items-end gap-3 sm:gap-4">
-                  <div className="border-background/40 relative size-14 shrink-0 overflow-hidden rounded-full border-2 shadow-md ring-2 ring-black/20 sm:size-[4.25rem]">
+                  <div className="border-background/40 relative size-14 min-h-0 min-w-0 shrink-0 overflow-hidden rounded-full border-2 shadow-md ring-2 ring-black/20 sm:size-[4.25rem]">
                     <Image src={imgs.avatar} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="72px" />
                   </div>
                   <div className="min-w-0 flex-1">

@@ -37,7 +37,7 @@ export function CoverCropPreview({
         {src ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary user URLs for preview */}
-            <img src={src} alt="" className={cn("size-full", imgClassName)} />
+            <img src={src} alt="" className={cn("absolute inset-0 size-full min-h-0 min-w-0", imgClassName)} />
             {safeFrame ? (
               <div
                 className="pointer-events-none absolute inset-[10%] rounded-sm border border-dashed border-white/55 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]"

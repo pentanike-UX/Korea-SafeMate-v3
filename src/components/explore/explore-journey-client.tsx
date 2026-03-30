@@ -27,6 +27,7 @@ import {
   ExploreTasteBuilderStep,
   ExploreTripSetupStep,
 } from "@/components/explore/explore-journey-step-panels";
+import { ExploreResultsDecisionHeader } from "@/components/explore/explore-results-decision-header";
 
 const STEPS = 5;
 
@@ -173,16 +174,24 @@ export function ExploreJourneyClient() {
 
   return (
     <div className="bg-[var(--bg-page)] min-h-[70vh]">
-      <section className="border-border/60 border-b bg-card/95">
-        <div className="mx-auto max-w-3xl px-4 py-12 text-center sm:px-6 sm:py-16">
-          <p className="text-primary inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold tracking-[0.2em] uppercase">
-            <Sparkles className="size-3.5" aria-hidden />
-            42 Guardians
-          </p>
-          <h1 className="text-text-strong mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{t("heroTitle")}</h1>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-sm leading-relaxed sm:text-[15px]">{t("heroBody")}</p>
-        </div>
-      </section>
+      {step === 4 ? (
+        <section className="border-border/60 border-b bg-card/95">
+          <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+            <ExploreResultsDecisionHeader region={region} theme={theme} />
+          </div>
+        </section>
+      ) : (
+        <section className="border-border/60 border-b bg-card/95">
+          <div className="mx-auto max-w-3xl px-4 py-12 text-center sm:px-6 sm:py-16">
+            <p className="text-primary inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold tracking-[0.2em] uppercase">
+              <Sparkles className="size-3.5" aria-hidden />
+              42 Guardians
+            </p>
+            <h1 className="text-text-strong mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{t("heroTitle")}</h1>
+            <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-sm leading-relaxed sm:text-[15px]">{t("heroBody")}</p>
+          </div>
+        </section>
+      )}
 
       <div
         id="journey-steps"
@@ -192,28 +201,30 @@ export function ExploreJourneyClient() {
           showMobileStickyCta && "pb-28 sm:pb-10",
         )}
       >
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
-          {Array.from({ length: STEPS }).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => {
-                if (i === 4 && step !== 4) return;
-                if (i < 4) setStep(i);
-              }}
-              className={cn(
-                "flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-colors",
-                i === step
-                  ? "bg-primary text-primary-foreground shadow-[var(--shadow-brand)]"
-                  : i < step
-                    ? "bg-primary/15 text-primary"
-                    : "bg-muted text-muted-foreground",
-              )}
-            >
-              {i < step ? <Check className="size-4" /> : i + 1}
-            </button>
-          ))}
-        </div>
+        {step < 4 ? (
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+            {Array.from({ length: STEPS }).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  if (i === 4 && step !== 4) return;
+                  if (i < 4) setStep(i);
+                }}
+                className={cn(
+                  "flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-colors",
+                  i === step
+                    ? "bg-primary text-primary-foreground shadow-[var(--shadow-brand)]"
+                    : i < step
+                      ? "bg-primary/15 text-primary"
+                      : "bg-muted text-muted-foreground",
+                )}
+              >
+                {i < step ? <Check className="size-4" /> : i + 1}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {enteredExploreViaPreset && step >= 2 && region && theme ? (
           <p className="text-muted-foreground mb-2 text-center text-[11px] font-medium">{t("presetFromHome")}</p>
@@ -232,7 +243,10 @@ export function ExploreJourneyClient() {
           guardianStylePrefs={guardianStylePrefs}
           workTokens={workTokens}
           artistTokens={artistTokens}
+          variant={step === 4 ? "results" : "journey"}
           onEditBasics={step >= 2 ? () => setStep(0) : undefined}
+          onEditSchedule={step === 4 ? () => setStep(2) : undefined}
+          onEditTaste={step === 4 ? () => setStep(3) : undefined}
         />
 
         {step === 0 ? <ExploreRegionStep value={region} onChange={(slug) => setRegion(slug)} /> : null}
@@ -298,56 +312,73 @@ export function ExploreJourneyClient() {
           />
         ) : null}
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-8">
-          <Button
-            type="button"
-            variant="ghost"
-            className="rounded-xl"
-            disabled={step === 0}
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-          >
-            <ArrowLeft className="size-4" />
-            {t("back")}
-          </Button>
-          <div className="flex flex-wrap gap-2">
-            {step >= 1 && step <= 3 ? (
-              <Button type="button" variant="ghost" className="rounded-xl max-sm:hidden" onClick={() => setStep((s) => s + 1)}>
-                {t("skipStep")}
-              </Button>
-            ) : null}
+        {step === 4 ? (
+          <div className="mt-8 flex flex-col items-center gap-3 border-t border-border/60 pt-8">
             <Button
               type="button"
-              variant="outline"
-              className="rounded-xl max-sm:hidden"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground h-auto rounded-xl py-1.5 text-xs font-normal"
               onClick={() => {
                 setEnteredExploreViaPreset(false);
                 setStep(0);
               }}
             >
-              {t("reset")}
+              {t("resetFromResultsHint")}
             </Button>
-            {step < 3 ? (
+          </div>
+        ) : (
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-8">
+            <Button
+              type="button"
+              variant="ghost"
+              className="rounded-xl"
+              disabled={step === 0}
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+            >
+              <ArrowLeft className="size-4" />
+              {t("back")}
+            </Button>
+            <div className="flex flex-wrap gap-2">
+              {step >= 1 && step <= 3 ? (
+                <Button type="button" variant="ghost" className="rounded-xl max-sm:hidden" onClick={() => setStep((s) => s + 1)}>
+                  {t("skipStep")}
+                </Button>
+              ) : null}
               <Button
                 type="button"
+                variant="outline"
                 className="rounded-xl max-sm:hidden"
-                disabled={
-                  (step === 0 && !isLaunchAreaSelectable(region)) || (step === 1 && !theme)
-                }
-                onClick={() => setStep((s) => s + 1)}
+                onClick={() => {
+                  setEnteredExploreViaPreset(false);
+                  setStep(0);
+                }}
               >
-                {t("next")}
-                <ArrowRight className="size-4" />
+                {t("reset")}
               </Button>
-            ) : null}
-            {step === 3 ? (
-              <Button type="button" className="rounded-xl max-sm:hidden" onClick={() => setStep(4)}>
-                {t("seeResults")}
-              </Button>
-            ) : null}
+              {step < 3 ? (
+                <Button
+                  type="button"
+                  className="rounded-xl max-sm:hidden"
+                  disabled={
+                    (step === 0 && !isLaunchAreaSelectable(region)) || (step === 1 && !theme)
+                  }
+                  onClick={() => setStep((s) => s + 1)}
+                >
+                  {t("next")}
+                  <ArrowRight className="size-4" />
+                </Button>
+              ) : null}
+              {step === 3 ? (
+                <Button type="button" className="rounded-xl max-sm:hidden" onClick={() => setStep(4)}>
+                  {t("seeResults")}
+                </Button>
+              ) : null}
+            </div>
           </div>
-        </div>
+        )}
 
-        <p className="text-muted-foreground mt-8 text-center text-xs">{tG("launchOnlyNote")}</p>
+        <p className={cn("text-muted-foreground text-center text-xs", step === 4 ? "mt-4" : "mt-8")}>{tG("launchOnlyNote")}</p>
       </div>
 
       {showMobileStickyCta ? (

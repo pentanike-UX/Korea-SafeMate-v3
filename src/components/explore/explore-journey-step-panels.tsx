@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { mockContentPosts } from "@/data/mock";
 import type { ContentPost } from "@/types/domain";
 import type { LaunchAreaSlug } from "@/types/launch-area";
-import { postHasRouteJourney } from "@/lib/content-post-route";
+import { getPostHeroImageUrl, postHasRouteJourney } from "@/lib/content-post-route";
 import type { PublicGuardian } from "@/lib/guardian-public";
 import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Badge } from "@/components/ui/badge";
@@ -22,11 +22,15 @@ import {
   representativePostLinesForSheetPreview,
 } from "@/lib/guardian-representative-post-context";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
-import { PostPreviewSheetCardArticle, PostPreviewSheetCardRoute } from "@/components/posts/post-preview-sheet";
+import { PostPreviewSheetPanel } from "@/components/posts/post-preview-sheet";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import {
+  guardianProfileImageUrls,
+  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_PROFILE_HERO_COVER_CLASS,
+} from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -539,6 +543,73 @@ export function ExploreTasteBuilderStep(props: {
   );
 }
 
+function guardianLangsLine(g: PublicGuardian): string {
+  return g.languages.map((l) => l.language_code.toUpperCase()).join(" · ");
+}
+
+function guardianPositioningLine(locale: string, g: PublicGuardian): string {
+  if (locale === "ko") return g.positioning.ko;
+  if (locale === "ja") return g.positioning.en;
+  return g.positioning.en;
+}
+
+/** 결과 화면용 소형 포스트 카드 — 시트로 미리보기 */
+function ExploreJourneyPostCompactCard({
+  post,
+  routeBadgeLabel,
+}: {
+  post: ContentPost;
+  routeBadgeLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [side, setSide] = useState<"right" | "bottom">("bottom");
+  const cover = getPostHeroImageUrl(post);
+  const isRoute = postHasRouteJourney(post);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setSide(mq.matches ? "right" : "bottom");
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="border-border/60 bg-muted/15 group flex w-full max-w-full gap-2.5 overflow-hidden rounded-xl border text-left transition-colors hover:border-primary/25 hover:bg-muted/25"
+      >
+        <div className="relative h-[4.25rem] w-[5.25rem] shrink-0 overflow-hidden bg-muted sm:h-[4.5rem] sm:w-[5.75rem]">
+          {cover ? (
+            <Image
+              src={cover}
+              alt=""
+              fill
+              className="object-cover object-[center_42%] transition-transform duration-300 group-hover:scale-[1.03] sm:object-center"
+              sizes="96px"
+            />
+          ) : null}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-center py-1.5 pr-2">
+          {isRoute ? (
+            <Badge variant="outline" className="mb-0.5 w-fit rounded-full px-1.5 py-0 text-[9px] font-semibold">
+              {routeBadgeLabel}
+            </Badge>
+          ) : null}
+          <p className="text-foreground line-clamp-2 text-xs font-semibold leading-snug">{post.title}</p>
+        </div>
+      </button>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side={side} className={side === "right" ? "sm:max-w-md" : "max-h-[86vh] rounded-t-2xl"}>
+          <PostPreviewSheetPanel post={post} onNavigate={() => setOpen(false)} />
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+
 export function ExploreResultsDashboard(props: {
   comingSoonArea: boolean;
   results: { guardians: PublicGuardian[]; posts: ContentPost[] };
@@ -562,91 +633,43 @@ export function ExploreResultsDashboard(props: {
   const tLaunch = useTranslations("LaunchAreas");
   const tThemes = useTranslations("ExperienceThemes");
   const tG = useTranslations("GuardiansDiscover");
+  const tHub = useTranslations("TravelerHub");
   const tTier = useTranslations("GuardianTier");
+  const tStyles = useTranslations("CompanionStyles");
   const locale = useLocale();
+  const [postsSheetOpen, setPostsSheetOpen] = useState(false);
 
-  const {
-    comingSoonArea,
-    results,
-    region,
-    theme,
-    days,
-    partySize,
-    pace,
-    langPref,
-    tripWhenPreset,
-    tripCustomDate,
-    workTokens,
-    artistTokens,
-    sceneMoods,
-    guardianStylePrefs,
-    onEditConditions,
-    onReRecommend,
-    resultsSpinDisabled,
-  } = props;
+  const { comingSoonArea, results, region, theme, pace, onEditConditions, onReRecommend, resultsSpinDisabled } = props;
 
-  const tripKey = days === "1" ? "tripDays1" : days === "2" ? "tripDays2" : "tripDays3";
   const featured = results.guardians[0];
   const more = results.guardians.slice(1);
-  const routePosts = results.posts.filter((p) => postHasRouteJourney(p));
-  const articlePosts = results.posts.filter((p) => !postHasRouteJourney(p));
+  const topPosts = results.posts.slice(0, 3);
+  const extraPosts = results.posts.slice(3);
   const featuredRepCtx = featured ? postContextFromGuardianRepresentative(featured, mockContentPosts) : null;
 
-  const reasons = useMemo(() => {
-    const lines: string[] = [];
+  const paceLabel = pace === "calm" ? t("paceCalm") : pace === "packed" ? t("pacePacked") : t("paceBalanced");
+
+  const criteriaLine = useMemo(() => {
+    if (region && theme) {
+      const an = (tLaunch.raw(region) as { name: string }).name;
+      const tt = (tThemes.raw(theme) as { title: string }).title;
+      return t("criteriaLineBoth", { area: an, theme: tt, pace: paceLabel });
+    }
     if (region) {
-      const name = (tLaunch.raw(region) as { name: string }).name;
-      lines.push(t("reasonArea", { name }));
+      const an = (tLaunch.raw(region) as { name: string }).name;
+      return t("criteriaLineArea", { area: an, pace: paceLabel });
     }
     if (theme) {
-      const title = (tThemes.raw(theme) as { title: string }).title;
-      lines.push(t("reasonTheme", { title }));
+      const tt = (tThemes.raw(theme) as { title: string }).title;
+      return t("criteriaLineTheme", { theme: tt, pace: paceLabel });
     }
-    lines.push(t("reasonLength", { label: t(tripKey) }));
-    if (tripWhenPreset) lines.push(t(`reasonWhen_${tripWhenPreset}` as "reasonWhen_next_week"));
-    if (tripCustomDate) lines.push(t("reasonDatePicked"));
-    lines.push(t("reasonParty", { label: t(`party_${partySize}` as "party_solo") }));
-    if (langPref !== "any") lines.push(t("reasonLang", { code: langPref.toUpperCase() }));
-    else lines.push(t("reasonLangAny"));
-    if (pace === "calm") lines.push(t("reasonPaceCalm"));
-    else if (pace === "packed") lines.push(t("reasonPacePacked"));
-    else lines.push(t("reasonPaceBalanced"));
-    if (workTokens.length) lines.push(t("reasonWorks"));
-    if (artistTokens.length) lines.push(t("reasonArtists"));
-    if (sceneMoods.length) lines.push(t("reasonScenes"));
-    if (guardianStylePrefs.length) lines.push(t("reasonStyles"));
-    return lines;
-  }, [
-    region,
-    theme,
-    days,
-    tripKey,
-    tripWhenPreset,
-    tripCustomDate,
-    partySize,
-    langPref,
-    pace,
-    workTokens.length,
-    artistTokens.length,
-    sceneMoods.length,
-    guardianStylePrefs.length,
-    t,
-    tLaunch,
-    tThemes,
-  ]);
+    return t("criteriaLineFallback", { pace: paceLabel });
+  }, [region, theme, paceLabel, t, tLaunch, tThemes]);
 
-  function guardianFitOneLiner(g: PublicGuardian) {
-    return locale === "ko" ? g.positioning.ko : g.positioning.en;
-  }
+  const themeTitleForUi = theme ? (tThemes.raw(theme) as { title: string }).title : t("dashThemeAny");
 
   return (
     <div className="animate-in fade-in space-y-8 duration-300">
-      <div>
-        <p className="text-primary text-[11px] font-semibold tracking-[0.18em] uppercase">{t("dashEyebrow")}</p>
-        <h2 className="text-text-strong mt-2 text-xl font-semibold sm:text-2xl">{t("dashTitle")}</h2>
-        <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-relaxed">{t("dashSubtitle")}</p>
-      </div>
-
       {comingSoonArea ? (
         <Card className="border-dashed rounded-[1.35rem]">
           <CardContent className="p-8 text-center">
@@ -658,119 +681,35 @@ export function ExploreResultsDashboard(props: {
         </Card>
       ) : (
         <>
-          {/* Summary + result count (decision header) */}
-          <Card className="from-primary/[0.06] border-primary/15 rounded-[1.35rem] border bg-gradient-to-br to-transparent shadow-[var(--shadow-sm)]">
-            <CardContent className="p-5 sm:p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 flex-1">
-                  {results.guardians.length > 0 ? (
-                    <div className="mb-4">
-                      <p className="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">{t("dashFinalEyebrow")}</p>
-                      <p className="text-text-strong mt-1 text-xl font-bold tabular-nums sm:text-2xl">
-                        {t("dashResultCount", { count: results.guardians.length })}
-                      </p>
-                      <p className="text-muted-foreground mt-1 max-w-xl text-xs leading-relaxed sm:text-sm">{t("dashDecisionHelper")}</p>
-                    </div>
-                  ) : null}
-                  <h3 className="text-foreground flex items-center gap-2 font-semibold">
-                    <Sparkles className="text-primary size-4" />
-                    {t("dashSummaryTitle")}
-                  </h3>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {region ? (
-                      <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                        <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("summaryRowArea")}</p>
-                        <p className="text-foreground mt-0.5 text-sm font-medium">{(tLaunch.raw(region) as { name: string }).name}</p>
-                      </div>
-                    ) : null}
-                    {theme ? (
-                      <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                        <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("summaryRowMood")}</p>
-                        <p className="text-foreground mt-0.5 text-sm font-medium">{(tThemes.raw(theme) as { title: string }).title}</p>
-                      </div>
-                    ) : null}
-                    <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                      <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("summaryRowTrip")}</p>
-                      <p className="text-foreground mt-0.5 text-sm font-medium">{t(tripKey)}</p>
-                    </div>
-                    <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                      <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("summaryRowParty")}</p>
-                      <p className="text-foreground mt-0.5 text-sm font-medium">{t(`party_${partySize}` as "party_solo")}</p>
-                    </div>
-                    <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                      <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("summaryRowLang")}</p>
-                      <p className="text-foreground mt-0.5 text-sm font-medium">
-                        {langPref === "any" ? t("langAny") : langPref.toUpperCase()}
-                      </p>
-                    </div>
-                    <div className="border-border/50 bg-card/80 rounded-xl border px-3 py-2">
-                      <p className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">{t("paceSection")}</p>
-                      <p className="text-foreground mt-0.5 text-sm font-medium">
-                        {pace === "calm" ? t("paceCalm") : pace === "balanced" ? t("paceBalanced") : t("pacePacked")}
-                      </p>
-                    </div>
-                  </div>
-                  {(workTokens.length > 0 || artistTokens.length > 0) && (
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {workTokens.map((w) => (
-                        <Badge
-                          key={w}
-                          variant="secondary"
-                          className="max-w-[min(100%,10rem)] truncate rounded-full text-[11px] sm:max-w-[12rem]"
-                        >
-                          {w}
-                        </Badge>
-                      ))}
-                      {artistTokens.map((w) => (
-                        <Badge
-                          key={w}
-                          variant="secondary"
-                          className="max-w-[min(100%,10rem)] truncate rounded-full text-[11px] sm:max-w-[12rem]"
-                        >
-                          {w}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="flex w-full shrink-0 flex-col gap-2 min-[420px]:w-auto min-[420px]:flex-row min-[420px]:flex-wrap">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className={cn(listCardActionButtonClass, "w-full min-[420px]:w-auto")}
-                    onClick={onEditConditions}
-                  >
-                    {t("editConditions")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className={cn(listCardActionButtonClass, "w-full min-[420px]:w-auto")}
-                    disabled={resultsSpinDisabled}
-                    onClick={onReRecommend}
-                  >
-                    {t("reRecommend")}
-                  </Button>
-                </div>
+          {/* 결과 요약: 건수 + 추천 기준 한 줄 (선택 상세는 상단 요약 바) */}
+          <Card className="from-primary/[0.05] border-primary/20 rounded-[1.25rem] border bg-gradient-to-br to-transparent shadow-[var(--shadow-sm)]">
+            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
+              <div className="min-w-0 flex-1">
+                <p className="text-primary text-[10px] font-bold tracking-[0.22em] uppercase">{t("dashFinalEyebrow")}</p>
+                <p className="text-text-strong mt-2 text-lg font-bold leading-tight sm:text-xl">
+                  {results.posts.length > 0
+                    ? t("resultsStatsLine", { g: results.guardians.length, p: results.posts.length })
+                    : t("resultsStatsGuardiansOnly", { g: results.guardians.length })}
+                </p>
+                {results.guardians.length > 0 ? (
+                  <p className="text-muted-foreground mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm">{t("dashDecisionHelperShort")}</p>
+                ) : null}
+                <p className="text-foreground mt-3 text-sm font-medium leading-snug">{criteriaLine}</p>
               </div>
+              {results.guardians.length > 0 ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className={cn(listCardActionButtonClass, "h-10 w-full shrink-0 sm:mt-1 sm:w-auto")}
+                  disabled={resultsSpinDisabled}
+                  onClick={onReRecommend}
+                >
+                  {t("reRecommend")}
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
-
-          {/* Why */}
-          <section className="border-border/60 bg-card rounded-[1.35rem] border p-5 shadow-[var(--shadow-sm)] sm:p-6">
-            <h3 className="text-foreground font-semibold">{t("dashWhyTitle")}</h3>
-            <p className="text-muted-foreground mt-1 text-sm">{t("dashWhyIntro")}</p>
-            <ul className="mt-4 space-y-2.5">
-              {reasons.map((line, i) => (
-                <li key={`${i}-${line.slice(0, 24)}`} className="text-foreground flex gap-2 text-sm leading-relaxed">
-                  <span className="bg-primary mt-1.5 size-1.5 shrink-0 rounded-full" aria-hidden />
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </section>
 
           {results.guardians.length === 0 ? (
             <div className="border-border/60 rounded-[1.35rem] border border-dashed bg-muted/10 p-10 text-center">
@@ -800,12 +739,12 @@ export function ExploreResultsDashboard(props: {
                   <Card className="border-primary/35 from-primary/[0.09] ring-primary/15 overflow-hidden rounded-[1.5rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-lg)] ring-2">
                     <CardContent className="p-0">
                       <div className="flex flex-col lg:flex-row">
-                        <div className="relative aspect-[5/4] w-full overflow-hidden bg-muted lg:aspect-auto lg:max-w-[300px] lg:min-h-[260px] lg:shrink-0">
+                        <div className="relative aspect-[5/4] w-full min-h-0 overflow-hidden bg-muted lg:aspect-auto lg:max-w-[300px] lg:min-h-[260px] lg:shrink-0">
                           <Image
                             src={guardianProfileImageUrls(featured).landscape}
                             alt=""
                             fill
-                            className={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+                            className={GUARDIAN_PROFILE_HERO_COVER_CLASS}
                             sizes="(max-width:1024px) 100vw, 300px"
                           />
                           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
@@ -830,10 +769,29 @@ export function ExploreResultsDashboard(props: {
                               <Badge variant="outline" className="rounded-full text-[10px] font-medium">
                                 {(tLaunch.raw(featured.launch_area_slug) as { name: string }).name}
                               </Badge>
+                              <Badge variant="outline" className="rounded-full font-mono text-[10px] font-medium">
+                                {guardianLangsLine(featured)}
+                              </Badge>
                             </div>
+                            <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
+                              {t("dashCardMatchLine", {
+                                area: (tLaunch.raw(featured.launch_area_slug) as { name: string }).name,
+                                theme: themeTitleForUi,
+                                langs: guardianLangsLine(featured),
+                              })}
+                            </p>
+                            {featured.companion_style_slugs.length > 0 ? (
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                {featured.companion_style_slugs.slice(0, 2).map((slug) => (
+                                  <Badge key={slug} variant="secondary" className="rounded-full text-[10px] font-medium">
+                                    {tStyles(slug)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : null}
                             <div className="border-primary/20 bg-primary/5 mt-3 rounded-xl border px-3 py-2">
                               <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("dashGuardianWhyLabel")}</p>
-                              <p className="text-foreground mt-1 text-sm font-medium leading-snug">{guardianFitOneLiner(featured)}</p>
+                              <p className="text-foreground mt-1 text-sm font-medium leading-snug">{guardianPositioningLine(locale, featured)}</p>
                             </div>
                             <TrustBadgeRow ids={featured.trust_badge_ids} className="mt-3" size="sm" />
                           </div>
@@ -883,13 +841,14 @@ export function ExploreResultsDashboard(props: {
                 <section className="space-y-3">
                   <h3 className="text-foreground font-semibold">{t("dashMoreGuardians")}</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {more.map((g) => {
+                    {more.map((g, idx) => {
                       const repCtx = postContextFromGuardianRepresentative(g, mockContentPosts);
+                      const rankN = idx + 2;
                       return (
-                      <Card key={g.user_id} className="overflow-hidden rounded-2xl border-border/70 py-0 shadow-[var(--shadow-sm)]">
+                      <Card key={g.user_id} className="overflow-hidden rounded-2xl border-border/70 py-0 shadow-[var(--shadow-sm)] ring-1 ring-border/40">
                         <CardContent className="p-4 sm:p-5">
                           <div className="flex gap-4">
-                            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl sm:size-24">
+                            <div className="relative size-20 min-h-0 min-w-0 shrink-0 overflow-hidden rounded-xl sm:size-24">
                               <Image
                                 src={guardianProfileImageUrls(g).avatar}
                                 alt=""
@@ -897,21 +856,39 @@ export function ExploreResultsDashboard(props: {
                                 className={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
                                 sizes="96px"
                               />
+                              <div className="absolute top-1 left-1">
+                                <Badge className="rounded-md bg-foreground/90 px-1.5 py-0 text-[9px] font-bold text-background">
+                                  {t("dashRankN", { n: rankN })}
+                                </Badge>
+                              </div>
                             </div>
                             <div className="min-w-0 flex-1">
                               <span className="font-semibold leading-snug">{g.display_name}</span>
-                              <div className="mt-1 flex flex-wrap items-center gap-2">
+                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
                                 <Badge
                                   variant={guardianTierBadgeVariant(g.guardian_tier)}
                                   className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME)}
                                 >
                                   {tTier(g.guardian_tier)}
                                 </Badge>
+                                <Badge variant="outline" className="rounded-full text-[9px] font-medium">
+                                  {(tLaunch.raw(g.launch_area_slug) as { name: string }).name}
+                                </Badge>
+                                <span className="text-muted-foreground font-mono text-[10px]">{guardianLangsLine(g)}</span>
                               </div>
+                              {g.companion_style_slugs.length > 0 ? (
+                                <div className="mt-1.5 flex flex-wrap gap-1">
+                                  {g.companion_style_slugs.slice(0, 2).map((slug) => (
+                                    <Badge key={slug} variant="secondary" className="rounded-full text-[9px] font-normal">
+                                      {tStyles(slug)}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : null}
                               <div className="border-border/60 bg-muted/20 mt-2 rounded-lg border border-dashed px-2.5 py-1.5">
                                 <p className="text-primary text-[9px] font-bold uppercase tracking-wide">{t("dashGuardianWhyLabel")}</p>
                                 <p className="text-foreground mt-0.5 line-clamp-2 text-xs font-medium leading-snug">
-                                  {guardianFitOneLiner(g)}
+                                  {guardianPositioningLine(locale, g)}
                                 </p>
                               </div>
                               <TrustBadgeRow ids={g.trust_badge_ids} className="mt-2" size="sm" />
@@ -959,27 +936,60 @@ export function ExploreResultsDashboard(props: {
             </>
           )}
 
-          {/* Routes */}
-          {routePosts.length > 0 ? (
-            <section className="space-y-3">
-              <h3 className="text-foreground font-semibold">{t("dashRoutesTitle")}</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {routePosts.map((p) => (
-                  <PostPreviewSheetCardRoute key={p.id} post={p} badgeLabel={t("dashRouteBadge")} />
+          {/* 포스트는 보조 증거 — 가디언 아래 소형 카드 + 시트 */}
+          {results.posts.length > 0 ? (
+            <section className="border-border/50 space-y-3 rounded-[1.25rem] border border-dashed bg-muted/10 px-4 py-5 sm:px-5">
+              <div>
+                <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("postsSecondaryEyebrow")}</h3>
+                <p className="text-foreground mt-1 text-sm font-semibold">{t("postsSecondaryTitle")}</p>
+                <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{t("postsSecondaryLead")}</p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {topPosts.map((p) => (
+                  <ExploreJourneyPostCompactCard key={p.id} post={p} routeBadgeLabel={t("dashRouteBadge")} />
                 ))}
               </div>
-            </section>
-          ) : null}
-
-          {/* Articles */}
-          {articlePosts.length > 0 ? (
-            <section className="space-y-3">
-              <h3 className="text-foreground font-semibold">{t("dashPostsTitle")}</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {articlePosts.map((p) => (
-                  <PostPreviewSheetCardArticle key={p.id} post={p} />
-                ))}
-              </div>
+              {extraPosts.length > 0 ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-xl text-xs font-semibold sm:w-auto"
+                    onClick={() => setPostsSheetOpen(true)}
+                  >
+                    {t("postsSeeAll", { count: results.posts.length })}
+                  </Button>
+                  <Sheet open={postsSheetOpen} onOpenChange={setPostsSheetOpen}>
+                    <SheetContent side="bottom" className="max-h-[88vh] rounded-t-2xl">
+                      <SheetHeader>
+                        <SheetTitle>{t("postsSheetTitle")}</SheetTitle>
+                      </SheetHeader>
+                      <ul className="mt-4 max-h-[min(60vh,28rem)] space-y-2 overflow-y-auto px-1 pb-4">
+                        {results.posts.map((p) => (
+                          <li key={p.id}>
+                            <Link
+                              href={`/posts/${p.id}`}
+                              className="border-border/60 hover:bg-muted/40 flex items-start gap-3 rounded-xl border bg-card p-3 text-left transition-colors"
+                              onClick={() => setPostsSheetOpen(false)}
+                            >
+                              <div className="relative h-14 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
+                                {getPostHeroImageUrl(p) ? (
+                                  <Image src={getPostHeroImageUrl(p)} alt="" fill className="object-cover" sizes="80px" />
+                                ) : null}
+                              </div>
+                              <span className="min-w-0 flex-1">
+                                <span className="text-foreground line-clamp-2 text-sm font-semibold leading-snug">{p.title}</span>
+                                <span className="text-primary mt-1 block text-xs font-medium">{tHub("readPost")} →</span>
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </SheetContent>
+                  </Sheet>
+                </>
+              ) : null}
             </section>
           ) : null}
         </>
