@@ -133,7 +133,7 @@ export function MypageHubShell({
       pathname.startsWith("/mypage/guardian/points"));
   const guardianTabMuted = !snapshot.guardianSegmentUnlocked;
   const showIdentityHero = shouldShowMypageIdentityHero(pathname, hubMode);
-  const attention = useMypageAttentionView(snapshot, pathname, accountUserId, hubMode);
+  const { attention, markBlockAttentionSeen } = useMypageAttentionView(snapshot, pathname, accountUserId, hubMode);
 
   useEffect(() => {
     if (!modeReady) return;
@@ -169,7 +169,7 @@ export function MypageHubShell({
   );
 
   return (
-    <MypageHubProvider value={{ appRole, guardianStatus, accountUserId, snapshot, attention }}>
+    <MypageHubProvider value={{ appRole, guardianStatus, accountUserId, snapshot, attention, markBlockAttentionSeen }}>
       <div className="bg-[var(--bg-page)] flex min-h-screen w-full max-w-[100vw] flex-col md:flex-row">
         <aside
           className={cn(

@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const filePath = path.join(process.cwd(), ...JSON_PATH);
+  const filePath = path.join(/* turbopackIgnore: true */ process.cwd(), ...JSON_PATH);
   let fileOk = true;
   try {
     await writeFile(filePath, JSON.stringify(body.galleries, null, 2), "utf8");

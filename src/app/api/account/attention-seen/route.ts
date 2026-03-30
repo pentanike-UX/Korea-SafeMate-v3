@@ -1,33 +1,65 @@
 import { NextResponse } from "next/server";
-import { isAttentionMenuKey, getSeenMapForUser, upsertSeenSignature } from "@/lib/mypage-attention-seen.server";
+import {
+  getBlockSeenMapForUser,
+  getSeenMapForUser,
+  isAttentionBlockKey,
+  isAttentionMenuKey,
+  upsertBlockSeenSignature,
+  upsertSeenSignature,
+} from "@/lib/mypage-attention-seen.server";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 
-/** GET — 현재 세션 사용자의 메뉴별 seen 시그니처 */
+/** GET — 메뉴·블록별 seen 시그니처 */
 export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const seen = await getSeenMapForUser(userId);
-  return NextResponse.json({ seen });
+  const [seen, blockSeen] = await Promise.all([getSeenMapForUser(userId), getBlockSeenMapForUser(userId)]);
+  return NextResponse.json({ seen, blockSeen });
 }
 
-/** POST — 메뉴 이탈 시 seen 시그니처 저장 */
+type PostBody =
+  | { scope: "menu"; menuKey: string; signature: string }
+  | { scope: "block"; blockKey: string; signature: string }
+  | { menuKey?: string; signature?: string };
+
+/** POST — 메뉴 이탈(비파티션) 또는 블록 관측 시 seen 저장 */
 export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { menuKey?: string; signature?: string };
+  let body: PostBody;
   try {
-    body = (await req.json()) as typeof body;
+    body = (await req.json()) as PostBody;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const menuKey = typeof body.menuKey === "string" ? body.menuKey.trim() : "";
-  const signature = typeof body.signature === "string" ? body.signature : "";
+  if (body && typeof body === "object" && "scope" in body && body.scope === "block") {
+    const blockKey = typeof body.blockKey === "string" ? body.blockKey.trim() : "";
+    const signature = typeof body.signature === "string" ? body.signature : "";
+    if (!blockKey || !isAttentionBlockKey(blockKey)) {
+      return NextResponse.json({ error: "Invalid blockKey" }, { status: 400 });
+    }
+    if (!signature) {
+      return NextResponse.json({ error: "signature required" }, { status: 400 });
+    }
+    await upsertBlockSeenSignature(userId, blockKey, signature);
+    return NextResponse.json({ ok: true });
+  }
+
+  const menuKey =
+    body && typeof body === "object" && "menuKey" in body && typeof body.menuKey === "string"
+      ? body.menuKey.trim()
+      : "";
+  const signature =
+    body && typeof body === "object" && "signature" in body && typeof body.signature === "string"
+      ? body.signature
+      : "";
+
   if (!menuKey || !isAttentionMenuKey(menuKey)) {
     return NextResponse.json({ error: "Invalid menuKey" }, { status: 400 });
   }

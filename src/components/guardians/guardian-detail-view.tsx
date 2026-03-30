@@ -18,6 +18,7 @@ import { GuardianRequestDefaultsPublisher } from "@/components/guardians/guardia
 import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
 import { GuardianStickyCta } from "@/components/guardians/guardian-sticky-cta";
 import { GuardianTravelerReviewsList } from "@/components/guardians/guardian-traveler-reviews-list";
+import { clampSheetHeadline } from "@/lib/guardian-sheet-headline";
 import { filterIntroGalleryExcludingHero } from "@/lib/guardian-intro-gallery";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
 import { GuardianIntroGallery } from "@/components/guardians/guardian-intro-gallery";
@@ -87,6 +88,10 @@ export async function GuardianDetailView({
     .map((p) => p.trim())
     .filter(Boolean);
 
+  const heroHeadline =
+    g.headline?.trim() || longBioParagraphs[0]?.trim() || line(g.positioning).trim() || "";
+  const sheetHeadlineForPublisher = clampSheetHeadline(heroHeadline || line(g.positioning));
+
   const categoryLabel = (slug: string) => mockContentCategories.find((c) => c.slug === slug)?.name ?? slug;
 
   return (
@@ -94,7 +99,7 @@ export async function GuardianDetailView({
       <GuardianRequestDefaultsPublisher
         guardianUserId={g.user_id}
         displayName={g.display_name}
-        headline={g.headline}
+        headline={sheetHeadlineForPublisher}
         avatarUrl={imgs.avatar}
         suggestedRegionSlug={sheetRegion}
       />
@@ -143,9 +148,11 @@ export async function GuardianDetailView({
                     </div>
                   </div>
                 </div>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-base">
-                  {g.headline}
-                </p>
+                {heroHeadline ? (
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-base">
+                    {heroHeadline}
+                  </p>
+                ) : null}
                 {showHeroReviews ? (
                   <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:mt-3">
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-black/30 px-2.5 py-1 text-sm text-white shadow-inner backdrop-blur-sm">

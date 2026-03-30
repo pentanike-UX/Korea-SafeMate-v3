@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { GuardianRequestDefaultsPublisher } from "@/components/guardians/guardian-request-defaults-publisher";
+import { GuardianRequestIntakeBullets } from "@/components/guardians/guardian-request-intake-bullets";
 import { GuardianRequestOpenTrigger, type GuardianRequestSheetHostProps } from "@/components/guardians/guardian-request-sheet";
 import { postCoverImageUrl, getSpotDisplayImageAlt, getSpotDisplayImageUrl } from "@/lib/content-post-route";
 import { buildLocalPostVisualPlan, localHeroAlt, type LocalPostVisualPlan } from "@/lib/post-local-images";
@@ -367,16 +368,19 @@ export function RoutePostDetailClient({
       <div className="border-border/50 mt-12 rounded-2xl border bg-gradient-to-br from-[var(--brand-primary-soft)] to-white p-8 text-center shadow-[var(--shadow-sm)]">
         <p className="text-text-strong text-lg font-semibold">{t("bottomCtaTitle")}</p>
         <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-relaxed">{t("bottomCtaLead")}</p>
-        <ul className="text-muted-foreground mx-auto mt-4 max-w-md list-inside list-disc space-y-1 text-left text-xs leading-relaxed">
-          <li>{tReq("asideBulletHalfFull")}</li>
-          <li>{tReq("asideBulletRegion")}</li>
-          <li>{tReq("asideBulletTheme")}</li>
-          <li>{tReq("asideBulletFlexible")}</li>
-        </ul>
+        <GuardianRequestIntakeBullets className="mx-auto mt-4 max-w-md text-left" />
         <GuardianRequestOpenTrigger
           size="lg"
           className="mt-6 rounded-2xl px-10"
-          postContext={{ postId: post.id, postTitle: post.title }}
+          openDetail={{
+            guardianUserId: requestHost.guardianUserId,
+            displayName: requestHost.displayName,
+            headline: requestHost.headline,
+            avatarUrl: requestHost.avatarUrl,
+            suggestedRegionSlug: requestHost.suggestedRegionSlug ?? null,
+            postId: post.id,
+            postTitle: post.title,
+          }}
         >
           {tReq("openCta")}
         </GuardianRequestOpenTrigger>

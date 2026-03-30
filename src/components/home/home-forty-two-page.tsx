@@ -9,7 +9,6 @@ import { HomeExploreBundle } from "@/components/home/home-explore-bundle";
 import { FileText, Languages, MessageCircle, ShieldCheck, Star, Zap } from "lucide-react";
 
 const POSTS_PREVIEW = 4;
-const REVIEWS_PREVIEW = 2;
 
 export async function HomeFortyTwoPage() {
   const t = await getTranslations("Home");
@@ -22,7 +21,7 @@ export async function HomeFortyTwoPage() {
     .sort((a, b) => b.popular_score - a.popular_score)
     .slice(0, POSTS_PREVIEW);
 
-  const reviews = mockTravelerReviewsHomeSpotlight().slice(0, REVIEWS_PREVIEW);
+  const reviews = mockTravelerReviewsHomeSpotlight();
 
   const trustItems = [
     ["trust42CardVerified", "trust42CardVerifiedDesc", ShieldCheck],
@@ -58,31 +57,38 @@ export async function HomeFortyTwoPage() {
                 </Card>
               ))}
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-              {reviews.map((r) => {
-                const text = isKo ? (r.comment ?? "") : (r.comment_en ?? r.comment ?? "");
-                const timeLabel =
-                  locale === "ko"
-                    ? r.time_label_ko
-                    : locale === "ja"
-                      ? (r.time_label_ja ?? r.time_label_en ?? r.time_label_ko)
-                      : r.time_label_en;
-                const who = r.reviewer_display_name ?? tHub("reviewsAnonymous");
-                const meta = [who, timeLabel].filter(Boolean).join(" · ");
-                return (
-                  <Card key={r.id} className="border-border/70 rounded-[var(--radius-md)] border bg-card/95">
-                    <CardContent className="flex flex-col gap-2.5 p-4 sm:p-5">
-                      <div className="flex items-center gap-0.5 text-amber-500">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={i < r.rating ? "size-3.5 fill-current sm:size-4" : "size-3.5 sm:size-4"} aria-hidden />
-                        ))}
-                      </div>
-                      <p className="text-foreground text-sm leading-relaxed">&ldquo;{text}&rdquo;</p>
-                      <p className="text-muted-foreground text-[11px] font-medium sm:text-xs">{meta}</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+                {reviews.map((r) => {
+                  const text = isKo ? (r.comment ?? "") : (r.comment_en ?? r.comment ?? "");
+                  const timeLabel =
+                    locale === "ko"
+                      ? r.time_label_ko
+                      : locale === "ja"
+                        ? (r.time_label_ja ?? r.time_label_en ?? r.time_label_ko)
+                        : r.time_label_en;
+                  const who = r.reviewer_display_name ?? tHub("reviewsAnonymous");
+                  const meta = [who, timeLabel].filter(Boolean).join(" · ");
+                  return (
+                    <Card key={r.id} className="border-border/70 rounded-[var(--radius-md)] border bg-card/95">
+                      <CardContent className="flex flex-col gap-2.5 p-4 sm:p-5">
+                        <div className="flex items-center gap-0.5 text-amber-500">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={i < r.rating ? "size-3.5 fill-current sm:size-4" : "size-3.5 sm:size-4"} aria-hidden />
+                          ))}
+                        </div>
+                        <p className="text-foreground text-sm leading-relaxed">&ldquo;{text}&rdquo;</p>
+                        <p className="text-muted-foreground text-[11px] font-medium sm:text-xs">{meta}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+              <div className="flex justify-end">
+                <TextActionLink href="/about#traveler-voices" className="text-sm sm:text-[15px]">
+                  {t("credibilityReviewsMore")}
+                </TextActionLink>
+              </div>
             </div>
           </div>
         </div>

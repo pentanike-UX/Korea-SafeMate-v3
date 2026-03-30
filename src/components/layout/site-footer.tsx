@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import NextLink from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -10,15 +11,16 @@ export async function SiteFooter() {
   const tNav = await getTranslations("Nav");
   const tHeader = await getTranslations("Header");
 
-  const sitemap: { href: string; label: string }[] = [
+  type AppHref = ComponentProps<typeof Link>["href"];
+  const sitemap: { href: AppHref; label: string }[] = [
     { href: "/explore", label: tNav("explore") },
     { href: "/posts", label: tNav("posts") },
     { href: "/guardians", label: tNav("guardians") },
     { href: "/mypage", label: tHeader("myJourney") },
     { href: "/about", label: tNav("about") },
     { href: "/guardians/apply", label: tFooter("apply") },
-    { href: "/about#terms", label: tFooter("termsLink") },
-    { href: "/about#privacy", label: tFooter("privacyLink") },
+    { href: "/about#terms" as AppHref, label: tFooter("termsLink") },
+    { href: "/about#privacy" as AppHref, label: tFooter("privacyLink") },
   ];
 
   const linkQuiet =
@@ -47,7 +49,7 @@ export async function SiteFooter() {
               <ul className="grid grid-cols-2 gap-x-6 gap-y-0.5 sm:max-w-md">
                 {sitemap.map((item) => (
                   <li key={`${item.href}-${item.label}`}>
-                    <Link href={item.href as never} className={linkQuiet}>
+                    <Link href={item.href} className={linkQuiet}>
                       {item.label}
                     </Link>
                   </li>

@@ -337,6 +337,25 @@ export function AboutLanding() {
         </div>
       </SectionShell>
 
+      <SectionShell id="traveler-voices" className="page-container max-w-3xl px-4 py-12 sm:px-6 sm:py-14">
+        <h2 className="text-text-strong text-xl font-semibold tracking-tight sm:text-2xl">{t("travelerVoicesTitle")}</h2>
+        <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-relaxed sm:text-[15px]">{t("travelerVoicesLead")}</p>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Button asChild className="h-11 rounded-[var(--radius-md)] px-6 font-semibold">
+            <Link href="/explore" className="inline-flex items-center justify-center gap-2">
+              <Compass className="size-4 opacity-90" strokeWidth={1.75} aria-hidden />
+              {t("travelerVoicesCtaExplore")}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-11 rounded-[var(--radius-md)] border-border/80 px-6 font-semibold">
+            <Link href="/guardians" className="inline-flex items-center justify-center gap-2">
+              <Users className="size-4 opacity-90" strokeWidth={1.75} aria-hidden />
+              {t("travelerVoicesCtaGuardians")}
+            </Link>
+          </Button>
+        </div>
+      </SectionShell>
+
       <SectionShell className="page-container max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
         <p className="text-muted-foreground text-center text-sm">{t("landing.legalIntro")}</p>
         <div className="mt-8 space-y-3">

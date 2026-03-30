@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { GuardianProfileNeedsRevisionBoundary } from "@/components/guardian/guardian-profile-needs-revision-boundary";
 import { GuardianProfileEditForm } from "@/components/guardian/guardian-profile-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +74,7 @@ export async function GuardianProfileEditScreen() {
   ]);
 
   return (
+    <GuardianProfileNeedsRevisionBoundary>
     <div className="mx-auto max-w-2xl space-y-8 py-2">
       <div>
         <h1 className="text-text-strong text-2xl font-semibold tracking-tight">{t("pageTitle")}</h1>
@@ -116,5 +118,6 @@ export async function GuardianProfileEditScreen() {
         </CardContent>
       </Card>
     </div>
+    </GuardianProfileNeedsRevisionBoundary>
   );
 }

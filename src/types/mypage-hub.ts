@@ -50,6 +50,8 @@ export type TravelerBlockAttention = {
   savedGuardianCount: number;
   /** 저장 포스트 수 — 시그니처·블록 배지용 (샘플 또는 추후 DB) */
   savedPostCount: number;
+  /** 추후: 여행자에게 도착한 신규 리뷰·피드백 (현재 0) */
+  inboundReviewSignals: number;
 };
 
 export type GuardianWorkspaceBlockAttention = {
@@ -58,6 +60,9 @@ export type GuardianWorkspaceBlockAttention = {
   openPoolSignal: number;
   postsPendingReview: number;
   postsDrafts: number;
+  inProgressBookings: number;
+  /** 계정 단위 최근 7일 원장 건수(여행자 블록과 동일 소스) */
+  pointsRecentLedgerCount: number;
 };
 
 export type MypageHubSnapshot = {
@@ -73,13 +78,67 @@ export type MypageHubSnapshot = {
   guardianWorkspaceNavSignatures: Record<GuardianWorkspaceNavBadgeKey, string>;
   travelerBlockAttention: TravelerBlockAttention;
   guardianWorkspaceBlockAttention: GuardianWorkspaceBlockAttention | null;
+  blockAttentionCounts: Record<AttentionBlockKey, number>;
+  blockAttentionSignatures: Record<AttentionBlockKey, string>;
 };
 
 export type AttentionMenuKey = TravelerNavBadgeKey | GuardianWorkspaceNavBadgeKey;
 
+/**
+ * 블록 단위 attention — 메뉴(LNB)보다 세분화된 read 상태.
+ * 시그니처·raw count는 `getMypageHubSnapshot`에서 채운다.
+ */
+export const ATTENTION_BLOCK_KEYS = [
+  "traveler.journeys.openTrips",
+  "traveler.journeys.savedGuardians",
+  "traveler.journeys.savedPosts",
+  "traveler.matches.newResponses",
+  "traveler.matches.reviewDue",
+  "traveler.points.newEarnings",
+  "traveler.reviews.newInbound",
+  "guardian.posts.pendingReview",
+  "guardian.posts.drafts",
+  "guardian.matches.newRequests",
+  "guardian.matches.reviewQueue",
+  "guardian.matches.activeProgress",
+  "guardian.points.newEarnings",
+  "guardian.profile.needsRevision",
+] as const;
+export type AttentionBlockKey = (typeof ATTENTION_BLOCK_KEYS)[number];
+
+/** 블록이 속한 LNB 메뉴(파티션된 메뉴는 블록 합으로 unread 계산) */
+export const ATTENTION_BLOCK_PARENT_MENU: Record<AttentionBlockKey, AttentionMenuKey | null> = {
+  "traveler.journeys.openTrips": "navJourneys",
+  "traveler.journeys.savedGuardians": "navJourneys",
+  "traveler.journeys.savedPosts": "navJourneys",
+  "traveler.matches.newResponses": "navMatches",
+  "traveler.matches.reviewDue": "navMatches",
+  "traveler.points.newEarnings": "navPoints",
+  "traveler.reviews.newInbound": "navMatches",
+  "guardian.posts.pendingReview": "guardianNavPosts",
+  "guardian.posts.drafts": "guardianNavPosts",
+  "guardian.matches.newRequests": "guardianNavMatches",
+  "guardian.matches.reviewQueue": "guardianNavMatches",
+  "guardian.matches.activeProgress": "guardianNavMatches",
+  "guardian.points.newEarnings": "guardianNavPoints",
+  "guardian.profile.needsRevision": "guardianNavProfile",
+};
+
+/** 메뉴 이탈 시 자동 seen(레거시)을 적용하지 않는 메뉴 — 블록 관측/명시적 seen만 사용 */
+export const ATTENTION_MENU_KEYS_PARTITIONED_TO_BLOCKS: AttentionMenuKey[] = [
+  "navJourneys",
+  "navMatches",
+  "navPoints",
+  "guardianNavPosts",
+  "guardianNavMatches",
+  "guardianNavPoints",
+  "guardianNavProfile",
+];
+
 export type MypageHubAttentionView = {
   unreadTravelerNavBadges: Record<TravelerNavBadgeKey, number>;
   unreadGuardianWorkspaceNavBadges: Record<GuardianWorkspaceNavBadgeKey, number>;
+  unreadBlockBadges: Record<AttentionBlockKey, number>;
   unreadTravelerBadgeCount: number;
   unreadGuardianBadgeCount: number;
   unreadGlobalAttentionDot: boolean;
@@ -91,4 +150,5 @@ export type MypageHubContextValue = {
   accountUserId: string | null;
   snapshot: MypageHubSnapshot;
   attention: MypageHubAttentionView;
+  markBlockAttentionSeen: (blockKey: AttentionBlockKey, signature: string) => void;
 };

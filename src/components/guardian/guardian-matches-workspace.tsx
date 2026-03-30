@@ -4,15 +4,14 @@ import {
   GuardianMatchesActiveBadge,
   GuardianMatchesPendingBadge,
 } from "@/components/mypage/mypage-guardian-matches-attention-badges";
-import { GuardianMatchAcceptButton } from "@/components/mypage/match-request-row-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { GuardianMatchesPageBlockBoundary } from "@/components/guardian/guardian-matches-page-block-boundary";
+import { GuardianMatchDetailSheetTrigger } from "@/components/mypage/guardian-match-detail-sheet";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
-import type { StoredMatchRequest } from "@/lib/traveler-match-requests";
 import { getMatchRequestsForGuardian } from "@/lib/traveler-match-requests.server";
 import { matchStatusChipClass } from "@/lib/mypage-status-badge";
-import { MypageTravelerInfoSheetTrigger } from "@/components/mypage/mypage-traveler-info-sheet-trigger";
 
 export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: string }) {
   const t = await getTranslations("TravelerHub");
@@ -23,6 +22,7 @@ export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: str
   const done = items.filter((r) => r.status === "completed");
 
   return (
+    <GuardianMatchesPageBlockBoundary>
     <div className="space-y-8">
       <div>
         <h1 className="text-text-strong text-2xl font-semibold tracking-tight">{t("guardianMatchesPageTitle")}</h1>
@@ -84,8 +84,7 @@ export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: str
                     <p className="text-muted-foreground font-mono text-[11px] break-all">{r.id}</p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
-                    <MypageTravelerInfoSheetTrigger travelerId={r.traveler_user_id} matchId={r.id} />
-                    {r.status === "requested" ? <GuardianMatchAcceptButton matchId={r.id} /> : null}
+                    <GuardianMatchDetailSheetTrigger row={r} />
                   </div>
                 </CardContent>
               </Card>
@@ -94,5 +93,6 @@ export async function GuardianMatchesWorkspace({ guardianId }: { guardianId: str
         </ul>
       )}
     </div>
+    </GuardianMatchesPageBlockBoundary>
   );
 }

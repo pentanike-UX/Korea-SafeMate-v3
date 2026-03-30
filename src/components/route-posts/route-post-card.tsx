@@ -9,6 +9,7 @@ import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 import { GuardianMiniPreviewSheetTrigger } from "@/components/guardians/guardian-mini-preview-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { listCardActionButtonClass, listCardMetaBlockClass } from "@/components/ui/action-variants";
 import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 
@@ -78,7 +79,7 @@ export function RoutePostCard({ post, regionLabel, className }: { post: ContentP
         </div>
       </Link>
       <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-1 sm:px-5 sm:pb-5 sm:pt-2">
-        <div className="text-muted-foreground space-y-1 text-xs leading-snug">
+        <div className={listCardMetaBlockClass}>
           <p>
             <span className="text-foreground font-medium">{t("cardSpots", { count: journey.spots.length })}</span>
             <span aria-hidden> · </span>
@@ -95,7 +96,7 @@ export function RoutePostCard({ post, regionLabel, className }: { post: ContentP
           </p>
         </div>
         <div className="mt-auto flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <Button asChild size="sm" className="h-9 min-h-9 flex-1 rounded-xl px-3 text-xs font-semibold sm:text-sm">
+          <Button asChild size="sm" className={cn(listCardActionButtonClass, "flex-1")}>
             <Link href={`/posts/${post.id}`}>{t("ctaViewRoute")}</Link>
           </Button>
           <GuardianMiniPreviewSheetTrigger
@@ -103,7 +104,7 @@ export function RoutePostCard({ post, regionLabel, className }: { post: ContentP
             displayName={post.author_display_name}
             subtitle={post.summary}
             triggerLabel={t("ctaChooseGuardian")}
-            triggerClassName="h-9 min-h-9 flex-1 px-3 text-xs font-semibold sm:text-sm"
+            triggerClassName={cn(listCardActionButtonClass, "flex-1")}
             size="sm"
           />
         </div>

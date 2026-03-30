@@ -5,6 +5,7 @@ import { getPostHeroImageUrl } from "@/lib/content-post-route";
 import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
+import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
 import { relatedPostsForMerged } from "@/lib/posts-public-merged.server";
 import { SaveTravelerPostButton } from "@/components/posts/save-traveler-post-button";
 import { PostAuthorAside } from "@/components/posts/post-author-aside";
@@ -18,7 +19,7 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
   const related = await relatedPostsForMerged(post, 4);
   const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const sheetAvatar = guardian ? guardianProfileImageUrls(guardian).avatar : getPostHeroImageUrl(post);
-  const sheetHeadline = guardian?.headline ?? post.summary;
+  const sheetHeadline = clampSheetHeadline(resolveGuardianHeadlineWithPostFallback(guardian?.headline, post.summary));
   const sheetName = guardian?.display_name ?? post.author_display_name;
   const sheetRegion =
     guardian && mockRegions.some((r) => r.slug === guardian.primary_region_slug)
@@ -46,7 +47,7 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
             requestHost={{
               guardianUserId: post.author_user_id,
               displayName: sheetName,
-              headline: sheetHeadline.length > 180 ? `${sheetHeadline.slice(0, 177)}…` : sheetHeadline,
+              headline: sheetHeadline,
               avatarUrl: sheetAvatar,
               suggestedRegionSlug: sheetRegion,
             }}

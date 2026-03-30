@@ -43,12 +43,12 @@ export function ExplorationFilterSummaryBar({
 }) {
   return (
     <div
-      className="flex min-h-10 flex-wrap items-center gap-x-2 gap-y-2 sm:min-h-11 sm:gap-x-2.5 sm:gap-y-2"
+      className="flex min-h-9 flex-wrap items-center gap-x-1.5 gap-y-2 min-[400px]:gap-x-2 sm:min-h-10 sm:gap-x-2.5 sm:gap-y-2"
       aria-label={summaryAriaLabel}
     >
       <div
         className={cn(
-          "border-border/60 bg-muted/35 flex min-h-9 min-w-0 flex-1 flex-wrap content-center items-center gap-1.5 rounded-[var(--radius-md)] border px-2 py-1.5 sm:min-h-10 sm:gap-2 sm:px-2.5 sm:py-2",
+          "border-border/60 bg-muted/35 flex min-h-9 min-w-0 flex-1 flex-wrap content-center items-center gap-1 rounded-[var(--radius-md)] border px-1.5 py-1.5 min-[400px]:gap-1.5 min-[400px]:px-2 sm:min-h-10 sm:gap-2 sm:px-2.5 sm:py-2",
         )}
       >
         {chips.length === 0 ? (
@@ -62,7 +62,7 @@ export function ExplorationFilterSummaryBar({
               aria-label={chipClearLabel(c.label)}
               className={cn(
                 "border-primary/20 bg-primary text-primary-foreground shadow-sm",
-                "inline-flex h-8 max-w-full min-w-0 items-center gap-1 rounded-full border px-2.5 pl-3 text-[11px] font-semibold sm:max-w-[min(280px,42vw)] sm:text-xs",
+                "inline-flex h-9 min-h-9 max-w-full min-w-0 items-center gap-1 rounded-full border px-2 pl-2.5 text-[11px] font-semibold sm:max-w-[min(280px,42vw)] sm:px-2.5 sm:pl-3 sm:text-xs",
                 "active:scale-[0.98]",
               )}
             >
@@ -72,7 +72,7 @@ export function ExplorationFilterSummaryBar({
           ))
         )}
       </div>
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+      <div className="flex w-full min-w-0 shrink-0 flex-wrap items-center justify-end gap-1 min-[400px]:w-auto min-[400px]:gap-1.5 sm:gap-2">
         <span
           className="text-muted-foreground tabular-nums text-[11px] font-semibold sm:hidden"
           title={resultSummary}

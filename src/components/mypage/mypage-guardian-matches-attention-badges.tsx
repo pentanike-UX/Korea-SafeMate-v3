@@ -7,15 +7,15 @@ import { useMypageHubContext } from "@/components/mypage/mypage-hub-context";
 export function GuardianMatchesPendingBadge({ count }: { count: number }) {
   const t = useTranslations("TravelerHub");
   const ctx = useMypageHubContext();
-  const unread = ctx?.attention.unreadGuardianWorkspaceNavBadges.guardianNavMatches ?? 0;
-  if (count < 1 || unread < 1) return null;
-  return <BlockAttentionBadge count={count} ariaLabel={t("attentionGuardianMatchIncoming")} />;
+  const u = ctx?.attention.unreadBlockBadges["guardian.matches.newRequests"] ?? 0;
+  if (count < 1 || u < 1) return null;
+  return <BlockAttentionBadge count={u} ariaLabel={t("attentionGuardianMatchIncoming")} />;
 }
 
 export function GuardianMatchesActiveBadge({ count }: { count: number }) {
   const t = useTranslations("TravelerHub");
   const ctx = useMypageHubContext();
-  const unread = ctx?.attention.unreadGuardianWorkspaceNavBadges.guardianNavMatches ?? 0;
-  if (count < 1 || unread < 1) return null;
-  return <BlockAttentionBadge count={count} ariaLabel={t("attentionBlockMatchesActive")} />;
+  const u = ctx?.attention.unreadBlockBadges["guardian.matches.activeProgress"] ?? 0;
+  if (count < 1 || u < 1) return null;
+  return <BlockAttentionBadge count={u} ariaLabel={t("attentionBlockMatchesActive")} />;
 }

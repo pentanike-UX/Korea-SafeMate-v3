@@ -42,7 +42,13 @@ export function TravelerMatchCompleteButton({ matchId }: { matchId: string }) {
   );
 }
 
-export function GuardianMatchAcceptButton({ matchId }: { matchId: string }) {
+export function GuardianMatchAcceptButton({
+  matchId,
+  onSuccess,
+}: {
+  matchId: string;
+  onSuccess?: () => void;
+}) {
   const t = useTranslations("TravelerHub");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -56,7 +62,10 @@ export function GuardianMatchAcceptButton({ matchId }: { matchId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "accepted" }),
       });
-      if (res.ok) router.refresh();
+      if (res.ok) {
+        onSuccess?.();
+        router.refresh();
+      }
     } finally {
       setLoading(false);
     }

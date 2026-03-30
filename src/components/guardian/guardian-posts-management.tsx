@@ -1,4 +1,5 @@
 import { GuardianPostsAttentionStrip } from "@/components/guardian/guardian-posts-attention-strip";
+import { GuardianPostsPageBlockBoundary } from "@/components/guardian/guardian-posts-page-block-boundary";
 import { Link } from "@/i18n/navigation";
 import { listPostsForGuardian } from "@/lib/posts-public";
 import { getContentPostFormat, postHasRouteJourney } from "@/lib/content-post-route";
@@ -66,7 +67,8 @@ export async function GuardianPostsManagement({
   }
 
   return (
-    <div className="space-y-8">
+    <GuardianPostsPageBlockBoundary>
+      <div className="space-y-8">
       {savedBanner ? (
         <p className="border-primary/20 bg-primary/5 text-foreground rounded-xl border px-4 py-3 text-sm">
           게시 흐름이 기록되었습니다. (MVP: 실제 저장 API는 연결 예정)
@@ -131,6 +133,7 @@ export async function GuardianPostsManagement({
           );
         })}
       </ul>
-    </div>
+      </div>
+    </GuardianPostsPageBlockBoundary>
   );
 }

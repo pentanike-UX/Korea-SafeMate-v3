@@ -358,6 +358,13 @@
     animation-fill-mode: forwards;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-progress-bar {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
   @keyframes guardian-review-target-pulse {
     0% {
       box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 38%, transparent);

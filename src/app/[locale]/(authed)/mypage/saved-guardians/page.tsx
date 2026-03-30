@@ -4,7 +4,8 @@ import { Link } from "@/i18n/navigation";
 import type { PublicGuardian } from "@/lib/guardian-public";
 import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
-import { getTravelerSavedGuardianIds } from "@/lib/traveler-saved-guardians-cookie";
+import { getSessionUserId } from "@/lib/supabase/server-user";
+import { getTravelerSavedGuardianIdsUnified } from "@/lib/traveler-saved-unified.server";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +26,9 @@ export default async function TravelerSavedGuardiansPage() {
   const t = await getTranslations("TravelerHub");
   const tTier = await getTranslations("GuardianTier");
   const all = await listPublicGuardiansMerged();
-  const cookieIds = await getTravelerSavedGuardianIds();
-  const saved = cookieIds.map((id) => all.find((g) => g.user_id === id)).filter(Boolean) as PublicGuardian[];
+  const userId = await getSessionUserId();
+  const savedIds = await getTravelerSavedGuardianIdsUnified(userId);
+  const saved = savedIds.map((id) => all.find((g) => g.user_id === id)).filter(Boolean) as PublicGuardian[];
 
   return (
     <div className="space-y-6">

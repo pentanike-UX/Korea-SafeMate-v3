@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
 import { isActiveLaunchArea, type PublicGuardian } from "@/lib/guardian-public";
 import type { LaunchAreaSlug } from "@/types/launch-area";
+import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -525,7 +526,7 @@ export function GuardiansDiscoverClient({
                         <div className="mt-auto flex flex-col gap-2 pt-1">
                           <GuardianRequestOpenTrigger
                             size="sm"
-                            className="h-9 min-h-9 w-full rounded-[var(--radius-md)] text-xs font-semibold"
+                            className={cn(listCardActionButtonClass, "w-full rounded-[var(--radius-md)]")}
                             openDetail={{
                               guardianUserId: g.user_id,
                               displayName: g.display_name,
@@ -542,9 +543,9 @@ export function GuardiansDiscoverClient({
                               triggerLabel={t("cardCtaCompareDetail")}
                               triggerVariant="outline"
                               size="sm"
-                              className="h-9 min-h-9 w-full rounded-[var(--radius-md)] text-[11px] font-semibold"
+                              className={cn(listCardActionButtonClass, "w-full rounded-[var(--radius-md)] text-[11px] sm:text-sm")}
                             />
-                            <div className="[&_button]:h-9 [&_button]:min-h-9 [&_button]:w-full [&_button]:text-[11px] [&_button]:font-semibold">
+                            <div className="[&_button]:min-h-9 [&_button]:h-9 [&_button]:w-full [&_button]:rounded-[var(--radius-md)] [&_button]:text-[11px] [&_button]:font-semibold sm:[&_button]:text-sm">
                               <SaveGuardianButton guardianUserId={g.user_id} compact />
                             </div>
                           </div>

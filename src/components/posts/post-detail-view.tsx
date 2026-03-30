@@ -22,6 +22,7 @@ import { RoutePostDetailView } from "@/components/posts/route-post-detail-view";
 import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
+import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
 import { ArrowLeft, Calendar, Heart, MapPin } from "lucide-react";
 
 function heroGradient(post: ContentPost) {
@@ -40,7 +41,8 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
   const heroAlt = getPostHeroImageAlt(post);
   const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const sheetAvatar = guardian ? guardianProfileImageUrls(guardian).avatar : heroCover;
-  const sheetHeadline = guardian?.headline ?? post.summary;
+  const sheetHeadlineRaw = resolveGuardianHeadlineWithPostFallback(guardian?.headline, post.summary);
+  const sheetHeadline = clampSheetHeadline(sheetHeadlineRaw);
   const sheetName = guardian?.display_name ?? post.author_display_name;
   const sheetRegion =
     guardian && mockRegions.some((r) => r.slug === guardian.primary_region_slug)
@@ -63,7 +65,7 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
       <GuardianRequestDefaultsPublisher
         guardianUserId={post.author_user_id}
         displayName={sheetName}
-        headline={sheetHeadline.length > 180 ? `${sheetHeadline.slice(0, 177)}…` : sheetHeadline}
+        headline={sheetHeadline}
         avatarUrl={sheetAvatar}
         suggestedRegionSlug={sheetRegion}
       />

@@ -9,18 +9,16 @@ export function GuardianPostsAttentionStrip() {
   const ctx = useMypageHubContext();
   const g = ctx?.snapshot.guardianWorkspaceBlockAttention;
   if (!g) return null;
-  const menuUnread = ctx?.attention.unreadGuardianWorkspaceNavBadges.guardianNavPosts ?? 0;
-  if (menuUnread < 1) return null;
-  const pending = g.postsPendingReview;
-  const drafts = g.postsDrafts;
-  if (pending < 1 && drafts < 1) return null;
+  const uPending = ctx?.attention.unreadBlockBadges["guardian.posts.pendingReview"] ?? 0;
+  const uDrafts = ctx?.attention.unreadBlockBadges["guardian.posts.drafts"] ?? 0;
+  if (uPending < 1 && uDrafts < 1) return null;
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2">
-      {pending > 0 ? (
-        <BlockAttentionBadge count={pending} ariaLabel={t("attentionGuardianPostsPending")} />
+      {uPending > 0 ? (
+        <BlockAttentionBadge count={uPending} ariaLabel={t("attentionGuardianPostsPending")} />
       ) : null}
-      {drafts > 0 ? (
-        <BlockAttentionBadge count={drafts} ariaLabel={t("attentionGuardianPostsDraft")} />
+      {uDrafts > 0 ? (
+        <BlockAttentionBadge count={uDrafts} ariaLabel={t("attentionGuardianPostsDraft")} />
       ) : null}
     </div>
   );

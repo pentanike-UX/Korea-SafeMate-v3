@@ -83,10 +83,10 @@ export function SiteHeader() {
           : "border-border/70 bg-background/93 shadow-[var(--shadow-sm)] supports-[backdrop-filter]:bg-background/86",
       )}
     >
-      <div className="flex min-h-14 h-14 w-full items-center gap-3 px-4 sm:h-16 sm:min-h-16 sm:gap-4 sm:px-6 md:px-8 xl:px-10">
+      <div className="flex min-h-14 h-14 w-full min-w-0 items-center gap-2 px-3 sm:h-16 sm:min-h-16 sm:gap-4 sm:px-6 md:px-8 xl:px-10">
         <Link
           href="/"
-          className="flex min-w-0 max-w-[min(100%,calc(100%-9.75rem))] shrink-0 items-center gap-2.5 rounded-lg active:opacity-90 sm:max-w-[min(100%,calc(100%-10.5rem))] md:max-w-none"
+          className="flex min-w-0 max-w-[min(100%,calc(100%-6.5rem))] shrink items-center gap-2 rounded-lg active:opacity-90 min-[400px]:max-w-[min(100%,calc(100%-8.75rem))] sm:max-w-[min(100%,calc(100%-10.5rem))] sm:gap-2.5 md:max-w-none"
         >
           <span
             className={cn(

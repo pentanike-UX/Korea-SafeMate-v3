@@ -1,14 +1,25 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
+import {
+  GuardianRequestOpenTrigger,
+  type GuardianRequestOpenDetail,
+} from "@/components/guardians/guardian-request-sheet";
+import { cn } from "@/lib/utils";
 
-export function PostAuthorRequestCta({ postId, postTitle }: { postId: string; postTitle: string }) {
+/** 포스트 작성 가디언에게 요청 — 시트에 가디언·포스트 맥락을 한 번에 전달(전역 시트와 동일) */
+export function PostAuthorRequestCta({
+  openDetail,
+  className,
+}: {
+  openDetail: GuardianRequestOpenDetail & { guardianUserId: string; postId: string; postTitle: string };
+  className?: string;
+}) {
   const t = useTranslations("GuardianRequest");
   return (
     <GuardianRequestOpenTrigger
-      className="h-11 w-full rounded-xl font-semibold"
-      postContext={{ postId, postTitle }}
+      className={cn("h-11 w-full rounded-xl font-semibold", className)}
+      openDetail={openDetail}
     >
       {t("openCta")}
     </GuardianRequestOpenTrigger>

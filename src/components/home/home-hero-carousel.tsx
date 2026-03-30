@@ -28,7 +28,16 @@ export function HomeHeroCarousel() {
   const total = HOME_HERO_SLIDES.length;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setPrefersReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const go = useCallback(
     (dir: -1 | 1) => {
@@ -38,7 +47,7 @@ export function HomeHeroCarousel() {
   );
 
   useEffect(() => {
-    if (paused) {
+    if (paused || prefersReducedMotion) {
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
       return;
@@ -49,7 +58,7 @@ export function HomeHeroCarousel() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [paused, total]);
+  }, [paused, prefersReducedMotion, total]);
 
   const slide = HOME_HERO_SLIDES[index]!;
   const metaLabel = t(slide.metaKey);
@@ -76,7 +85,7 @@ export function HomeHeroCarousel() {
           <div
             key={slide.src}
             className={cn(
-              "absolute inset-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+              "absolute inset-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
               i === index ? "z-[1] opacity-100" : "z-0 opacity-0",
             )}
           >
@@ -219,7 +228,10 @@ export function HomeHeroCarousel() {
         {/* Bottom bar: progress + meta + dots + arrows */}
         <div className="mt-auto flex flex-col gap-4 pt-12 sm:pt-16 lg:pt-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="min-w-0 flex-1 space-y-2">
+            <div
+              key={`meta-${index}`}
+              className="min-w-0 flex-1 animate-in fade-in duration-500 motion-reduce:animate-none space-y-2"
+            >
               <p
                 className="text-[11px] font-medium tracking-[0.12em] text-white/50 uppercase"
                 aria-live="polite"
@@ -265,7 +277,7 @@ export function HomeHeroCarousel() {
                 aria-label={t("heroCarouselGoTo", { n: i + 1 })}
                 onClick={() => setIndex(i)}
                 className={cn(
-                  "h-1.5 rounded-full transition-all duration-500 ease-out",
+                  "h-1.5 rounded-full transition-all duration-500 ease-out motion-reduce:transition-none",
                   i === index ? "w-8 bg-white" : "w-1.5 bg-white/35 hover:bg-white/55",
                 )}
               />

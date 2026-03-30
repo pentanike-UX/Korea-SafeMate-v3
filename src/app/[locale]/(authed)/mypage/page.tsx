@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { mockTravelerSavedPostIds, mockTravelerTripRequests } from "@/data/mock";
-import { getTravelerSavedPostIds } from "@/lib/traveler-saved-posts-cookie";
-import { getTravelerSavedGuardianIds } from "@/lib/traveler-saved-guardians-cookie";
+import { mockTravelerTripRequests } from "@/data/mock";
+import { getTravelerSavedGuardianIdsUnified, getTravelerSavedPostIdsUnified } from "@/lib/traveler-saved-unified.server";
 import { mockGuardians } from "@/data/mock";
 import { isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
 import { TravelerOverviewStatGrid } from "@/components/mypage/mypage-traveler-overview-stat-grid";
@@ -43,15 +42,14 @@ export default async function TravelerOverviewPage() {
   }
 
   const openRequests = mockTravelerTripRequests.filter((r) => r.status === "requested" || r.status === "reviewing");
-  const savedGuardianIds = await getTravelerSavedGuardianIds();
-  const savedG = savedGuardianIds.length;
-
   const travelerAuthId = await getSupabaseAuthUserIdOnly();
   const useMockTrips = !travelerAuthId || isMockGuardianId(travelerAuthId);
-  const savedPostIds = useMockTrips ? mockTravelerSavedPostIds : await getTravelerSavedPostIds();
+  const savedGuardianIds = await getTravelerSavedGuardianIdsUnified(userId);
+  const savedG = savedGuardianIds.length;
+  const savedPostIds = await getTravelerSavedPostIdsUnified(userId);
   const savedP = savedPostIds.length;
-  const openRequestsCount = useMockTrips ? openRequests.length : 0;
   const matchRows = travelerAuthId ? await getMatchRequestsForTraveler(travelerAuthId) : [];
+  const openRequestsCount = useMockTrips ? openRequests.length : matchRows.filter((m) => m.status === "requested").length;
   const matchActive = matchRows.filter((m) => m.status === "accepted").length;
   const matchPending = matchRows.filter((m) => m.status === "requested").length;
   const recentMatches = matchRows.slice(0, 2);

@@ -4,6 +4,8 @@ import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { StoredMatchRequest } from "@/lib/traveler-match-requests";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BlockAttentionBadge } from "@/components/mypage/mypage-attention-primitives";
+import { MypageBlockSeenBoundary } from "@/components/mypage/mypage-block-seen-boundary";
+import type { AttentionBlockKey } from "@/types/mypage-hub";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MypageMatchesEmpty } from "@/components/mypage/mypage-matches-empty";
@@ -124,6 +126,7 @@ export async function MypageMatchesView({
             showComplete={false}
             reviewedMatchIds={reviewedMatchIds}
             canWriteTravelerReview={canWriteTravelerReview}
+            attentionBlockKey="traveler.matches.newResponses"
           />
           <MatchSection
             title={t("matchesSectionCompleted")}
@@ -134,6 +137,7 @@ export async function MypageMatchesView({
             showComplete={false}
             reviewedMatchIds={reviewedMatchIds}
             canWriteTravelerReview={canWriteTravelerReview}
+            attentionBlockKey="traveler.matches.reviewDue"
           />
         </div>
       )}
@@ -150,6 +154,7 @@ function MatchSection({
   showComplete,
   reviewedMatchIds,
   canWriteTravelerReview,
+  attentionBlockKey,
 }: {
   title: string;
   attentionCount: number;
@@ -159,9 +164,10 @@ function MatchSection({
   showComplete: boolean;
   reviewedMatchIds: string[];
   canWriteTravelerReview: boolean;
+  attentionBlockKey?: AttentionBlockKey;
 }) {
   if (rows.length === 0) return null;
-  return (
+  const section = (
     <section className="space-y-3">
       <h3 className="text-foreground flex flex-wrap items-center gap-2 text-sm font-semibold">
         {title}
@@ -196,4 +202,8 @@ function MatchSection({
       </ul>
     </section>
   );
+  if (attentionBlockKey) {
+    return <MypageBlockSeenBoundary blockKey={attentionBlockKey}>{section}</MypageBlockSeenBoundary>;
+  }
+  return section;
 }

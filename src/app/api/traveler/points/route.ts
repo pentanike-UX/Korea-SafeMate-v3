@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchBalanceSnapshot, fetchLedgerForUser } from "@/lib/points/point-ledger-service";
+import { loadMypagePointsData } from "@/lib/points/mypage-points-data.server";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 
 export async function GET() {
@@ -8,10 +8,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [balance, ledger] = await Promise.all([fetchBalanceSnapshot(userId), fetchLedgerForUser(userId, 80)]);
+  const { balance, earned, revoked, ledger, policy } = await loadMypagePointsData(userId, 80);
 
   return NextResponse.json({
-    balance: balance ?? { user_id: userId, balance: 0, lifetime_earned: 0, lifetime_revoked: 0, updated_at: null },
+    balance: {
+      user_id: userId,
+      balance,
+      lifetime_earned: earned,
+      lifetime_revoked: revoked,
+      updated_at: null as string | null,
+    },
     ledger,
+    policy,
   });
 }

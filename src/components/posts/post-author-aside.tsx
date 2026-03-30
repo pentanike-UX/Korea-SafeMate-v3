@@ -1,13 +1,16 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import type { ContentPost } from "@/types/domain";
+import { mockRegions } from "@/data/mock";
 import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { getPostHeroImageUrl } from "@/lib/content-post-route";
 import { listPostsForGuardianMerged } from "@/lib/posts-public-merged.server";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { GuardianPostsExplorerSheet } from "@/components/guardians/guardian-posts-explorer-sheet";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
+import { GuardianRequestIntakeBullets } from "@/components/guardians/guardian-request-intake-bullets";
 import { PostAuthorRequestCta } from "@/components/posts/post-author-request-cta";
+import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrustBadgesServer } from "@/components/forty-two/trust-badges-server";
@@ -18,7 +21,6 @@ import { PostSampleBadge } from "@/components/posts/post-sample-badge";
 
 export async function PostAuthorAside({ post }: { post: ContentPost }) {
   const t = await getTranslations("Posts");
-  const tReq = await getTranslations("GuardianRequest");
   const tTier = await getTranslations("GuardianTier");
   const guardian = await getPublicGuardianByIdMerged(post.author_user_id);
   const imgs = guardian ? guardianProfileImageUrls(guardian) : null;
@@ -70,7 +72,9 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
           ) : null}
           {guardian ? (
             <>
-              <p className="text-muted-foreground text-sm leading-relaxed">{guardian.headline}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {resolveGuardianHeadlineWithPostFallback(guardian.headline, post.summary) || t("authorTaglinePlaceholder")}
+              </p>
               <TrustBadgesServer ids={guardian.trust_badge_ids} size="xs" />
               {repForPreview ? (
                 <GuardianProfilePreviewSheetTrigger
@@ -81,13 +85,22 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
                   postContext={{ postId: post.id, postTitle: post.title }}
                 />
               ) : null}
-              <ul className="text-muted-foreground list-inside list-disc space-y-1 text-xs leading-relaxed">
-                <li>{tReq("asideBulletHalfFull")}</li>
-                <li>{tReq("asideBulletRegion")}</li>
-                <li>{tReq("asideBulletTheme")}</li>
-                <li>{tReq("asideBulletFlexible")}</li>
-              </ul>
-              <PostAuthorRequestCta postId={post.id} postTitle={post.title} />
+              <GuardianRequestIntakeBullets />
+              <PostAuthorRequestCta
+                openDetail={{
+                  guardianUserId: guardian.user_id,
+                  displayName: guardian.display_name,
+                  headline: clampSheetHeadline(resolveGuardianHeadlineWithPostFallback(guardian.headline, post.summary)),
+                  avatarUrl: imgs!.avatar,
+                  suggestedRegionSlug: mockRegions.some((r) => r.slug === guardian.primary_region_slug)
+                    ? guardian.primary_region_slug
+                    : mockRegions.some((r) => r.slug === post.region_slug)
+                      ? post.region_slug
+                      : null,
+                  postId: post.id,
+                  postTitle: post.title,
+                }}
+              />
               {postSheetItems.length > 0 ? (
                 <GuardianPostsExplorerSheet
                   guardianDisplayName={guardian.display_name}

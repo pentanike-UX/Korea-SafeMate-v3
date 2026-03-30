@@ -6,10 +6,13 @@ import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
 import { useMypageHubContext } from "@/components/mypage/mypage-hub-context";
 import { BlockAttentionBadge } from "@/components/mypage/mypage-attention-primitives";
+import { MypageBlockSeenBoundary } from "@/components/mypage/mypage-block-seen-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink, FileText, Heart, Pencil, Shield, Wallet } from "lucide-react";
+import { FileText, Heart, Pencil, Shield, Wallet } from "lucide-react";
+import { MypagePointsDetailSheetTrigger } from "@/components/mypage/mypage-points-detail-sheet";
+import { MypageSelfGuardianPreviewSheet } from "@/components/mypage/mypage-self-guardian-preview-sheet";
 
 function formatPostUpdated(iso: string, locale: string) {
   try {
@@ -113,7 +116,11 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
     const completedBookings = ops?.completedBookings ?? 0;
     const openPool = ops?.openPoolCount ?? 0;
     const pointsLabel = ops?.points != null ? String(ops.points) : "—";
-    const unreadG = hub?.attention.unreadGuardianWorkspaceNavBadges;
+    const ub = hub?.attention.unreadBlockBadges;
+    const gAttn = hub?.snapshot.guardianWorkspaceBlockAttention;
+    const pointsRecent = gAttn?.pointsRecentLedgerCount ?? 0;
+    const uPosts =
+      (ub?.["guardian.posts.pendingReview"] ?? 0) + (ub?.["guardian.posts.drafts"] ?? 0);
 
     return (
       <div className="space-y-6">
@@ -127,67 +134,87 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
               <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-relaxed">{t("guardianDashApprovedHubLead")}</p>
             </div>
             {uid ? (
-              <Button asChild variant="outline" size="sm" className="rounded-[var(--radius-md)]">
-                <Link href={`/guardians/${uid}`} className="inline-flex items-center gap-1.5">
-                  {t("guardianDashPublicProfileCta")}
-                  <ExternalLink className="size-3.5 opacity-70" aria-hidden />
-                </Link>
-              </Button>
+              <MypageSelfGuardianPreviewSheet
+                triggerLabel={t("guardianDashPublicProfileCta")}
+                variant="outline"
+                size="sm"
+                triggerClassName="h-9"
+              />
             ) : null}
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <FileText className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
-                  {(unreadG?.guardianNavPosts ?? 0) > 0 && pendingPosts + draftPosts > 0 ? (
-                    <BlockAttentionBadge
-                      count={pendingPosts + draftPosts}
-                      ariaLabel={t("attentionGuardianDashPosts")}
-                    />
-                  ) : null}
+              <MypageBlockSeenBoundary blockKeys={["guardian.posts.pendingReview", "guardian.posts.drafts"]}>
+                <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <FileText className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
+                    {uPosts > 0 && pendingPosts + draftPosts > 0 ? (
+                      <BlockAttentionBadge count={uPosts} ariaLabel={t("attentionGuardianDashPosts")} />
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                    {t("guardianDashStatPostsPending")}
+                  </p>
+                  <p className="text-text-strong text-2xl font-semibold tabular-nums">{pendingPosts + draftPosts}</p>
                 </div>
-                <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  {t("guardianDashStatPostsPending")}
-                </p>
-                <p className="text-text-strong text-2xl font-semibold tabular-nums">{pendingPosts + draftPosts}</p>
-              </div>
-              <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Heart className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
-                  {(unreadG?.guardianNavMatches ?? 0) > 0 && inProgressBookings > 0 ? (
-                    <BlockAttentionBadge count={inProgressBookings} ariaLabel={t("attentionGuardianDashMatching")} />
-                  ) : null}
+              </MypageBlockSeenBoundary>
+              <MypageBlockSeenBoundary blockKey="guardian.matches.activeProgress">
+                <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Heart className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
+                    {(ub?.["guardian.matches.activeProgress"] ?? 0) > 0 && inProgressBookings > 0 ? (
+                      <BlockAttentionBadge
+                        count={ub?.["guardian.matches.activeProgress"] ?? 0}
+                        ariaLabel={t("attentionGuardianDashMatching")}
+                      />
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                    {t("guardianDashStatMatching")}
+                  </p>
+                  <p className="text-text-strong text-2xl font-semibold tabular-nums">{inProgressBookings}</p>
                 </div>
-                <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  {t("guardianDashStatMatching")}
-                </p>
-                <p className="text-text-strong text-2xl font-semibold tabular-nums">{inProgressBookings}</p>
-              </div>
-              <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Shield className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
-                  {(unreadG?.guardianNavMatches ?? 0) > 0 && reviewingBookings > 0 ? (
-                    <BlockAttentionBadge count={reviewingBookings} ariaLabel={t("attentionGuardianDashReviewQueue")} />
-                  ) : null}
+              </MypageBlockSeenBoundary>
+              <MypageBlockSeenBoundary blockKey="guardian.matches.reviewQueue">
+                <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Shield className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
+                    {(ub?.["guardian.matches.reviewQueue"] ?? 0) > 0 && reviewingBookings + openPool > 0 ? (
+                      <BlockAttentionBadge
+                        count={ub?.["guardian.matches.reviewQueue"] ?? 0}
+                        ariaLabel={t("attentionGuardianDashReviewQueue")}
+                      />
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                    {t("guardianDashStatReviewQueue")}
+                  </p>
+                  <p className="text-text-strong text-2xl font-semibold tabular-nums">{reviewingBookings}</p>
                 </div>
-                <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  {t("guardianDashStatReviewQueue")}
-                </p>
-                <p className="text-text-strong text-2xl font-semibold tabular-nums">{reviewingBookings}</p>
-              </div>
-              <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Wallet className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
-                  {(unreadG?.guardianNavPoints ?? 0) > 0 ? (
-                    <BlockAttentionBadge count={1} ariaLabel={t("attentionGuardianDashPoints")} />
-                  ) : null}
+              </MypageBlockSeenBoundary>
+              <MypageBlockSeenBoundary blockKey="guardian.points.newEarnings">
+                <div className="border-border/60 bg-muted/20 flex flex-col gap-2 rounded-xl border px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Wallet className="text-[var(--brand-trust-blue)] size-5 opacity-90" strokeWidth={1.75} aria-hidden />
+                    {(ub?.["guardian.points.newEarnings"] ?? 0) > 0 && pointsRecent > 0 ? (
+                      <BlockAttentionBadge
+                        count={ub?.["guardian.points.newEarnings"] ?? 0}
+                        ariaLabel={t("attentionGuardianDashPoints")}
+                      />
+                    ) : null}
+                  </div>
+                  <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                    {t("guardianDashStatPoints")}
+                  </p>
+                  <p className="text-text-strong text-2xl font-semibold tabular-nums">{pointsLabel}</p>
+                  <MypagePointsDetailSheetTrigger
+                    triggerLabel={t("pointsSheetCta")}
+                    variant="link"
+                    size="sm"
+                    className="h-auto justify-start px-0 text-xs font-semibold"
+                  />
                 </div>
-                <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  {t("guardianDashStatPoints")}
-                </p>
-                <p className="text-text-strong text-2xl font-semibold tabular-nums">{pointsLabel}</p>
-              </div>
+              </MypageBlockSeenBoundary>
             </div>
             {openPool > 0 ? (
               <p className="text-muted-foreground mt-4 text-xs leading-relaxed">
@@ -204,18 +231,23 @@ export function MypageGuardianDashboard({ status }: { status: GuardianProfileSta
             <p className="text-muted-foreground text-sm">{t("guardianDashMatchPipelineLead")}</p>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-3">
-            <div className="border-border/60 rounded-xl border bg-card/80 px-4 py-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineNew")}</p>
-                {(unreadG?.guardianNavMatches ?? 0) > 0 && reviewingBookings > 0 ? (
-                  <BlockAttentionBadge count={reviewingBookings} ariaLabel={t("attentionGuardianDashReviewQueue")} />
-                ) : null}
+            <MypageBlockSeenBoundary blockKey="guardian.matches.reviewQueue">
+              <div className="border-border/60 rounded-xl border bg-card/80 px-4 py-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineNew")}</p>
+                  {(ub?.["guardian.matches.reviewQueue"] ?? 0) > 0 && reviewingBookings + openPool > 0 ? (
+                    <BlockAttentionBadge
+                      count={ub?.["guardian.matches.reviewQueue"] ?? 0}
+                      ariaLabel={t("attentionGuardianDashReviewQueue")}
+                    />
+                  ) : null}
+                </div>
+                <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{reviewingBookings}</p>
+                <Button asChild variant="link" className="mt-1 h-auto px-0 text-sm font-semibold">
+                  <Link href={GUARDIAN_WORKSPACE.matches}>{t("guardianDashPipelineCta")}</Link>
+                </Button>
               </div>
-              <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{reviewingBookings}</p>
-              <Button asChild variant="link" className="mt-1 h-auto px-0 text-sm font-semibold">
-                <Link href={GUARDIAN_WORKSPACE.matches}>{t("guardianDashPipelineCta")}</Link>
-              </Button>
-            </div>
+            </MypageBlockSeenBoundary>
             <div className="border-border/60 rounded-xl border bg-card/80 px-4 py-4">
               <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianDashPipelineActive")}</p>
               <p className="text-text-strong mt-2 text-2xl font-semibold tabular-nums">{inProgressBookings}</p>

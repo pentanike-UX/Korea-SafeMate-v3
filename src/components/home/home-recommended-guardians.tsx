@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
 import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
+import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TextActionLink } from "@/components/ui/text-action";
@@ -69,8 +70,8 @@ export function HomeRecommendedGuardiansSection() {
   return (
     <section className="border-border/35 border-t bg-card">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-14 md:py-16">
-        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
-          <div className="max-w-2xl">
+        <div className="mb-6 flex min-w-0 flex-col gap-3 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 max-w-2xl">
             <h2 className="text-text-strong text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
               {t("featuredGuardiansSectionTitle")}
             </h2>
@@ -146,7 +147,7 @@ export function HomeRecommendedGuardiansSection() {
 
                 <div className="mt-auto flex flex-1 flex-col gap-2 border-border/50 pt-4">
                   <GuardianRequestOpenTrigger
-                    className="h-11 w-full rounded-[var(--radius-md)] text-sm font-semibold shadow-[var(--shadow-brand)]"
+                    className={cn(listCardActionButtonClass, "w-full shadow-[var(--shadow-brand)]")}
                     openDetail={{
                       guardianUserId: g.user_id,
                       displayName: g.display_name,
@@ -163,13 +164,18 @@ export function HomeRecommendedGuardiansSection() {
                       triggerLabel={t("recommendedCtaDetail")}
                       triggerVariant="outline"
                       size="sm"
-                      className="h-10 w-full rounded-[var(--radius-md)] text-xs font-semibold"
+                      className={cn(listCardActionButtonClass, "w-full rounded-[var(--radius-md)]")}
                     />
-                    <div className="[&_button]:h-10 [&_button]:text-xs">
+                    <div className="[&_button]:min-h-9 [&_button]:h-9 [&_button]:w-full [&_button]:rounded-[var(--radius-md)] [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm">
                       <SaveGuardianButton guardianUserId={g.user_id} compact />
                     </div>
                   </div>
-                  <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground h-8 text-xs font-medium">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground h-9 min-h-9 justify-center rounded-[var(--radius-md)] text-xs font-medium"
+                  >
                     <Link href={`/guardians/${g.user_id}`}>{t("recommendedCtaFullProfile")}</Link>
                   </Button>
                 </div>

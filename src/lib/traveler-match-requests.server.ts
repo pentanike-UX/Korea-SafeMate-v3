@@ -3,6 +3,7 @@ import {
   parseMatchRequests,
   serializeMatchRequests,
   TRAVELER_MATCH_REQUESTS_COOKIE,
+  type MatchRequestStatus,
   type StoredMatchRequest,
 } from "@/lib/traveler-match-requests";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
@@ -45,7 +46,48 @@ type DbMatchRow = {
   guardian_user_id: string;
   created_at: string;
   updated_at: string | null;
+  traveler_confirmed_at: string | null;
+  guardian_confirmed_at: string | null;
+  completion_confirmed_at: string | null;
 };
+
+function deriveMatchStatusFromDbRow(m: Pick<DbMatchRow, "traveler_confirmed_at" | "guardian_confirmed_at" | "completion_confirmed_at">): MatchRequestStatus {
+  if (m.completion_confirmed_at) return "completed";
+  if (m.traveler_confirmed_at && m.guardian_confirmed_at) return "completed";
+  if (m.traveler_confirmed_at || m.guardian_confirmed_at) return "accepted";
+  return "requested";
+}
+
+async function enrichGuardianDisplayNames(sb: NonNullable<ReturnType<typeof createServiceRoleSupabase>>, rows: StoredMatchRequest[]): Promise<void> {
+  if (rows.length === 0) return;
+  const ids = [...new Set(rows.map((r) => r.guardian_user_id).filter(Boolean))];
+  if (ids.length === 0) return;
+
+  const nameByUser = new Map<string, string>();
+
+  const { data: gp } = await sb.from("guardian_profiles").select("user_id, display_name").in("user_id", ids);
+  for (const r of gp ?? []) {
+    const uid = r.user_id as string;
+    const dn = typeof r.display_name === "string" ? r.display_name.trim() : "";
+    if (dn) nameByUser.set(uid, dn);
+  }
+
+  const missing = ids.filter((id) => !nameByUser.has(id));
+  if (missing.length > 0) {
+    const { data: up } = await sb.from("user_profiles").select("user_id, display_name").in("user_id", missing);
+    for (const r of up ?? []) {
+      const uid = r.user_id as string;
+      const dn = typeof r.display_name === "string" ? r.display_name.trim() : "";
+      if (dn) nameByUser.set(uid, dn);
+    }
+  }
+
+  for (const row of rows) {
+    if (!row.guardian_display_name && nameByUser.has(row.guardian_user_id)) {
+      row.guardian_display_name = nameByUser.get(row.guardian_user_id) ?? null;
+    }
+  }
+}
 
 async function getDbMatchRequests(params: {
   travelerUserId?: string;
@@ -55,7 +97,9 @@ async function getDbMatchRequests(params: {
   if (!sb) return [];
   const base = sb
     .from("matches")
-    .select("id, traveler_user_id, guardian_user_id, created_at, updated_at")
+    .select(
+      "id, traveler_user_id, guardian_user_id, created_at, updated_at, traveler_confirmed_at, guardian_confirmed_at, completion_confirmed_at",
+    )
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -69,17 +113,18 @@ async function getDbMatchRequests(params: {
   const { data, error } = await query;
   if (error || !data) return [];
 
-  return (data as DbMatchRow[]).map((r) => ({
+  const mapped: StoredMatchRequest[] = (data as DbMatchRow[]).map((r) => ({
     id: r.id,
     traveler_user_id: r.traveler_user_id,
     guardian_user_id: r.guardian_user_id,
     guardian_display_name: null,
-    // DB flow currently has no explicit status in this table.
-    // Keep it as requested so real actions still surface in MyPage.
-    status: "requested",
+    status: deriveMatchStatusFromDbRow(r),
     created_at: r.created_at,
     updated_at: r.updated_at ?? r.created_at,
   }));
+
+  await enrichGuardianDisplayNames(sb, mapped);
+  return mapped;
 }
 
 function mergeMatchRows(primary: StoredMatchRequest[], secondary: StoredMatchRequest[]): StoredMatchRequest[] {
@@ -90,7 +135,6 @@ function mergeMatchRows(primary: StoredMatchRequest[], secondary: StoredMatchReq
       map.set(row.id, row);
       continue;
     }
-    // Cookie row has richer status progression, keep it over DB duplicate.
     if (prev.status === "requested" && row.status !== "requested") {
       map.set(row.id, row);
     }

@@ -229,7 +229,7 @@ export function HeaderAccountMenu({
 
   const triggerClassMobile = cn(
     triggerClassBase,
-    "max-w-[min(100%,10.5rem)] px-2 sm:max-w-[min(100%,12rem)]",
+    "max-w-[min(100%,5.75rem)] px-1.5 min-[360px]:max-w-[min(100%,9rem)] min-[360px]:px-2 sm:max-w-[min(100%,12rem)] sm:px-2",
     onDarkSurface
       ? "border-white/25 bg-white/10 text-white hover:bg-white/16"
       : "border-border/80 bg-background hover:bg-muted/80",

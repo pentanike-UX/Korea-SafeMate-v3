@@ -9,6 +9,7 @@ import type { ContentPost } from "@/types/domain";
 import type { LaunchAreaSlug } from "@/types/launch-area";
 import { postHasRouteJourney } from "@/lib/content-post-route";
 import type { PublicGuardian } from "@/lib/guardian-public";
+import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -653,8 +654,8 @@ export function ExploreResultsDashboard(props: {
         <Card className="border-dashed rounded-[1.35rem]">
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground text-sm leading-relaxed">{t("comingSoonRegion")}</p>
-            <Button asChild className="mt-6 rounded-xl">
-              <Link href="/guardians">{tG("cardCtaPrimary")}</Link>
+            <Button asChild className={cn(listCardActionButtonClass, "mt-6 px-6")}>
+              <Link href="/guardians">{tG("browseGuardiansDirectory")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -715,27 +716,41 @@ export function ExploreResultsDashboard(props: {
                   {(workTokens.length > 0 || artistTokens.length > 0) && (
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {workTokens.map((w) => (
-                        <Badge key={w} variant="secondary" className="rounded-full text-[11px]">
+                        <Badge
+                          key={w}
+                          variant="secondary"
+                          className="max-w-[min(100%,10rem)] truncate rounded-full text-[11px] sm:max-w-[12rem]"
+                        >
                           {w}
                         </Badge>
                       ))}
                       {artistTokens.map((w) => (
-                        <Badge key={w} variant="secondary" className="rounded-full text-[11px]">
+                        <Badge
+                          key={w}
+                          variant="secondary"
+                          className="max-w-[min(100%,10rem)] truncate rounded-full text-[11px] sm:max-w-[12rem]"
+                        >
                           {w}
                         </Badge>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={onEditConditions}>
+                <div className="flex w-full shrink-0 flex-col gap-2 min-[420px]:w-auto min-[420px]:flex-row min-[420px]:flex-wrap">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className={cn(listCardActionButtonClass, "w-full min-[420px]:w-auto")}
+                    onClick={onEditConditions}
+                  >
                     {t("editConditions")}
                   </Button>
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
-                    className="rounded-xl"
+                    className={cn(listCardActionButtonClass, "w-full min-[420px]:w-auto")}
                     disabled={resultsSpinDisabled}
                     onClick={onReRecommend}
                   >
@@ -764,14 +779,14 @@ export function ExploreResultsDashboard(props: {
             <div className="border-border/60 rounded-[1.35rem] border border-dashed bg-muted/10 p-10 text-center">
               <p className="text-foreground text-sm font-semibold">{tG("empty")}</p>
               <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{tG("emptyBody")}</p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                <Button type="button" variant="outline" className="h-10 rounded-xl" onClick={onEditConditions}>
+              <div className="mt-5 flex flex-col items-stretch justify-center gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:items-center min-[360px]:gap-2.5">
+                <Button type="button" variant="outline" className={listCardActionButtonClass} onClick={onEditConditions}>
                   {t("editConditions")}
                 </Button>
-                <Button type="button" variant="ghost" className="h-10 rounded-xl" onClick={onReRecommend}>
+                <Button type="button" variant="ghost" className={listCardActionButtonClass} onClick={onReRecommend}>
                   {t("reset")}
                 </Button>
-                <Button asChild className="h-10 rounded-xl">
+                <Button asChild className={listCardActionButtonClass}>
                   <Link href="/guardians">{t("btnGuardiansFirst")}</Link>
                 </Button>
               </div>
@@ -827,7 +842,10 @@ export function ExploreResultsDashboard(props: {
                           </div>
                           <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                             <GuardianRequestOpenTrigger
-                              className="h-12 w-full rounded-xl text-base font-semibold shadow-[var(--shadow-brand)] sm:min-w-0 sm:flex-[1.35]"
+                              className={cn(
+                                listCardActionButtonClass,
+                                "w-full shadow-[var(--shadow-brand)] sm:min-w-0 sm:flex-[1.35] sm:text-sm",
+                              )}
                               openDetail={{
                                 guardianUserId: featured.user_id,
                                 displayName: featured.display_name,
@@ -843,10 +861,10 @@ export function ExploreResultsDashboard(props: {
                                 guardian={publicGuardianToSheetPreview(featured, repPostsForSheetPreviewFromExplore(featured))}
                                 triggerLabel={t("dashCtaDetail")}
                                 triggerVariant="outline"
-                                className="h-12 w-full rounded-xl text-sm font-semibold"
-                                size="lg"
+                                className={cn(listCardActionButtonClass, "w-full")}
+                                size="sm"
                               />
-                              <div className="[&_button]:h-12 [&_button]:w-full [&_button]:rounded-xl [&_button]:text-sm [&_button]:font-semibold">
+                              <div className={cn("[&_button]:w-full", "[&_button]:min-h-9 [&_button]:h-9 [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm")}>
                                 <SaveGuardianButton guardianUserId={featured.user_id} compact />
                               </div>
                             </div>
@@ -896,7 +914,7 @@ export function ExploreResultsDashboard(props: {
                               <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-stretch">
                                 <GuardianRequestOpenTrigger
                                   size="sm"
-                                  className="h-10 w-full rounded-xl text-xs font-semibold sm:flex-1"
+                                  className={cn(listCardActionButtonClass, "w-full sm:flex-1")}
                                   openDetail={{
                                     guardianUserId: g.user_id,
                                     displayName: g.display_name,
@@ -913,9 +931,9 @@ export function ExploreResultsDashboard(props: {
                                     triggerLabel={t("dashCtaDetail")}
                                     triggerVariant="outline"
                                     size="sm"
-                                    className="h-10 w-full rounded-xl text-xs font-semibold"
+                                    className={cn(listCardActionButtonClass, "w-full")}
                                   />
-                                  <div className="[&_button]:h-10 [&_button]:w-full [&_button]:text-xs [&_button]:font-semibold">
+                                  <div className="[&_button]:h-9 [&_button]:min-h-9 [&_button]:w-full [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm">
                                     <SaveGuardianButton guardianUserId={g.user_id} compact />
                                   </div>
                                 </div>

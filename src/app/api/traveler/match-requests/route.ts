@@ -6,7 +6,7 @@ import {
   TRAVELER_MATCH_REQUESTS_COOKIE,
   type StoredMatchRequest,
 } from "@/lib/traveler-match-requests";
-import { cookieOpts } from "@/lib/traveler-match-requests.server";
+import { cookieOpts, getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
 import { getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
 import { createMatchRecord } from "@/lib/points/match-service";
 
@@ -18,9 +18,7 @@ export async function GET() {
   const travelerId = await getSupabaseAuthUserIdOnly();
   if (!travelerId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const jar = await import("next/headers").then((m) => m.cookies());
-  const all = parseMatchRequests(jar.get(TRAVELER_MATCH_REQUESTS_COOKIE)?.value);
-  const items = all.filter((r) => r.traveler_user_id === travelerId);
+  const items = await getMatchRequestsForTraveler(travelerId);
   return NextResponse.json({ items });
 }
 

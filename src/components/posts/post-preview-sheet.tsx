@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { getPostHeroImageUrl } from "@/lib/content-post-route";
 import type { ContentPost } from "@/types/domain";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -35,7 +36,7 @@ export function PostPreviewSheetPanel({
         </div>
         <p className="text-muted-foreground text-sm leading-relaxed">{post.summary}</p>
         <div className="flex flex-wrap gap-2 pt-1">
-          <Button asChild className="rounded-xl font-semibold">
+          <Button asChild className={cn(listCardActionButtonClass, "px-4")}>
             <Link href={`/posts/${post.id}`} onClick={onNavigate}>
               {t("readPost")}
             </Link>
@@ -76,7 +77,7 @@ export function PostPreviewSheetCardRoute({
         onClick={() => setOpen(true)}
         className="border-border/70 bg-card group flex w-full overflow-hidden rounded-2xl border text-left shadow-[var(--shadow-sm)] transition-all hover:border-primary/30 hover:shadow-[var(--shadow-md)]"
       >
-        <div className="relative aspect-square w-28 shrink-0 bg-muted sm:w-32">
+        <div className="relative aspect-square w-[6.25rem] max-[360px]:w-24 shrink-0 bg-muted sm:w-32">
           {cover ? (
             <Image
               src={cover}
@@ -87,7 +88,7 @@ export function PostPreviewSheetCardRoute({
             />
           ) : null}
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
+        <div className="flex min-w-0 flex-1 flex-col justify-center p-3 sm:p-4">
           <Badge variant="outline" className="mb-1 w-fit rounded-full text-[10px]">
             {badgeLabel}
           </Badge>
