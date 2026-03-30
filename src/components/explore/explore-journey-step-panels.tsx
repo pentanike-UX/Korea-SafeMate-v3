@@ -16,7 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { TrustBadgeRow } from "@/components/forty-two/trust-badges";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
-import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
+import { GuardianRequestOpenTrigger, postContextFromContentPost } from "@/components/guardians/guardian-request-sheet";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
 import { PostPreviewSheetCardArticle, PostPreviewSheetCardRoute } from "@/components/posts/post-preview-sheet";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
@@ -63,6 +63,12 @@ function repPostsForSheetPreviewFromExplore(g: PublicGuardian): Pick<ContentPost
     .filter(Boolean)
     .slice(0, 3)
     .map((p) => ({ id: p!.id, title: p!.title, summary: p!.summary }));
+}
+
+function firstRepContentPostForExplore(g: PublicGuardian): ContentPost | null {
+  const id = g.representative_post_ids[0];
+  if (!id) return null;
+  return mockContentPosts.find((p) => p.id === id) ?? null;
 }
 
 function selectCardClass(selected: boolean) {
@@ -594,6 +600,8 @@ export function ExploreResultsDashboard(props: {
   const more = results.guardians.slice(1);
   const routePosts = results.posts.filter((p) => postHasRouteJourney(p));
   const articlePosts = results.posts.filter((p) => !postHasRouteJourney(p));
+  const featuredRepPost = featured ? firstRepContentPostForExplore(featured) : null;
+  const featuredRepCtx = featuredRepPost ? postContextFromContentPost(featuredRepPost) : null;
 
   const reasons = useMemo(() => {
     const lines: string[] = [];
@@ -852,6 +860,7 @@ export function ExploreResultsDashboard(props: {
                                 headline: featured.headline,
                                 avatarUrl: guardianProfileImageUrls(featured).avatar,
                                 suggestedRegionSlug: featured.primary_region_slug,
+                                ...(featuredRepCtx ?? {}),
                               }}
                             >
                               {t("dashCtaRequest")}
@@ -863,6 +872,7 @@ export function ExploreResultsDashboard(props: {
                                 triggerVariant="outline"
                                 className={cn(listCardActionButtonClass, "w-full")}
                                 size="sm"
+                                postContext={featuredRepCtx}
                               />
                               <div className={cn("[&_button]:w-full", "[&_button]:min-h-9 [&_button]:h-9 [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm")}>
                                 <SaveGuardianButton guardianUserId={featured.user_id} compact />
@@ -881,7 +891,10 @@ export function ExploreResultsDashboard(props: {
                 <section className="space-y-3">
                   <h3 className="text-foreground font-semibold">{t("dashMoreGuardians")}</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {more.map((g) => (
+                    {more.map((g) => {
+                      const repPostFull = firstRepContentPostForExplore(g);
+                      const repCtx = repPostFull ? postContextFromContentPost(repPostFull) : null;
+                      return (
                       <Card key={g.user_id} className="overflow-hidden rounded-2xl border-border/70 py-0 shadow-[var(--shadow-sm)]">
                         <CardContent className="p-4 sm:p-5">
                           <div className="flex gap-4">
@@ -921,6 +934,7 @@ export function ExploreResultsDashboard(props: {
                                     headline: g.headline,
                                     avatarUrl: guardianProfileImageUrls(g).avatar,
                                     suggestedRegionSlug: g.primary_region_slug,
+                                    ...(repCtx ?? {}),
                                   }}
                                 >
                                   {t("dashCtaRequest")}
@@ -932,6 +946,7 @@ export function ExploreResultsDashboard(props: {
                                     triggerVariant="outline"
                                     size="sm"
                                     className={cn(listCardActionButtonClass, "w-full")}
+                                    postContext={repCtx}
                                   />
                                   <div className="[&_button]:h-9 [&_button]:min-h-9 [&_button]:w-full [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm">
                                     <SaveGuardianButton guardianUserId={g.user_id} compact />
@@ -942,7 +957,8 @@ export function ExploreResultsDashboard(props: {
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                    );
+                    })}
                   </div>
                 </section>
               ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -10,21 +10,18 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { actionDrawerTriggerButtonClass } from "@/components/ui/action-variants";
 import type { AttentionBlockKey } from "@/types/mypage-hub";
-import type { PointLedgerRow, PointPolicyVersionRow } from "@/lib/points/types";
+import type { MypagePointsApiResponse } from "@/lib/points/types";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Info } from "lucide-react";
 
-type PointsApiResponse = {
-  balance: {
-    user_id: string;
-    balance: number;
-    lifetime_earned: number;
-    lifetime_revoked: number;
-    updated_at: string | null;
-  };
-  ledger: PointLedgerRow[];
-  policy: PointPolicyVersionRow | null;
-};
+const CLIENT_POINTS_CACHE_TTL_MS = 35_000;
+
+let clientPointsFetchCache: { userId: string; at: number; data: MypagePointsApiResponse } | null = null;
+
+function payloadSignature(p: MypagePointsApiResponse | null | undefined) {
+  if (!p) return "";
+  return `${p.balance.balance}:${p.balance.lifetime_earned}:${p.ledger[0]?.id ?? ""}:${p.ledger.length}`;
+}
 
 function formatSignedP(n: number) {
   const sign = n >= 0 ? "+" : "−";
@@ -45,11 +42,14 @@ export function MypagePointsDetailSheetTrigger({
   variant = "outline",
   size = "sm",
   className,
+  initialPointsPayload = null,
 }: {
   triggerLabel: string;
   variant?: "outline" | "ghost" | "link" | "default";
   size?: "default" | "sm" | "lg";
   className?: string;
+  /** 페이지 RSC에서 넘기면 컨텍스트보다 우선 (포인트 전용 페이지 등) */
+  initialPointsPayload?: MypagePointsApiResponse | null;
 }) {
   const t = useTranslations("TravelerPoints");
   const th = useTranslations("TravelerHub");
@@ -60,9 +60,15 @@ export function MypagePointsDetailSheetTrigger({
   const [side, setSide] = useState<"right" | "bottom">("bottom");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<PointsApiResponse | null>(null);
+  const [data, setData] = useState<MypagePointsApiResponse | null>(null);
+  const dataRef = useRef<MypagePointsApiResponse | null>(null);
+  dataRef.current = data;
+  const openCycleRef = useRef(0);
 
   const pointsPageHref = pathname.includes("/mypage/guardian") ? "/mypage/guardian/points" : "/mypage/points";
+  const userId = ctx?.accountUserId ?? null;
+  const resolvedInitial = initialPointsPayload ?? ctx?.pointsSheetInitial ?? null;
+  const resolvedSig = payloadSignature(resolvedInitial);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -72,29 +78,63 @@ export function MypagePointsDetailSheetTrigger({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/traveler/points", { credentials: "same-origin" });
-      if (!res.ok) {
-        setError(t("sheetFetchError"));
-        setData(null);
-        return;
-      }
-      const json = (await res.json()) as PointsApiResponse;
-      setData(json);
-    } catch {
+  useEffect(() => {
+    if (!resolvedInitial) return;
+    setData((prev) => (payloadSignature(prev) === resolvedSig ? prev : resolvedInitial));
+  }, [resolvedInitial, resolvedSig]);
+
+  const fetchPoints = useCallback(async () => {
+    const res = await fetch("/api/traveler/points", { credentials: "same-origin" });
+    if (!res.ok) {
       setError(t("sheetFetchError"));
-      setData(null);
-    } finally {
-      setLoading(false);
+      return null;
     }
-  }, [t]);
+    const json = (await res.json()) as MypagePointsApiResponse;
+    setError(null);
+    if (userId) {
+      clientPointsFetchCache = { userId, at: Date.now(), data: json };
+    }
+    return json;
+  }, [t, userId]);
 
   useEffect(() => {
-    if (open) void load();
-  }, [open, load]);
+    if (!open) return;
+    const cycle = ++openCycleRef.current;
+
+    const cached =
+      userId &&
+      clientPointsFetchCache &&
+      clientPointsFetchCache.userId === userId &&
+      Date.now() - clientPointsFetchCache.at < CLIENT_POINTS_CACHE_TTL_MS
+        ? clientPointsFetchCache.data
+        : null;
+
+    const mergedSeed = resolvedInitial ?? cached ?? dataRef.current;
+    if (resolvedInitial) {
+      setData(resolvedInitial);
+      setError(null);
+    } else if (cached) {
+      setData(cached);
+      setError(null);
+    }
+
+    setLoading(!mergedSeed);
+
+    void (async () => {
+      try {
+        const json = await fetchPoints();
+        if (cycle !== openCycleRef.current) return;
+        if (json) setData(json);
+        else if (!mergedSeed) setData(null);
+      } catch {
+        if (cycle !== openCycleRef.current) return;
+        setError(t("sheetFetchError"));
+        if (!mergedSeed) setData(null);
+      } finally {
+        if (cycle === openCycleRef.current) setLoading(false);
+      }
+    })();
+  }, [open, fetchPoints, resolvedSig, t, userId]);
 
   const dateLocale = locale === "ko" ? "ko-KR" : locale === "ja" ? "ja-JP" : "en-US";
   function fmt(iso: string) {
@@ -108,6 +148,14 @@ export function MypagePointsDetailSheetTrigger({
   const pointsBlock: AttentionBlockKey = pathname.includes("/mypage/guardian")
     ? "guardian.points.newEarnings"
     : "traveler.points.newEarnings";
+  const pointsBlockSig = ctx?.snapshot.blockAttentionSignatures[pointsBlock] ?? "0";
+  const markBlock = ctx?.markBlockAttentionSeen;
+
+  useEffect(() => {
+    if (!open || !userId || pointsBlockSig === "0" || !markBlock) return;
+    markBlock(pointsBlock, pointsBlockSig);
+  }, [open, userId, pointsBlock, pointsBlockSig, markBlock]);
+
   const raw =
     pointsBlock === "guardian.points.newEarnings"
       ? (ctx?.snapshot.guardianWorkspaceBlockAttention?.pointsRecentLedgerCount ?? 0)

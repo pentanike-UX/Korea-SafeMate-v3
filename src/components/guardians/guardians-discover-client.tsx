@@ -15,7 +15,7 @@ import { TrustBadgeRow } from "@/components/forty-two/trust-badges";
 import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
-import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
+import { GuardianRequestOpenTrigger, postContextFromContentPost } from "@/components/guardians/guardian-request-sheet";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { ExplorationFilterSummaryBar, type ExplorationSummaryChip } from "@/components/listing/exploration-filter-summary-bar";
@@ -454,6 +454,7 @@ export function GuardiansDiscoverClient({
           <ul className="grid gap-3 sm:grid-cols-2 sm:gap-3.5 xl:grid-cols-3 2xl:grid-cols-4">
             {filtered.map((g) => {
               const rep = repPostFor(g, approvedPosts);
+              const repCtx = rep ? postContextFromContentPost(rep) : null;
               const areaName = (tLaunch.raw(g.launch_area_slug) as { name: string }).name;
               const imgs = guardianProfileImageUrls(g);
               const styleSummary = g.companion_style_slugs
@@ -533,6 +534,7 @@ export function GuardiansDiscoverClient({
                               headline: g.headline,
                               avatarUrl: imgs.avatar,
                               suggestedRegionSlug: g.primary_region_slug,
+                              ...(repCtx ?? {}),
                             }}
                           >
                             {t("cardCtaRequest")}
@@ -544,6 +546,7 @@ export function GuardiansDiscoverClient({
                               triggerVariant="outline"
                               size="sm"
                               className={cn(listCardActionButtonClass, "w-full rounded-[var(--radius-md)] text-[11px] sm:text-sm")}
+                              postContext={repCtx}
                             />
                             <div className="[&_button]:min-h-9 [&_button]:h-9 [&_button]:w-full [&_button]:rounded-[var(--radius-md)] [&_button]:text-[11px] [&_button]:font-semibold sm:[&_button]:text-sm">
                               <SaveGuardianButton guardianUserId={g.user_id} compact />

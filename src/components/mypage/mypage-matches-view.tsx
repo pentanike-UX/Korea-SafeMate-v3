@@ -9,6 +9,7 @@ import type { AttentionBlockKey } from "@/types/mypage-hub";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MypageMatchesEmpty } from "@/components/mypage/mypage-matches-empty";
+import { MypageTravelerReviewsInboundSeenBoundary } from "@/components/mypage/mypage-traveler-reviews-inbound-seen-boundary";
 import { MypageMatchRowActions } from "@/components/mypage/mypage-match-row-actions";
 import { matchStatusChipClass } from "@/lib/mypage-status-badge";
 
@@ -138,6 +139,7 @@ export async function MypageMatchesView({
             reviewedMatchIds={reviewedMatchIds}
             canWriteTravelerReview={canWriteTravelerReview}
             attentionBlockKey="traveler.matches.reviewDue"
+            wrapWithReviewsInboundBoundary
           />
         </div>
       )}
@@ -155,6 +157,7 @@ function MatchSection({
   reviewedMatchIds,
   canWriteTravelerReview,
   attentionBlockKey,
+  wrapWithReviewsInboundBoundary,
 }: {
   title: string;
   attentionCount: number;
@@ -165,6 +168,8 @@ function MatchSection({
   reviewedMatchIds: string[];
   canWriteTravelerReview: boolean;
   attentionBlockKey?: AttentionBlockKey;
+  /** 인바운드 리뷰 블록(`traveler.reviews.newInbound`) 후보 — 시그니처가 0이면 관측만 스킵 */
+  wrapWithReviewsInboundBoundary?: boolean;
 }) {
   if (rows.length === 0) return null;
   const section = (
@@ -203,7 +208,11 @@ function MatchSection({
     </section>
   );
   if (attentionBlockKey) {
-    return <MypageBlockSeenBoundary blockKey={attentionBlockKey}>{section}</MypageBlockSeenBoundary>;
+    const wrapped = <MypageBlockSeenBoundary blockKey={attentionBlockKey}>{section}</MypageBlockSeenBoundary>;
+    if (wrapWithReviewsInboundBoundary) {
+      return <MypageTravelerReviewsInboundSeenBoundary>{wrapped}</MypageTravelerReviewsInboundSeenBoundary>;
+    }
+    return wrapped;
   }
   return section;
 }

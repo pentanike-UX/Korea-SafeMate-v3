@@ -1,7 +1,9 @@
+"use client";
+
 import type { GuardianProfile } from "@/types/domain";
 import type { GuardianDashboardSnapshot } from "@/types/guardian-dashboard";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
+import { MypageSelfGuardianPreviewSheet } from "@/components/mypage/mypage-self-guardian-preview-sheet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +15,8 @@ export function GuardianFeaturedReputationSection({
   profile: GuardianProfile;
   snapshot: GuardianDashboardSnapshot;
 }) {
+  const t = useTranslations("TravelerHub");
+
   return (
     <Card className="border-border/80 shadow-sm">
       <CardHeader>
@@ -69,9 +73,12 @@ export function GuardianFeaturedReputationSection({
           <p className="text-muted-foreground text-xs leading-relaxed">
             Public directory reflects your contributor identity — keep intel accurate and scoped honestly.
           </p>
-          <Button asChild variant="outline" size="sm" className="rounded-lg shrink-0">
-            <Link href="/guardians">View public guardian context</Link>
-          </Button>
+          <MypageSelfGuardianPreviewSheet
+            triggerLabel={t("guardianDashPublicProfileCta")}
+            variant="outline"
+            size="sm"
+            triggerClassName="rounded-lg shrink-0"
+          />
         </div>
       </CardContent>
     </Card>

@@ -11,7 +11,7 @@ import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from 
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { cn } from "@/lib/utils";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
-import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
+import { GuardianRequestOpenTrigger, postContextFromContentPost } from "@/components/guardians/guardian-request-sheet";
 import { SaveGuardianButton } from "@/components/guardians/save-guardian-button";
 import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,12 @@ function repPostsForSheetPreview(g: PublicGuardian): Pick<ContentPost, "id" | "t
     .filter(Boolean)
     .slice(0, 3)
     .map((p) => ({ id: p!.id, title: p!.title, summary: p!.summary }));
+}
+
+function firstRepContentPost(g: PublicGuardian): ContentPost | null {
+  const id = g.representative_post_ids[0];
+  if (!id) return null;
+  return mockContentPosts.find((p) => p.id === id) ?? null;
 }
 
 export function HomeRecommendedGuardiansSection() {
@@ -98,6 +104,8 @@ export function HomeRecommendedGuardiansSection() {
         <div className="mx-auto grid max-w-5xl gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {picks.map((g) => {
             const imgs = guardianProfileImageUrls(g);
+            const repPostFull = firstRepContentPost(g);
+            const repCtx = repPostFull ? postContextFromContentPost(repPostFull) : null;
             return (
               <article
                 key={g.user_id}
@@ -154,6 +162,7 @@ export function HomeRecommendedGuardiansSection() {
                       headline: g.headline,
                       avatarUrl: imgs.avatar,
                       suggestedRegionSlug: g.primary_region_slug,
+                      ...(repCtx ?? {}),
                     }}
                   >
                     {t("recommendedCtaRequest")}
@@ -165,6 +174,7 @@ export function HomeRecommendedGuardiansSection() {
                       triggerVariant="outline"
                       size="sm"
                       className={cn(listCardActionButtonClass, "w-full rounded-[var(--radius-md)]")}
+                      postContext={repCtx}
                     />
                     <div className="[&_button]:min-h-9 [&_button]:h-9 [&_button]:w-full [&_button]:rounded-[var(--radius-md)] [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm">
                       <SaveGuardianButton guardianUserId={g.user_id} compact />

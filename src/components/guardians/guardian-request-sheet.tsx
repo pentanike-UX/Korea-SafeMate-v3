@@ -12,6 +12,7 @@ import {
 } from "@/lib/guardian-request-intake-payload";
 import { LANGUAGE_OPTIONS } from "@/lib/booking-wizard-config";
 import type { TravelerUserType } from "@/types/domain";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,12 +31,18 @@ export const GUARDIAN_REQUEST_DEFAULTS_EVENT = "safemate:guardian-request-defaul
 export type GuardianRequestOpenDetail = {
   postId?: string;
   postTitle?: string;
+  /** 카드·프리뷰에서 보던 요약 — 요청 패널·부킹 특이사항으로 전달 */
+  postSummary?: string;
+  /** 루트형 포스트는 배지 등 미묘한 위계용(선택) */
+  postContextKind?: "route" | "post";
   guardianUserId?: string;
   displayName?: string;
   headline?: string;
   avatarUrl?: string;
   suggestedRegionSlug?: string | null;
 };
+
+export { postContextFromContentPost } from "@/lib/guardian-request-post-context";
 
 export const FALLBACK_GUARDIAN_REQUEST_AVATAR = "/images/hero/seoul2_MyLoveFromTheStar_NSeoulTower.jpg";
 
@@ -172,7 +179,16 @@ export function GuardianRequestSheetHost({
 
   const onOpenEvent = useCallback((e: Event) => {
     const d = (e as CustomEvent<GuardianRequestOpenDetail>).detail ?? {};
-    setPostCtx(d.postId ? { postId: d.postId, postTitle: d.postTitle } : null);
+    setPostCtx(
+      d.postId && d.postTitle
+        ? {
+            postId: d.postId,
+            postTitle: d.postTitle,
+            postSummary: d.postSummary,
+            postContextKind: d.postContextKind,
+          }
+        : null,
+    );
     if (d.guardianUserId) {
       setIdentityOverride({
         guardianUserId: d.guardianUserId,
@@ -258,7 +274,13 @@ export function GuardianRequestSheetHost({
       guardianUserId: activeGuardianUserId,
       guardianDisplayName: activeDisplayName,
       relatedPost:
-        postCtx?.postId && postCtx.postTitle ? { id: postCtx.postId, title: postCtx.postTitle } : null,
+        postCtx?.postId && postCtx.postTitle
+          ? {
+              id: postCtx.postId,
+              title: postCtx.postTitle,
+              summary: postCtx.postSummary?.trim() || undefined,
+            }
+          : null,
     };
 
     const payload = buildGuardianIntakePayload(input, kindLabel(requestKind), {
@@ -323,9 +345,21 @@ export function GuardianRequestSheetHost({
             </div>
           </div>
           {postCtx?.postTitle ? (
-            <p className="bg-primary/6 text-foreground rounded-lg px-3 py-2 text-xs leading-relaxed">
-              <span className="text-primary font-semibold">{t("postContextPrefix")}</span> {postCtx.postTitle}
-            </p>
+            <div className="bg-primary/6 space-y-1.5 rounded-lg px-3 py-2.5 text-xs leading-relaxed">
+              <div className="flex flex-wrap items-center gap-2">
+                {postCtx.postContextKind === "route" ? (
+                  <Badge variant="outline" className="rounded-full text-[10px] font-semibold">
+                    {t("postContextRouteBadge")}
+                  </Badge>
+                ) : null}
+                <p className="text-foreground min-w-0 flex-1 font-medium leading-snug">
+                  <span className="text-primary font-semibold">{t("postContextPrefix")}</span> {postCtx.postTitle}
+                </p>
+              </div>
+              {postCtx.postSummary?.trim() ? (
+                <p className="text-muted-foreground line-clamp-3 text-[13px] leading-relaxed">{postCtx.postSummary.trim()}</p>
+              ) : null}
+            </div>
           ) : null}
         </SheetHeader>
 

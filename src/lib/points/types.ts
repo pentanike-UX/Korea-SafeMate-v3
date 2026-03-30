@@ -71,3 +71,16 @@ export type GuardianProfilePointsFields = {
   reward_granted_at: string | null;
   reward_revoked_at: string | null;
 };
+
+/** `/api/traveler/points` 및 마이페이지 시트와 동일한 직렬화 형태 */
+export type MypagePointsApiResponse = {
+  balance: {
+    user_id: string;
+    balance: number;
+    lifetime_earned: number;
+    lifetime_revoked: number;
+    updated_at: string | null;
+  };
+  ledger: PointLedgerRow[];
+  policy: PointPolicyVersionRow | null;
+};

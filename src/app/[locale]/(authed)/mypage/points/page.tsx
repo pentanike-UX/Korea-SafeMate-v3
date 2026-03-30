@@ -1,10 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MypagePointsDetailSheetTrigger } from "@/components/mypage/mypage-points-detail-sheet";
+import { MypagePointsPageSeenBoundary } from "@/components/mypage/mypage-points-page-seen-boundary";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/constants";
-import { loadMypagePointsData } from "@/lib/points/mypage-points-data.server";
+import { getMypagePointsBundleCached } from "@/lib/points/mypage-points-data.server";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 import { Coins, Info } from "lucide-react";
 
@@ -43,10 +44,11 @@ export default async function TravelerPointsPage() {
     );
   }
 
-  const { balance, earned, revoked, ledger, policy } = await loadMypagePointsData(userId, 100);
+  const { data, api: pointsApiPayload } = await getMypagePointsBundleCached(userId);
+  const { balance, earned, revoked, ledger, policy } = data;
 
   return (
-    <div className="space-y-8">
+    <MypagePointsPageSeenBoundary className="space-y-8">
       <div>
         <h2 className="text-text-strong text-xl font-semibold tracking-tight sm:text-2xl">{t("title")}</h2>
         <p className="text-muted-foreground mt-2 max-w-xl text-[15px] leading-relaxed">{t("lead")}</p>
@@ -108,6 +110,7 @@ export default async function TravelerPointsPage() {
               </p>
             </div>
             <MypagePointsDetailSheetTrigger
+              initialPointsPayload={pointsApiPayload}
               triggerLabel={t("pageDetailSheetCta")}
               variant="default"
               size="default"
@@ -126,6 +129,6 @@ export default async function TravelerPointsPage() {
           ) : null}
         </CardContent>
       </Card>
-    </div>
+    </MypagePointsPageSeenBoundary>
   );
 }

@@ -4,7 +4,7 @@ import { mockTravelerTripRequests } from "@/data/mock/traveler-hub";
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
 import { isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
-import { fetchLedgerForUser } from "@/lib/points/point-ledger-service";
+import { fetchBalanceSnapshot, fetchLedgerForUser } from "@/lib/points/point-ledger-service";
 import { getMatchRequestsForGuardian, getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
 import { getTravelerSavedGuardianIdsUnified, getTravelerSavedPostIdsUnified } from "@/lib/traveler-saved-unified.server";
 import { getSubmittedTravelerReviewsFromCookie } from "@/lib/traveler-submitted-reviews.server";
@@ -347,7 +347,13 @@ export async function getMypageHubSnapshot(
       }
       openPoolCount = poolBookings?.length ? 1 : 0;
     }
-    const points = bundle.pointsByAuthorId[userId] ?? null;
+    let points: number | null;
+    if (isMockGuardianId(userId)) {
+      points = bundle.pointsByAuthorId[userId] ?? null;
+    } else {
+      const bal = await fetchBalanceSnapshot(userId);
+      points = bal?.balance ?? 0;
+    }
     const recentPosts = [...postRows]
       .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0))
       .slice(0, 5)

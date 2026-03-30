@@ -17,6 +17,11 @@ import { Star } from "lucide-react";
 
 export type { GuardianProfileSheetPreview };
 
+export type GuardianPreviewPostContext = Pick<
+  GuardianRequestOpenDetail,
+  "postId" | "postTitle" | "postSummary" | "postContextKind"
+>;
+
 export function GuardianProfilePreviewPanel({
   guardian,
   onClose,
@@ -25,11 +30,12 @@ export function GuardianProfilePreviewPanel({
 }: {
   guardian: GuardianProfileSheetPreview;
   onClose: () => void;
-  postContext?: Pick<GuardianRequestOpenDetail, "postId" | "postTitle"> | null;
+  postContext?: GuardianPreviewPostContext | null;
   /** Guardian workspace: no request CTA; optional link to public profile only as explicit exit. */
   workspaceSelf?: boolean;
 }) {
   const t = useTranslations("TravelerHub");
+  const tReq = useTranslations("GuardianRequest");
   const tGd = useTranslations("GuardianDetail");
   const locale = useLocale();
   const imgs = guardianProfileImageUrls(guardian);
@@ -87,6 +93,17 @@ export function GuardianProfilePreviewPanel({
             </div>
           </div>
         ) : null}
+        {postContext?.postId ? (
+          <div className="border-border/60 bg-muted/15 space-y-1 rounded-xl border px-3 py-2.5">
+            <p className="text-foreground text-sm font-semibold leading-snug">{postContext.postTitle}</p>
+            {postContext.postSummary?.trim() ? (
+              <p className="text-muted-foreground line-clamp-3 text-xs leading-relaxed">{postContext.postSummary.trim()}</p>
+            ) : null}
+            {postContext.postContextKind === "route" ? (
+              <p className="text-primary text-[10px] font-bold uppercase tracking-wide">{tReq("postContextRouteBadge")}</p>
+            ) : null}
+          </div>
+        ) : null}
         {repPosts.length > 0 ? (
           <div className="space-y-2">
             <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianPreviewRepPosts")}</p>
@@ -119,7 +136,14 @@ export function GuardianProfilePreviewPanel({
                   headline: guardian.headline?.trim() || "",
                   avatarUrl: imgs.avatar,
                   suggestedRegionSlug: guardian.primary_region_slug ?? null,
-                  ...(postContext?.postId ? { postId: postContext.postId, postTitle: postContext.postTitle } : {}),
+                  ...(postContext?.postId
+                    ? {
+                        postId: postContext.postId,
+                        postTitle: postContext.postTitle,
+                        postSummary: postContext.postSummary,
+                        postContextKind: postContext.postContextKind,
+                      }
+                    : {}),
                 };
                 window.requestAnimationFrame(() =>
                   window.dispatchEvent(
@@ -128,7 +152,7 @@ export function GuardianProfilePreviewPanel({
                 );
               }}
             >
-              {t("request")}
+              {tReq("openCta")}
             </Button>
           )}
         </div>
@@ -153,7 +177,7 @@ export function GuardianProfilePreviewSheetTrigger({
   triggerVariant?: "outline" | "ghost" | "default";
   className?: string;
   size?: "default" | "sm" | "lg";
-  postContext?: Pick<GuardianRequestOpenDetail, "postId" | "postTitle"> | null;
+  postContext?: GuardianPreviewPostContext | null;
 }) {
   const [open, setOpen] = useState(false);
   const [side, setSide] = useState<"right" | "bottom">("bottom");

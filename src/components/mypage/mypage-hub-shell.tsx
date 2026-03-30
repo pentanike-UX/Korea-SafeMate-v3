@@ -13,6 +13,7 @@ import { MypageHubSegmentSwitcher } from "@/components/mypage/mypage-hub-segment
 import { MypageHubSideNavigation } from "@/components/mypage/mypage-hub-side-navigation";
 import { useMypageAttentionView } from "@/lib/mypage-attention-read-state";
 import { useTranslations } from "next-intl";
+import type { MypagePointsApiResponse } from "@/lib/points/types";
 import type { MypageHubSnapshot } from "@/types/mypage-hub";
 
 const MYPAGE_MODE_KEY = "safemate-mypage-mode";
@@ -44,6 +45,7 @@ export function MypageHubShell({
   memberSinceIso,
   accountUserId = null,
   snapshot,
+  pointsSheetInitial,
 }: {
   children: React.ReactNode;
   appRole: AppAccountRole;
@@ -54,6 +56,7 @@ export function MypageHubShell({
   memberSinceIso: string | null;
   accountUserId?: string | null;
   snapshot: MypageHubSnapshot;
+  pointsSheetInitial: MypagePointsApiResponse | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -169,7 +172,17 @@ export function MypageHubShell({
   );
 
   return (
-    <MypageHubProvider value={{ appRole, guardianStatus, accountUserId, snapshot, attention, markBlockAttentionSeen }}>
+    <MypageHubProvider
+      value={{
+        appRole,
+        guardianStatus,
+        accountUserId,
+        snapshot,
+        attention,
+        markBlockAttentionSeen,
+        pointsSheetInitial,
+      }}
+    >
       <div className="bg-[var(--bg-page)] flex min-h-screen w-full max-w-[100vw] flex-col md:flex-row">
         <aside
           className={cn(

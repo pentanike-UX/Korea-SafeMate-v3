@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BRAND } from "@/lib/constants";
 import { resolveMypageSessionRole } from "@/lib/mypage-account.server";
+import { getMypagePointsBundleCached } from "@/lib/points/mypage-points-data.server";
 import { getServerSupabaseForUser, getSessionUserId, getSupabaseAuthUserIdOnly } from "@/lib/supabase/server-user";
 import { getMatchRequestsForTraveler } from "@/lib/traveler-match-requests.server";
 import { getSubmittedTravelerReviewsFromCookie } from "@/lib/traveler-submitted-reviews.server";
@@ -62,6 +63,11 @@ export default async function TravelerOverviewPage() {
   }
   const canWriteTravelerReview = appRole !== "guardian";
 
+  const pointsBundle = userId ? await getMypagePointsBundleCached(userId) : null;
+  const pointsLabel = pointsBundle
+    ? `${pointsBundle.data.balance.toLocaleString()}P`
+    : t("statPointsPlaceholder");
+
   return (
     <div className="space-y-8">
       <div className="border-border/60 bg-card rounded-2xl border p-6 shadow-[var(--shadow-sm)] sm:p-8">
@@ -85,7 +91,7 @@ export default async function TravelerOverviewPage() {
         savedP={savedP}
         matchActive={matchActive}
         matchPending={matchPending}
-        pointsLabel={t("statPointsPlaceholder")}
+        pointsLabel={pointsLabel}
       />
 
       <div className="flex flex-wrap gap-2">

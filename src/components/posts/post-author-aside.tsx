@@ -8,6 +8,7 @@ import { listPostsForGuardianMerged } from "@/lib/posts-public-merged.server";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { GuardianPostsExplorerSheet } from "@/components/guardians/guardian-posts-explorer-sheet";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
+import { postContextFromContentPost } from "@/lib/guardian-request-post-context";
 import { GuardianRequestIntakeBullets } from "@/components/guardians/guardian-request-intake-bullets";
 import { PostAuthorRequestCta } from "@/components/posts/post-author-request-cta";
 import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
@@ -38,6 +39,7 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
           authorApprovedPosts.slice(0, 3).map((gp) => ({ id: gp.id, title: gp.title, summary: gp.summary })),
         )
       : null;
+  const postCtx = postContextFromContentPost(post);
 
   return (
     <aside className="contents">
@@ -82,7 +84,7 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
                   triggerLabel={t("viewGuardian")}
                   triggerVariant="outline"
                   className="w-full"
-                  postContext={{ postId: post.id, postTitle: post.title }}
+                  postContext={postCtx}
                 />
               ) : null}
               <GuardianRequestIntakeBullets />
@@ -97,8 +99,7 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
                     : mockRegions.some((r) => r.slug === post.region_slug)
                       ? post.region_slug
                       : null,
-                  postId: post.id,
-                  postTitle: post.title,
+                  ...postCtx,
                 }}
               />
               {postSheetItems.length > 0 ? (

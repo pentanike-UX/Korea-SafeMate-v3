@@ -19,7 +19,7 @@ export type GuardianIntakeFormInput = {
   travelerCount: number;
   guardianUserId: string;
   guardianDisplayName: string;
-  relatedPost?: { id: string; title: string } | null;
+  relatedPost?: { id: string; title: string; summary?: string } | null;
 };
 
 function defaultTentativeDate(): string {
@@ -45,6 +45,7 @@ function buildSpecialRequests(input: GuardianIntakeFormInput, kindLabel: string)
     `Guardian: ${input.guardianDisplayName} (${input.guardianUserId})`,
     `Request type: ${kindLabel}`,
     input.relatedPost ? `Related post: ${input.relatedPost.title} (${input.relatedPost.id})` : "",
+    input.relatedPost?.summary?.trim() ? `Post summary: ${input.relatedPost.summary.trim()}` : "",
     `Preferred region slug: ${input.regionSlug}`,
     `Preferred date: ${input.preferredDate || "Flexible / to be coordinated"}`,
     input.mood.trim() ? `Mood / style: ${input.mood.trim()}` : "",

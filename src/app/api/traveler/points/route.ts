@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { loadMypagePointsData } from "@/lib/points/mypage-points-data.server";
+import {
+  loadMypagePointsData,
+  MYPAGE_POINTS_LEDGER_LIMIT,
+  toMypagePointsApiResponse,
+} from "@/lib/points/mypage-points-data.server";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 
 export async function GET() {
@@ -8,17 +12,6 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { balance, earned, revoked, ledger, policy } = await loadMypagePointsData(userId, 80);
-
-  return NextResponse.json({
-    balance: {
-      user_id: userId,
-      balance,
-      lifetime_earned: earned,
-      lifetime_revoked: revoked,
-      updated_at: null as string | null,
-    },
-    ledger,
-    policy,
-  });
+  const bundle = await loadMypagePointsData(userId, MYPAGE_POINTS_LEDGER_LIMIT);
+  return NextResponse.json(toMypagePointsApiResponse(userId, bundle));
 }

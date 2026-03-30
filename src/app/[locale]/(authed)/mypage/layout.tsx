@@ -4,6 +4,7 @@ import { guardianStatusFromRow, type GuardianProfileStatus } from "@/lib/auth/gu
 import { buildMockAccountMePayload } from "@/lib/dev/mock-guardian-auth";
 import { getMockGuardianIdFromCookies } from "@/lib/dev/mock-guardian-cookies.server";
 import { getMypageHubSnapshot } from "@/lib/mypage-hub-snapshot.server";
+import { getMypagePointsBundleCached } from "@/lib/points/mypage-points-data.server";
 import { getServerSupabaseForUser } from "@/lib/supabase/server-user";
 
 export default async function MypageLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,10 @@ export default async function MypageLayout({ children }: { children: React.React
   if (mockId) {
     const mock = buildMockAccountMePayload(mockId);
     if (mock) {
-      const snapshot = await getMypageHubSnapshot(mock.auth.id, "guardian", mock.guardian_status);
+      const [snapshot, pointsBundle] = await Promise.all([
+        getMypageHubSnapshot(mock.auth.id, "guardian", mock.guardian_status),
+        getMypagePointsBundleCached(mock.auth.id),
+      ]);
       return (
         <MypageHubShell
           appRole="guardian"
@@ -30,6 +34,7 @@ export default async function MypageLayout({ children }: { children: React.React
           memberSinceIso={mock.user.created_at}
           accountUserId={mock.auth.id}
           snapshot={snapshot}
+          pointsSheetInitial={pointsBundle.api}
         >
           {children}
         </MypageHubShell>
@@ -79,7 +84,10 @@ export default async function MypageLayout({ children }: { children: React.React
     }
   }
 
-  const snapshot = await getMypageHubSnapshot(accountUserId, appRole, guardianStatus);
+  const [snapshot, pointsBundle] = await Promise.all([
+    getMypageHubSnapshot(accountUserId, appRole, guardianStatus),
+    accountUserId ? getMypagePointsBundleCached(accountUserId) : Promise.resolve(null),
+  ]);
 
   return (
     <MypageHubShell
@@ -91,6 +99,7 @@ export default async function MypageLayout({ children }: { children: React.React
       memberSinceIso={memberSinceIso}
       accountUserId={accountUserId}
       snapshot={snapshot}
+      pointsSheetInitial={pointsBundle?.api ?? null}
     >
       {children}
     </MypageHubShell>

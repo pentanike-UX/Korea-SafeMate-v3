@@ -1,5 +1,6 @@
 import type { AppAccountRole } from "@/lib/auth/app-role";
 import type { GuardianProfileStatus } from "@/lib/auth/guardian-profile-status";
+import type { MypagePointsApiResponse } from "@/lib/points/types";
 
 export type GuardianRecentPostLine = {
   id: string;
@@ -151,4 +152,6 @@ export type MypageHubContextValue = {
   snapshot: MypageHubSnapshot;
   attention: MypageHubAttentionView;
   markBlockAttentionSeen: (blockKey: AttentionBlockKey, signature: string) => void;
+  /** RSC에서 직렬화한 포인트 시트 초기 payload (없으면 시트만 API로 로드) */
+  pointsSheetInitial: MypagePointsApiResponse | null;
 };
