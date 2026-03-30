@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import {
+  ATTENTION_COUNT_DISPLAY_CAP_COMPACT,
   attentionCountAccessibleLabel,
   formatAttentionCountForDisplay,
 } from "@/lib/mypage/attention-badge-display";
@@ -9,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 function SegmentCountBadge({ count, ariaLabel }: { count: number; ariaLabel: string }) {
   if (count <= 0) return null;
-  const label = formatAttentionCountForDisplay(count);
+  const label = formatAttentionCountForDisplay(count, ATTENTION_COUNT_DISPLAY_CAP_COMPACT);
   return (
     <span
       role="status"
@@ -53,7 +54,7 @@ export function MypageHubSegmentSwitcher({
             "relative flex min-h-11 flex-1 items-center justify-center gap-0.5 rounded-[calc(var(--radius-md)-2px)] px-2.5 text-xs font-semibold transition-colors sm:min-h-12 sm:px-3 sm:text-sm",
             hubMode === "traveler"
               ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
-              : "text-muted-foreground hover:text-foreground",
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
           )}
         >
           <span className="truncate">{t("modeSegmentTraveler")}</span>
@@ -68,7 +69,7 @@ export function MypageHubSegmentSwitcher({
             "relative flex min-h-11 flex-1 items-center justify-center gap-0.5 rounded-[calc(var(--radius-md)-2px)] px-2.5 text-xs font-semibold transition-colors sm:min-h-12 sm:px-3 sm:text-sm",
             hubMode === "guardian"
               ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
-              : "text-muted-foreground hover:text-foreground",
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
             guardianTabMuted && hubMode !== "guardian" && "opacity-80",
           )}
         >

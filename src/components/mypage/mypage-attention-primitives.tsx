@@ -1,15 +1,25 @@
 "use client";
 
 import {
+  ATTENTION_COUNT_DISPLAY_CAP_COMPACT,
   attentionCountAccessibleLabel,
   formatAttentionCountForDisplay,
 } from "@/lib/mypage/attention-badge-display";
 import { cn } from "@/lib/utils";
 
 /** LNB·세그먼트용 숫자 배지 (0이면 렌더 없음) */
-export function MypageMenuCountBadge({ count, ariaLabel }: { count: number; ariaLabel: string }) {
+export function MypageMenuCountBadge({
+  count,
+  ariaLabel,
+  displayCap = ATTENTION_COUNT_DISPLAY_CAP_COMPACT,
+}: {
+  count: number;
+  ariaLabel: string;
+  /** 기본: 좁은 칩용 9+. 카드형 등에서는 99 넘기기. */
+  displayCap?: number;
+}) {
   if (count < 1) return null;
-  const shown = formatAttentionCountForDisplay(count);
+  const shown = formatAttentionCountForDisplay(count, displayCap);
   return (
     <span
       role="status"
@@ -37,9 +47,18 @@ export function HeaderAttentionDot({ className }: { className?: string }) {
 }
 
 /** 카드/섹션 제목 옆 블록 단위 배지 */
-export function BlockAttentionBadge({ count, ariaLabel }: { count: number; ariaLabel: string }) {
+export function BlockAttentionBadge({
+  count,
+  ariaLabel,
+  displayCap,
+}: {
+  count: number;
+  ariaLabel: string;
+  /** 미지정 시 전역 기본(99+) */
+  displayCap?: number;
+}) {
   if (count < 1) return null;
-  const shown = formatAttentionCountForDisplay(count);
+  const shown = formatAttentionCountForDisplay(count, displayCap);
   return (
     <span
       role="status"

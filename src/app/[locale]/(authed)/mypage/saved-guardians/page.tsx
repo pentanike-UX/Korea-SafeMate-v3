@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import type { PublicGuardian } from "@/lib/guardian-public";
 import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 import {
-  getLatestApprovedPostForGuardianMerged,
+  getLatestApprovedPostsForGuardiansMergedBatch,
   listApprovedPostsByIdsMerged,
 } from "@/lib/posts-public-merged.server";
 import {
@@ -45,10 +45,7 @@ export default async function TravelerSavedGuardiansPage() {
   const needFallbackUserIds = [
     ...new Set(saved.filter((g) => !resolveRepresentativeContentPost(g, repPosts)).map((g) => g.user_id)),
   ];
-  const fallbackPairs = await Promise.all(
-    needFallbackUserIds.map(async (uid) => [uid, await getLatestApprovedPostForGuardianMerged(uid)] as const),
-  );
-  const fallbackByUserId = new Map(fallbackPairs);
+  const fallbackByUserId = await getLatestApprovedPostsForGuardiansMergedBatch(needFallbackUserIds);
 
   return (
     <div className="space-y-6">
@@ -71,6 +68,9 @@ export default async function TravelerSavedGuardiansPage() {
           const fb = fallbackByUserId.get(g.user_id) ?? null;
           const repLines = representativePostLinesForSheetPreviewWithFallback(g, repPosts, fb);
           const repCtx = postContextFromGuardianRepresentativeWithFallback(g, repPosts, fb);
+          const fromRep = resolveRepresentativeContentPost(g, repPosts) != null;
+          const representativePostsSource =
+            repLines.length === 0 ? undefined : !fromRep && fb ? ("recent_approved" as const) : ("curated" as const);
           return (
             <li key={g.user_id}>
               <Card className="overflow-hidden rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
@@ -105,7 +105,9 @@ export default async function TravelerSavedGuardiansPage() {
                           avatar_image_url: g.avatar_image_url,
                           list_card_image_url: g.list_card_image_url,
                           detail_hero_image_url: g.detail_hero_image_url,
-                          ...(repLines.length > 0 ? { representativePosts: repLines } : {}),
+                          ...(repLines.length > 0
+                            ? { representativePosts: repLines, representativePostsSource }
+                            : {}),
                         }}
                         triggerLabel={t("openProfile")}
                         className="h-10 w-full sm:min-w-0 sm:flex-1"

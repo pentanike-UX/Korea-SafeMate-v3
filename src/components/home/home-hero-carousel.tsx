@@ -223,12 +223,8 @@ export function HomeHeroCarousel() {
               </>
             ) : null}
           </div>
-          <HomeAuxiliaryNoteHero
-            className="mt-5"
-            primary={t("scopeNote")}
-            secondary={t("scopeNoteDetail")}
-            secondaryFromSm
-          />
+          {/* 보조 노트: 주=항상 · 부=sm↑ (정책·예외는 home-auxiliary-note.tsx 상단 주석) */}
+          <HomeAuxiliaryNoteHero className="mt-5" primary={t("scopeNote")} secondary={t("scopeNoteDetail")} />
         </div>
 
         {/* Bottom bar: progress + meta + dots + arrows */}

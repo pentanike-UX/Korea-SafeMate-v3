@@ -19,7 +19,7 @@ import { requestStatusChipClass, type RequestTimelineStatus } from "@/lib/mypage
 import { MypageGuardianProfileSheetTrigger } from "@/components/mypage/mypage-guardian-profile-sheet-trigger";
 import { listPublicGuardiansMerged } from "@/lib/guardian-public-merged.server";
 import {
-  getLatestApprovedPostForGuardianMerged,
+  getLatestApprovedPostsForGuardiansMergedBatch,
   listApprovedPostsByIdsMerged,
 } from "@/lib/posts-public-merged.server";
 import {
@@ -186,10 +186,7 @@ export default async function TravelerRequestsPage() {
   const needFallbackUserIds = [
     ...new Set(usedGuardians.filter((g) => !resolveRepresentativeContentPost(g, repPosts)).map((g) => g.user_id)),
   ];
-  const fallbackPairs = await Promise.all(
-    needFallbackUserIds.map(async (uid) => [uid, await getLatestApprovedPostForGuardianMerged(uid)] as const),
-  );
-  const fallbackByUserId = new Map(fallbackPairs);
+  const fallbackByUserId = await getLatestApprovedPostsForGuardiansMergedBatch(needFallbackUserIds);
 
   return (
     <div className="space-y-6">
@@ -204,6 +201,9 @@ export default async function TravelerRequestsPage() {
           const fb = g ? (fallbackByUserId.get(g.user_id) ?? null) : null;
           const repPostLines = g ? representativePostLinesForSheetPreviewWithFallback(g, repPosts, fb) : [];
           const repCtx = g ? postContextFromGuardianRepresentativeWithFallback(g, repPosts, fb) : null;
+          const fromRep = g ? resolveRepresentativeContentPost(g, repPosts) != null : false;
+          const representativePostsSource =
+            !g || repPostLines.length === 0 ? undefined : !fromRep && fb ? ("recent_approved" as const) : ("curated" as const);
           const svc = serviceLabel(t, r.serviceCode);
           return (
             <li key={r.id}>
@@ -287,7 +287,9 @@ export default async function TravelerRequestsPage() {
                           avg_traveler_rating: g.avg_traveler_rating,
                           expertise_tags: g.expertise_tags,
                           companion_style_slugs: g.companion_style_slugs,
-                          ...(repPostLines.length > 0 ? { representativePosts: repPostLines } : {}),
+                          ...(repPostLines.length > 0
+                            ? { representativePosts: repPostLines, representativePostsSource }
+                            : {}),
                         }}
                         triggerLabel={t("openGuardian")}
                         postContext={repCtx}

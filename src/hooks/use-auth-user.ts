@@ -29,7 +29,32 @@ export function useAuthUser(): User | null | undefined {
     if (mockId) {
       const u = buildMockSupabaseUser(mockId);
       applySessionUser(u);
-      return;
+      const prevMockCookieRef: { current: string | null } = { current: mockId };
+      const resyncMockCookie = () => {
+        const m = readMockGuardianIdFromDocumentCookie();
+        const next = m?.trim() || null;
+        if (next === prevMockCookieRef.current) return;
+        prevMockCookieRef.current = next;
+        if (next) {
+          applySessionUser(buildMockSupabaseUser(next));
+          return;
+        }
+        const sb2 = createSupabaseBrowserClient();
+        if (!sb2) {
+          applySessionUser(null);
+          return;
+        }
+        void sb2.auth.getSession().then(({ data }) => applySessionUser(data.session?.user ?? null));
+      };
+      const onVisibility = () => {
+        if (document.visibilityState === "visible") resyncMockCookie();
+      };
+      window.addEventListener("focus", resyncMockCookie);
+      document.addEventListener("visibilitychange", onVisibility);
+      return () => {
+        window.removeEventListener("focus", resyncMockCookie);
+        document.removeEventListener("visibilitychange", onVisibility);
+      };
     }
 
     const sb = createSupabaseBrowserClient();

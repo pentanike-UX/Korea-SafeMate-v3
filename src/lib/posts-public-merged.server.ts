@@ -95,7 +95,12 @@ async function mapRowsToPosts(rows: RawPost[]): Promise<ContentPost[]> {
   return out;
 }
 
-/** 승인된 퍼블릭 포스트 — DB + 시드 mock 병합(동일 id는 DB 우선) */
+/**
+ * 전체 승인 포스트 병합(최대 400행) — 탐색·가디언 목록 등 넓은 목록에 적합.
+ * 카드/시트처럼 소수 id만 필요하면 `listApprovedPostsByIdsMerged`·배치 최신글 조회를 우선 검토.
+ *
+ * 단계적 경량화 후보: `/guardians`, `/posts`, explore, home-recommended(목업), discover-client 등.
+ */
 export const listApprovedPostsMerged = cache(async (): Promise<ContentPost[]> => {
   const sb = createServiceRoleSupabase();
   const mockApproved = mockContentPosts.filter((p) => p.status === "approved");
@@ -215,6 +220,69 @@ export async function getLatestApprovedPostForGuardianMerged(authorUserId: strin
     if (mapped[0]) return mapped[0];
   }
   return bestMock ?? null;
+}
+
+function upsertLatestByAuthor(m: Map<string, ContentPost>, p: ContentPost) {
+  const cur = m.get(p.author_user_id);
+  if (!cur || new Date(p.created_at).getTime() > new Date(cur.created_at).getTime()) {
+    m.set(p.author_user_id, p);
+  }
+}
+
+/**
+ * 폴백용 — 가디언별 최신 승인 글 1건을 한 번의(또는 소수의) 조회에 가깝게 채운다.
+ * DB는 `created_at` 내림차순 상한 행만 가져온 뒤 작성자당 첫 행을 채택하므로,
+ * 한도에 걸려 누락된 작성자는 `getLatestApprovedPostForGuardianMerged`로 보충한다.
+ */
+export async function getLatestApprovedPostsForGuardiansMergedBatch(
+  authorUserIds: string[],
+): Promise<Map<string, ContentPost>> {
+  const unique = [...new Set(authorUserIds.map((x) => x.trim()).filter(Boolean))];
+  const out = new Map<string, ContentPost>();
+  if (unique.length === 0) return out;
+
+  const uidSet = new Set(unique);
+  const sb = createServiceRoleSupabase();
+
+  if (sb) {
+    const maxRows = Math.min(500, Math.max(unique.length * 25, unique.length));
+    const { data: rows, error } = await sb
+      .from("content_posts")
+      .select("*")
+      .in("author_user_id", unique)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(maxRows);
+
+    if (error) {
+      console.error("[getLatestApprovedPostsForGuardiansMergedBatch]", error);
+    } else if (rows?.length) {
+      const mapped = await mapRowsToPosts(rows as RawPost[]);
+      for (const p of mapped) {
+        if (!out.has(p.author_user_id)) out.set(p.author_user_id, p);
+      }
+    }
+  }
+
+  const mockLatestByAuthor = new Map<string, ContentPost>();
+  for (const p of mockContentPosts) {
+    if (p.status !== "approved" || !uidSet.has(p.author_user_id)) continue;
+    upsertLatestByAuthor(mockLatestByAuthor, p);
+  }
+  for (const [aid, p] of mockLatestByAuthor) {
+    if (!out.has(aid)) out.set(aid, p);
+  }
+
+  const missing = unique.filter((id) => !out.has(id));
+  if (missing.length > 0) {
+    const singles = await Promise.all(missing.map((id) => getLatestApprovedPostForGuardianMerged(id)));
+    missing.forEach((id, i) => {
+      const p = singles[i];
+      if (p) out.set(id, p);
+    });
+  }
+
+  return out;
 }
 
 export async function listApprovedRoutePostsMerged(): Promise<ContentPost[]> {

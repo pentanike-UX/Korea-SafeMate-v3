@@ -12,6 +12,7 @@ import {
   type GuardianRequestOpenDetail,
 } from "@/components/guardians/guardian-request-sheet";
 import { Badge } from "@/components/ui/badge";
+import { regionDisplayLabelFromSlug } from "@/lib/mypage/region-label-i18n";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 
@@ -65,7 +66,11 @@ export function GuardianProfilePreviewPanel({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {guardian.primary_region_slug ? <Badge variant="outline">{guardian.primary_region_slug}</Badge> : null}
+          {guardian.primary_region_slug ? (
+            <Badge variant="outline">
+              {regionDisplayLabelFromSlug(guardian.primary_region_slug, (k) => t(k))}
+            </Badge>
+          ) : null}
           {guardian.guardian_tier ? <Badge variant="secondary">{guardian.guardian_tier}</Badge> : null}
           {languageList.length > 0 ? (
             <Badge variant="outline">
@@ -106,7 +111,12 @@ export function GuardianProfilePreviewPanel({
         ) : null}
         {repPosts.length > 0 ? (
           <div className="space-y-2">
-            <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianPreviewRepPosts")}</p>
+            <div>
+              <p className="text-muted-foreground text-xs font-semibold uppercase">{t("guardianPreviewRepPosts")}</p>
+              {guardian.representativePostsSource === "recent_approved" ? (
+                <p className="text-muted-foreground mt-1 text-[11px] leading-relaxed">{t("guardianPreviewRepPostsRecentHint")}</p>
+              ) : null}
+            </div>
             <ul className="space-y-1.5">
               {repPosts.map((p) => (
                 <li key={p.id} className="rounded-lg border border-border/60 bg-muted/15 px-3 py-2">

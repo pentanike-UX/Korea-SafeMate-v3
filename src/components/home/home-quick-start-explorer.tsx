@@ -285,6 +285,7 @@ export function HomeQuickStartExplorer() {
           </div>
         </div>
 
+        {/* 라이트 플로우 보조 노트 — Hero 패턴과 분리 (home-auxiliary-note.tsx) */}
         <HomeAuxiliaryNoteSection>{tHome("processClarity")}</HomeAuxiliaryNoteSection>
       </div>
     </section>

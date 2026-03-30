@@ -10,6 +10,9 @@ import { getActivePointPolicy } from "@/lib/points/point-policy-repository";
 import type { ApplyLedgerResult } from "@/lib/points/types";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 
+/** Supabase가 count+head에서 null을 반환할 때 warn은 프로세스당 1회만(스팸 방지). */
+let ledgerAttentionCountNullWarned = false;
+
 async function rpcApplyLedger(params: {
   userId: string;
   amount: number;
@@ -398,9 +401,10 @@ export async function fetchLedgerAttentionSignals(
   if (headErr) {
     console.error("[points] fetchLedgerAttentionSignals latest-id head failed", headErr);
   }
-  if (!countErr && count === null) {
+  if (!countErr && count === null && !ledgerAttentionCountNullWarned) {
+    ledgerAttentionCountNullWarned = true;
     console.warn(
-      "[points] fetchLedgerAttentionSignals: exact row count is null without error — check Supabase project settings / RLS / count+head behavior",
+      "[points] fetchLedgerAttentionSignals: exact row count is null without error (logged once per process) — check Supabase project settings / RLS / count+head behavior",
     );
   }
 

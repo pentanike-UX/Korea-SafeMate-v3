@@ -7,6 +7,7 @@ import type {
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import type { StoredMatchRequest } from "@/lib/traveler-match-requests";
 import type { PublicGuardian } from "@/lib/guardian-public";
+import { formatRegionSlugForDisplay } from "@/lib/mypage/region-label-i18n";
 import { regionKeyFromSlug, type TravelerHubRegionLabelKey } from "@/lib/mypage/traveler-hub-region-key";
 
 export type RequestPageRequestType = "half_day" | "day" | "consult";
@@ -61,14 +62,6 @@ function pickLatestIso(...candidates: (string | null | undefined)[]): string {
     }
   }
   return best ?? "";
-}
-
-function formatRegionSlugForDisplay(slug: string) {
-  return slug
-    .split(/[-_]/g)
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" · ");
 }
 
 function requestTypeFromServiceCode(code: ServiceTypeCode): RequestPageRequestType {

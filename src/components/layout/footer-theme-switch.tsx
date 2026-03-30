@@ -24,6 +24,7 @@ export function FooterThemeSwitch({ className }: { className?: string }) {
       onClick={toggleTheme}
       className={cn(
         "relative inline-flex h-10 min-h-10 w-[5.75rem] shrink-0 items-center rounded-[var(--radius-md)] border border-white/22 bg-white/[0.07] px-1 shadow-inner outline-none transition-colors sm:w-[6rem]",
+        "hover:border-white/32 hover:bg-white/[0.11] enabled:hover:shadow-sm",
         "focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
         "disabled:opacity-60",
         className,

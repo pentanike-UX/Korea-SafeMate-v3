@@ -1,7 +1,7 @@
 /**
  * 대표 포스트 해석: `representative_post_ids` 순으로 `postCatalog`에서만 찾는다.
  * - 카탈로그가 전체 승인 목록이면 DB에 없는 id는 스킵 → rep 맥락 null 가능.
- * - `listApprovedPostsByIdsMerged` + `getLatestApprovedPostForGuardianMerged` 조합과
+ * - `listApprovedPostsByIdsMerged` + `getLatestApprovedPostsForGuardiansMergedBatch`(폴백 N+1 완화)와
  *   `*WithFallback` 헬퍼로 null 빈도를 줄인다.
  */
 import type { ContentPost } from "@/types/domain";
@@ -65,7 +65,7 @@ export function postContextFromGuardianRepresentative(
 
 /**
  * 대표 id가 승인 카탈로그에 없을 때 가디언 최신 승인 포스트로 요청 시트 맥락을 채운다.
- * `fallbackPost`는 호출측에서 `getLatestApprovedPostForGuardianMerged` 등으로 준비.
+ * `fallbackPost`는 호출측에서 `getLatestApprovedPostsForGuardiansMergedBatch` 등으로 준비.
  */
 export function postContextFromGuardianRepresentativeWithFallback(
   guardian: RepIdSource,

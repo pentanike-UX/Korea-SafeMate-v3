@@ -1,12 +1,13 @@
+import { getTranslations } from "next-intl/server";
 import type { ContactMethod, GuardianProfile } from "@/types/domain";
 import type { GuardianDashboardSnapshot } from "@/types/guardian-dashboard";
 import { mockServiceTypes } from "@/data/mock/service-types";
 import { CONTACT_CHANNEL_LABELS } from "@/lib/constants";
-import { regionDisplayName } from "@/lib/guardian-dashboard-utils";
+import { regionDisplayLabelFromSlug } from "@/lib/mypage/region-label-i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function GuardianAvailabilityContactModule({
+export async function GuardianAvailabilityContactModule({
   profile,
   snapshot,
   contacts,
@@ -16,6 +17,10 @@ export function GuardianAvailabilityContactModule({
   contacts: ContactMethod[];
 }) {
   const services = mockServiceTypes.filter((s) => snapshot.supported_service_codes.includes(s.code));
+  const t = await getTranslations("TravelerHub");
+  const tRegion = (k: string) => t(k);
+  const primaryRegionLabel = regionDisplayLabelFromSlug(profile.primary_region_slug, tRegion);
+  const secondaryRegionLabels = snapshot.secondary_region_slugs.map((slug) => regionDisplayLabelFromSlug(slug, tRegion));
 
   return (
     <Card className="border-border/80 shadow-sm">
@@ -49,10 +54,10 @@ export function GuardianAvailabilityContactModule({
 
         <div>
           <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">Service regions</p>
-          <p className="text-foreground mt-2">{regionDisplayName(profile.primary_region_slug)}</p>
-          {snapshot.secondary_region_slugs.length > 0 ? (
+          <p className="text-foreground mt-2">{primaryRegionLabel}</p>
+          {secondaryRegionLabels.length > 0 ? (
             <p className="text-muted-foreground mt-1 text-xs">
-              Secondary: {snapshot.secondary_region_slugs.map(regionDisplayName).join(" · ")}
+              Secondary: {secondaryRegionLabels.join(" · ")}
             </p>
           ) : null}
         </div>

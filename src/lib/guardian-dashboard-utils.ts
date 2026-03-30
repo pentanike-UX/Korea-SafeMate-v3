@@ -1,10 +1,4 @@
-import { mockRegions } from "@/data/mock/regions";
 import type { BookingWithDetails, GuardianLanguage, GuardianProfile } from "@/types/domain";
-
-export function regionDisplayName(slug: string): string {
-  const r = mockRegions.find((x) => x.slug === slug);
-  return r ? `${r.name} (${r.name_ko})` : slug;
-}
 
 const LANG_LABEL: Record<string, string> = {
   en: "English",

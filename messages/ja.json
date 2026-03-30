@@ -1118,6 +1118,7 @@
     "guardianMiniSheetHint": "内容を確認してからプロフィールへ進むか、ここから予約リクエストを始められます。",
     "guardianPreviewLanguages": "言語",
     "guardianPreviewRepPosts": "主な投稿",
+    "guardianPreviewRepPostsRecentHint": "設定された代表投稿がまだ反映されていないため、最近公開された承認済みの投稿を表示しています。",
     "matchDetailOpenFullPage": "全体ページで見る",
     "tripRequestSheetTitle": "リクエスト詳細",
     "tripRequestOpenListPage": "リクエスト一覧へ",

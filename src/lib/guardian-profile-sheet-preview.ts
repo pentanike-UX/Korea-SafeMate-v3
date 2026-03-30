@@ -14,11 +14,14 @@ export type GuardianProfileSheetPreview = GuardianImageSource & {
   expertise_tags?: string[];
   companion_style_slugs?: string[];
   representativePosts?: Pick<ContentPost, "id" | "title" | "summary">[];
+  /** 대표 id로 해석됨 | 폴백으로 최신 승인 글만 채운 경우(시트 힌트용) */
+  representativePostsSource?: "curated" | "recent_approved";
 };
 
 export function publicGuardianToSheetPreview(
   g: PublicGuardian,
   repPosts: Pick<ContentPost, "id" | "title" | "summary">[],
+  representativePostsSource?: "curated" | "recent_approved",
 ): GuardianProfileSheetPreview {
   return {
     user_id: g.user_id,
@@ -37,5 +40,6 @@ export function publicGuardianToSheetPreview(
     expertise_tags: g.expertise_tags,
     companion_style_slugs: g.companion_style_slugs,
     representativePosts: repPosts.slice(0, 3),
+    ...(representativePostsSource ? { representativePostsSource } : {}),
   };
 }

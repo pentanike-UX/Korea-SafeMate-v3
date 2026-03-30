@@ -1,14 +1,18 @@
+import { getTranslations } from "next-intl/server";
 import type { GuardianProfile } from "@/types/domain";
 import { guardianApprovalLabel, guardianApprovalVariant } from "@/lib/booking-ui";
-import { guardianProfileCompleteness, formatGuardianLanguages, regionDisplayName } from "@/lib/guardian-dashboard-utils";
+import { guardianProfileCompleteness, formatGuardianLanguages } from "@/lib/guardian-dashboard-utils";
+import { regionDisplayLabelFromSlug } from "@/lib/mypage/region-label-i18n";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant, guardianTierLabel } from "@/lib/guardian-tier-ui";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GuardianProgressRow } from "@/components/guardian/dashboard/guardian-progress-row";
 
-export function GuardianProfileSummaryCard({ profile }: { profile: GuardianProfile }) {
+export async function GuardianProfileSummaryCard({ profile }: { profile: GuardianProfile }) {
   const complete = guardianProfileCompleteness(profile);
+  const t = await getTranslations("TravelerHub");
+  const primaryRegionLabel = regionDisplayLabelFromSlug(profile.primary_region_slug, (k) => t(k));
 
   return (
     <Card className="border-border/80 shadow-[var(--shadow-sm)] ring-1 ring-[color-mix(in_srgb,var(--brand-primary)_12%,transparent)]">
@@ -30,7 +34,7 @@ export function GuardianProfileSummaryCard({ profile }: { profile: GuardianProfi
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Primary area</p>
-            <p className="text-foreground mt-1">{regionDisplayName(profile.primary_region_slug)}</p>
+            <p className="text-foreground mt-1">{primaryRegionLabel}</p>
           </div>
           <div>
             <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Languages</p>
