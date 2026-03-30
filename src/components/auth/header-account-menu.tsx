@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { HeaderAttentionDot } from "@/components/mypage/mypage-attention-primitives";
 import { MYPAGE_ATTENTION_UPDATED_EVENT } from "@/lib/mypage-attention-events";
+import { broadcastClientAuthContextChanged } from "@/lib/auth/client-auth-tab-sync";
 import { invalidateClientPointsCache } from "@/lib/points/client-points-fetch-cache";
 import type { GuardianWorkspaceNavBadgeKey, TravelerNavBadgeKey } from "@/types/mypage-hub";
 import { ChevronDown, Coins, FileText, Heart, LayoutDashboard, Plane, Shield, UserRound, Users } from "lucide-react";
@@ -195,6 +196,7 @@ export function HeaderAccountMenu({
     await fetch("/api/dev/mock-guardian-logout", { method: "POST", credentials: "include" });
     const sb = createSupabaseBrowserClient();
     await sb?.auth.signOut();
+    broadcastClientAuthContextChanged();
     setDesktopOpen(false);
     setMobileOpen(false);
     if (isProtectedPath(pathname)) {

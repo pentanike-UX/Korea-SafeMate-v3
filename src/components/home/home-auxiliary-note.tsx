@@ -13,13 +13,13 @@ import { cn } from "@/lib/utils";
  * - `HomeAuxiliaryNoteSection`: **라이트 배경**의 섹션 하단·카드 직후 등. 퀵스타트 `processClarity`와 동일 리듬이 필요할 때만 추가한다.
  *
  * ## 히어로 secondary(예: scopeNoteDetail) 모바일 정책
- * - **제품 정책 스위치**: `home-hero-carousel.tsx`의 `HOME_HERO_SCOPE_NOTE_SECONDARY_FROM_SM` — `false`로 바꾸면 즉시 모든 뷰포트에서 부 노트 표시(컴포넌트 prop `secondaryFromSm`과 동일 의미).
+ * - **환경 스위치**: `HOME_HERO_SCOPE_NOTE_SECONDARY_FROM_SM` → `getHomeHeroScopeNoteSecondaryFromSm()` → `HomeHeroCarousel` → 이 컴포넌트의 `secondaryFromSm`. `false`면 모든 뷰포트에서 부 노트 표시.
  * - 기본(스위치 `true`): `secondaryFromSm === true` → **sm 미만에서 부 문구만 시각적으로 숨김**(`hidden sm:block`) — 세로 밀도·히어로 리듬 유지.
  * - 주(`primary`, `scopeNote`)는 항상 노출.
  * - **정책 판단(현재)**: 부 문구는 법적 필수 고지가 아닌 “제외 범위·확인” 안내로 분류해 모바일 생략을 허용한다.
  * - **sm 이상만 노출 장점**: 히어로 압축, CTA 가시성. **단점**: 시각적 숨김 + 일부 스크린리더에서 부 문구 노출 약화 가능.
  * - **항상 노출 장점**: 고지·투명성·a11y 일관. **단점**: 모바일에서 세로 길이·줄바꿈 증가(로케일별 카피 길이 차이).
- * - **필수 고지로 격상 시**: 스위치를 `false`로 두거나, 약관/소개/전용 고지 화면으로 이전. (“더 보기” 접기 UI는 별도 과제.)
+ * - **필수 고지로 격상 시**: env를 `false`로 두거나(스테이징/운영), 약관/소개/전용 고지 화면으로 이전. (“더 보기” 접기 UI는 별도 과제.)
  *
  * ## 토큰화 후보 (장기, globals / tailwind theme)
  * - 히어로 주:`text-white/52` → 예: `--home-hero-note-primary-fg`
@@ -35,7 +35,7 @@ const heroSecondaryText =
 /**
  * 홈 히어로 전용 — 다크 배경 위 스코프 안내(주) + 제외·확인(부).
  * @param secondaryFromSm `true`(기본): 부 노트는 `sm` 이상에서만 표시. `false`: 모든 뷰포트에서 표시.
- * 홈 캐러셀에서는 `HOME_HERO_SCOPE_NOTE_SECONDARY_FROM_SM`로 이 값을 넘긴다(한 곳에서 정책 전환).
+ * 홈 캐러셀에서는 서버에서 읽은 `scopeNoteSecondaryFromSm`으로 이 값을 넘긴다.
  */
 export function HomeAuxiliaryNoteHero({
   primary,

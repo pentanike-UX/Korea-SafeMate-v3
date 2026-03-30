@@ -2,8 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { GuardianProfile } from "@/types/domain";
+import { CoverCropPreview } from "@/components/media/cover-crop-preview";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
+import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,10 +22,12 @@ export function AdminGuardianMediaClient({
   allGalleries: Record<string, string[]>;
 }) {
   const router = useRouter();
+  const t = useTranslations("GuardianProfileImages");
   const imgs = useMemo(() => guardianProfileImageUrls(guardian), [guardian]);
   const [urls, setUrls] = useState<string[]>(initialIntroUrls.length ? initialIntroUrls : [""]);
   const [status, setStatus] = useState<"idle" | "saving" | "err">("idle");
   const [err, setErr] = useState<string | null>(null);
+  const firstIntroUrl = useMemo(() => urls.map((x) => x.trim()).find(Boolean) ?? "", [urls]);
 
   function setAt(i: number, v: string) {
     setUrls((prev) => prev.map((x, j) => (j === i ? v : x)));
@@ -79,6 +84,7 @@ export function AdminGuardianMediaClient({
 
       <section className="space-y-4 rounded-xl border bg-card p-5">
         <h2 className="text-foreground text-base font-semibold">이미지 용도 (현재 해석)</h2>
+        <p className="text-muted-foreground text-xs leading-relaxed">{t("sectionCropExplain")}</p>
         <p className="text-muted-foreground text-sm leading-relaxed">
           아래는 시드·오버라이드가 합쳐진 <strong>실제 공개 URL</strong>입니다. 아바타·목록·히어로 오버라이드는 가디언 계정의 프로필 이미지 설정 또는 DB 필드에서
           바꿉니다.
@@ -87,17 +93,19 @@ export function AdminGuardianMediaClient({
           <div>
             <dt className="text-muted-foreground font-medium">아바타 이미지</dt>
             <dd className="text-foreground mt-1 break-all font-mono text-xs">{imgs.avatar || "—"}</dd>
-            <dd className="text-muted-foreground mt-1 text-xs">헤더·작은 썸네일·상세 상단 원형 프로필</dd>
+            <dd className="text-muted-foreground mt-1 text-xs">헤더·작은 썸네일·상세 상단 원형 프로필 — {t("avatarHelp")}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground font-medium">목록 카드 이미지</dt>
             <dd className="text-foreground mt-1 break-all font-mono text-xs">{imgs.default || "—"}</dd>
-            <dd className="text-muted-foreground mt-1 text-xs">가디언 목록·비교 카드</dd>
+            <dd className="text-muted-foreground mt-1 text-xs">{t("listHelp")}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground font-medium">상세 대표 이미지 (가로형 히어로)</dt>
             <dd className="text-foreground mt-1 break-all font-mono text-xs">{imgs.landscape || "—"}</dd>
-            <dd className="text-muted-foreground mt-1 text-xs">가디언 상단 히어로 — 세로 전용 시드(`profile_XX.jpg`)는 사용하지 않습니다.</dd>
+            <dd className="text-muted-foreground mt-1 text-xs">
+              {t("detailHelp")} 세로 전용 시드(`profile_XX.jpg`)는 히어로에 쓰지 않습니다.
+            </dd>
           </div>
         </dl>
       </section>
@@ -109,13 +117,33 @@ export function AdminGuardianMediaClient({
             「이 가디언을 소개합니다」 바로 아래에 표시됩니다. 히어로와 같은 URL은 상세에서 자동으로 빼고 보여 줍니다. `/public` 기준 경로(예:{" "}
             <code className="text-xs">/mock/posts/…</code>)를 넣으세요.
           </p>
+          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{t("introGalleryHelp")}</p>
         </div>
+        {firstIntroUrl ? (
+          <CoverCropPreview
+            src={firstIntroUrl}
+            containerClassName="aspect-[4/3] w-full max-w-md"
+            imgClassName={FILL_IMAGE_COVER_CENTER}
+            emptyLabel={t("previewEmpty")}
+            caption={t("introGalleryPreviewCaption")}
+            safeFrame
+          />
+        ) : null}
         <div className="space-y-3">
           {urls.map((u, i) => (
             <div key={i} className="flex flex-wrap items-center gap-2">
               <Label className="sr-only" htmlFor={`intro-${i}`}>
                 URL {i + 1}
               </Label>
+              <div
+                className="border-border/60 relative h-11 w-14 shrink-0 overflow-hidden rounded border bg-muted"
+                aria-hidden={!u.trim()}
+              >
+                {u.trim() ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary URLs
+                  <img src={u.trim()} alt="" className={`size-full ${FILL_IMAGE_COVER_CENTER}`} />
+                ) : null}
+              </div>
               <Input
                 id={`intro-${i}`}
                 value={u}

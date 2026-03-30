@@ -1,3 +1,4 @@
+import { broadcastClientAuthContextChanged } from "@/lib/auth/client-auth-tab-sync";
 import { getGuardianSeedRow, isMockGuardianId } from "@/lib/dev/mock-guardian-auth";
 import { invalidateClientPointsCache } from "@/lib/points/client-points-fetch-cache";
 
@@ -18,5 +19,6 @@ export async function loginAsMockGuardian(guardianId: string): Promise<{ ok: tru
     return { ok: false, error: "request_failed" };
   }
   invalidateClientPointsCache();
+  broadcastClientAuthContextChanged();
   return { ok: true };
 }

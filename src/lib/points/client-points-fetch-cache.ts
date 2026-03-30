@@ -12,8 +12,9 @@ let clientPointsFetchCache: { userId: string; at: number; data: MypagePointsApiR
  * - `use-auth-user` — Supabase 세션 user id 변경·로그아웃 시
  * - `login-as-mock-guardian` — mock 로그인 API 성공 직후(포커스 없이 쿠키만 바뀌는 경우 대비)
  * - `google-sign-in-button` — OAuth 직전 mock 쿠키 제거 직후
+ * - `client-auth-tab-sync` — 다른 탭에서 `broadcastClientAuthContextChanged` 수신 시 (`use-auth-user`)
  *
- * mock 가디언 쿠키 전환은 `use-auth-user`의 포커스/가시성 재동기화로도 보강되나, dev 전환 액션에서는 명시 호출이 더 안전하다.
+ * mock 가디언 쿠키 전환은 `use-auth-user`의 포커스/가시성·BroadcastChannel 재동기화로 보강한다.
  */
 export function invalidateClientPointsCache(): void {
   clientPointsFetchCache = null;

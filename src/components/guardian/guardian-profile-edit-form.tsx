@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { CoverCropPreview } from "@/components/media/cover-crop-preview";
+import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +35,7 @@ export type GuardianProfileEditInitial = {
 };
 
 export function GuardianProfileEditForm({ initial }: { initial: GuardianProfileEditInitial }) {
+  const tImg = useTranslations("GuardianProfileImages");
   const [displayName, setDisplayName] = useState(initial.display_name);
   const [headline, setHeadline] = useState(initial.headline);
   const [bio, setBio] = useState(initial.bio);
@@ -43,6 +47,10 @@ export function GuardianProfileEditForm({ initial }: { initial: GuardianProfileE
   const [trustReasons, setTrustReasons] = useState(initial.trust_reasons.join(", "));
   const [gallery, setGallery] = useState(initial.intro_gallery_image_urls.join("\n"));
   const [status, setStatus] = useState<"idle" | "saving" | "ok" | "err">("idle");
+  const firstGalleryUrl = useMemo(
+    () => gallery.split("\n").map((x) => x.trim()).find(Boolean) ?? "",
+    [gallery],
+  );
 
   const parseLanguages = () =>
     langs
@@ -161,6 +169,7 @@ export function GuardianProfileEditForm({ initial }: { initial: GuardianProfileE
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
+            <p className="text-muted-foreground text-sm leading-relaxed">{tImg("introGalleryHelp")}</p>
             <Label htmlFor="gp-gallery">소개 사진 갤러리(URL, 줄바꿈)</Label>
             <Textarea
               id="gp-gallery"
@@ -170,6 +179,18 @@ export function GuardianProfileEditForm({ initial }: { initial: GuardianProfileE
               placeholder="https://...\nhttps://..."
               className="font-mono text-sm rounded-xl"
             />
+            {firstGalleryUrl ? (
+              <div className="pt-1">
+                <CoverCropPreview
+                  src={firstGalleryUrl}
+                  containerClassName="aspect-[4/3] w-full max-w-[17.5rem]"
+                  imgClassName={FILL_IMAGE_COVER_CENTER}
+                  emptyLabel={tImg("previewEmpty")}
+                  caption={tImg("introGalleryPreviewCaption")}
+                  safeFrame
+                />
+              </div>
+            ) : null}
           </div>
         </CardContent>
       </Card>

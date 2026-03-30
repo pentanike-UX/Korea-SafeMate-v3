@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { safeNextPath } from "@/lib/auth/safe-next-path";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser-client";
 import { getOAuthRedirectOriginForClient } from "@/lib/site-url";
+import { broadcastClientAuthContextChanged } from "@/lib/auth/client-auth-tab-sync";
 import { invalidateClientPointsCache } from "@/lib/points/client-points-fetch-cache";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,7 @@ export function GoogleSignInButton({ className, returnPath = null }: Props) {
 
     await fetch("/api/dev/mock-guardian-logout", { method: "POST", credentials: "include" });
     invalidateClientPointsCache();
+    broadcastClientAuthContextChanged();
 
     setLoading(true);
     try {

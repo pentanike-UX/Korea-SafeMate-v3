@@ -2,11 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { guardianProfileImageUrls, type GuardianImageSource } from "@/lib/guardian-profile-images";
+import { CoverCropPreview } from "@/components/media/cover-crop-preview";
+import {
+  guardianProfileImageUrls,
+  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  type GuardianImageSource,
+} from "@/lib/guardian-profile-images";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 type Initial = {
   photo_url: string | null;
@@ -62,36 +66,14 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
     }
   };
 
-  const PreviewBox = ({
-    src,
-    className,
-    ratioLabel,
-  }: {
-    src: string;
-    className?: string;
-    ratioLabel: string;
-  }) => (
-    <div
-      className={cn("border-border/70 bg-muted/40 relative overflow-hidden rounded-[var(--radius-md)] border", className)}
-      aria-label={ratioLabel}
-    >
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- arbitrary user URLs for MVP preview
-        <img src={src} alt="" className="size-full object-cover" />
-      ) : (
-        <div className="text-muted-foreground flex size-full min-h-[4.5rem] items-center justify-center text-center text-xs font-medium">
-          {t("previewEmpty")}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-text-strong text-lg font-semibold tracking-tight">{t("sectionTitle")}</h2>
         <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{t("sectionLead")}</p>
+        <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{t("sectionCropExplain")}</p>
         <p className="text-muted-foreground mt-2 text-xs leading-relaxed">{t("hintStorage")}</p>
+        <p className="text-muted-foreground mt-2 text-[11px] leading-snug">{t("previewFootnoteCommon")}</p>
       </div>
 
       <div className="grid gap-8">
@@ -101,7 +83,14 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{t("avatarHelp")}</p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            <PreviewBox src={imgs.avatar} className="size-28 shrink-0 sm:size-32" ratioLabel={t("avatarTitle")} />
+            <CoverCropPreview
+              src={imgs.avatar}
+              containerClassName="size-28 shrink-0 sm:size-32"
+              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              emptyLabel={t("previewEmpty")}
+              roundedFull
+              safeFrame
+            />
             <div className="min-w-0 flex-1 space-y-2">
               <Label htmlFor="gp-avatar-url">{t("urlLabel")}</Label>
               <Input
@@ -122,10 +111,13 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{t("listHelp")}</p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            <PreviewBox
+            <CoverCropPreview
               src={imgs.default}
-              className="aspect-[3/4] w-full max-w-[11rem] shrink-0"
-              ratioLabel={t("listTitle")}
+              containerClassName="h-[9.5rem] w-[7.25rem] shrink-0"
+              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              emptyLabel={t("previewEmpty")}
+              caption={t("listPreviewCaption")}
+              safeFrame
             />
             <div className="min-w-0 flex-1 space-y-2">
               <Label htmlFor="gp-list-url">{t("urlLabel")}</Label>
@@ -147,10 +139,13 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{t("detailHelp")}</p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            <PreviewBox
+            <CoverCropPreview
               src={imgs.landscape}
-              className="aspect-[21/9] w-full max-w-xl shrink-0"
-              ratioLabel={t("detailTitle")}
+              containerClassName="aspect-[21/9] w-full max-w-xl shrink-0"
+              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              emptyLabel={t("previewEmpty")}
+              caption={t("detailPreviewCaption")}
+              safeFrame
             />
             <div className="min-w-0 flex-1 space-y-2">
               <Label htmlFor="gp-detail-url">{t("urlLabel")}</Label>

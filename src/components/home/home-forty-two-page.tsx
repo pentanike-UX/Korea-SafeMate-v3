@@ -4,6 +4,7 @@ import { mockContentPosts, mockTravelerReviewsHomeSpotlight } from "@/data/mock"
 import { Card, CardContent } from "@/components/ui/card";
 import { TextActionLink } from "@/components/ui/text-action";
 import { HomeHeroCarousel } from "@/components/home/home-hero-carousel";
+import { getHomeHeroScopeNoteSecondaryFromSm } from "@/lib/home/hero-scope-note-policy.server";
 import { HomeDualCtaSection } from "@/components/home/home-dual-cta-section";
 import { HomeExploreBundle } from "@/components/home/home-explore-bundle";
 import { FileText, Languages, MessageCircle, ShieldCheck, Star, Zap } from "lucide-react";
@@ -15,6 +16,7 @@ export async function HomeFortyTwoPage() {
   const tHub = await getTranslations("TravelerHub");
   const locale = await getLocale();
   const isKo = locale === "ko";
+  const scopeNoteSecondaryFromSm = getHomeHeroScopeNoteSecondaryFromSm();
 
   const seoulPosts = mockContentPosts
     .filter((p) => p.status === "approved" && p.region_slug === "seoul")
@@ -32,7 +34,7 @@ export async function HomeFortyTwoPage() {
 
   return (
     <div className="bg-[var(--bg-page)]">
-      <HomeHeroCarousel />
+      <HomeHeroCarousel scopeNoteSecondaryFromSm={scopeNoteSecondaryFromSm} />
 
       {/* 신뢰 + 후기 — 설득 우선, 한 블록으로 압축 */}
       <section className="border-border/50 border-y bg-card" aria-labelledby="home-credibility-heading">
