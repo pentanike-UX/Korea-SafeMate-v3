@@ -73,6 +73,9 @@ export function AdminContentTable({ posts }: { posts: ContentPost[] }) {
                 Author
               </TableHead>
               <TableHead className="text-muted-foreground h-11 px-4 text-[11px] font-semibold tracking-wide uppercase">
+                Hero focus
+              </TableHead>
+              <TableHead className="text-muted-foreground h-11 px-4 text-[11px] font-semibold tracking-wide uppercase">
                 Status
               </TableHead>
               <TableHead className="text-muted-foreground h-11 px-4 text-right text-[11px] font-semibold tracking-wide uppercase">
@@ -90,6 +93,15 @@ export function AdminContentTable({ posts }: { posts: ContentPost[] }) {
                   {regionDisplayLabelFromSlug(p.region_slug, (k) => tRegion(k))}
                 </TableCell>
                 <TableCell className="text-muted-foreground px-4 py-3 text-sm">{p.author_display_name}</TableCell>
+                <TableCell className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
+                  {p.hero_subject === "person"
+                    ? "인물 중심"
+                    : p.hero_subject === "place"
+                      ? "장소 중심"
+                      : p.hero_subject === "mixed"
+                        ? "혼합형"
+                        : "—"}
+                </TableCell>
                 <TableCell className="px-4 py-3">
                   <ContentStatusBadge status={p.status} />
                 </TableCell>

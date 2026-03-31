@@ -263,8 +263,8 @@ export async function GuardianDetailView({
 
           <section>
             <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("postsDecisionEyebrow")}</p>
-            <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
+            <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+              <div className="min-w-0 flex-1">
                 <h2 className="text-text-strong text-lg font-semibold">{t("postsTitle")}</h2>
                 <p className="text-muted-foreground mt-1 text-sm">{t("postsLead")}</p>
                 <p className="text-muted-foreground mt-2 text-xs leading-relaxed">{t("postsDecisionLead")}</p>
@@ -274,7 +274,7 @@ export async function GuardianDetailView({
                   guardianDisplayName={g.display_name}
                   posts={postSheetItems}
                   triggerVariant="asideOutline"
-                  className="shrink-0 sm:min-w-[11rem]"
+                  className="sm:min-w-[11rem]"
                 />
               ) : null}
             </div>

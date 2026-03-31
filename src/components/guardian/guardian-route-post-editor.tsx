@@ -3,7 +3,14 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ContentPost, ContentPostFormat, ContentPostKind, RouteJourney, RouteSpot } from "@/types/domain";
+import type {
+  ContentPost,
+  ContentPostFormat,
+  ContentPostHeroSubject,
+  ContentPostKind,
+  RouteJourney,
+  RouteSpot,
+} from "@/types/domain";
 import { saveGuardianRoutePostAction } from "@/app/[locale]/(authed)/guardian/posts/actions";
 import { signGuardianPostPreviewTokenAction } from "@/app/[locale]/(authed)/guardian/posts/preview-token-action";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
@@ -124,6 +131,9 @@ const COPY = {
   flowStep6: "미리보기·발행",
   kindLabel: "콘텐츠 종류(kind)",
   kindHint: "실용 팁·로컬 팁을 고르면 AI 추천은 본문 팁 블록 개수 기준으로 켜집니다. 그 외는 스팟·본문 문단 기준입니다.",
+  heroSubjectLabel: "히어로 이미지 초점",
+  heroSubjectHint: "목록·상세 커버 크롭 기준입니다. 미선택 시 콘텐츠 종류(kind)로 자동 추론합니다.",
+  heroSubjectAuto: "자동 (kind 기준)",
 } as const;
 
 const KIND_OPTIONS: { value: ContentPostKind; label: string }[] = [
@@ -133,6 +143,12 @@ const KIND_OPTIONS: { value: ContentPostKind; label: string }[] = [
   { value: "hot_place", label: "핫플" },
   { value: "food", label: "맛집·식도락" },
   { value: "shopping", label: "쇼핑" },
+];
+
+const HERO_SUBJECT_OPTIONS: { value: ContentPostHeroSubject; label: string }[] = [
+  { value: "person", label: "인물 중심" },
+  { value: "place", label: "장소 중심" },
+  { value: "mixed", label: "혼합형" },
 ];
 
 export function GuardianRoutePostEditor({
@@ -511,6 +527,29 @@ export function GuardianRoutePostEditor({
               ))}
             </select>
             <p className="text-muted-foreground text-xs leading-relaxed">{COPY.kindHint}</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rt-hero-subject">{COPY.heroSubjectLabel}</Label>
+            <select
+              id="rt-hero-subject"
+              className="border-input bg-background h-9 w-full rounded-lg border px-2 text-sm"
+              value={post.hero_subject ?? ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                setPost((p) => ({
+                  ...p,
+                  hero_subject: v === "" ? null : (v as ContentPostHeroSubject),
+                }));
+              }}
+            >
+              <option value="">{COPY.heroSubjectAuto}</option>
+              {HERO_SUBJECT_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <p className="text-muted-foreground text-xs leading-relaxed">{COPY.heroSubjectHint}</p>
           </div>
         </section>
 

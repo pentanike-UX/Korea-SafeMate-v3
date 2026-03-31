@@ -48,7 +48,7 @@ export function GuardianPostsExplorerSheet({
 
   const triggerClass =
     triggerVariant === "asideOutline"
-      ? "w-full rounded-xl justify-center font-medium text-sm"
+      ? "w-full shrink-0 rounded-xl justify-center font-medium text-sm sm:w-auto"
       : "text-primary h-auto min-h-0 justify-start p-0 text-xs font-semibold underline-offset-4 hover:underline";
 
   const triggerVariantBtn = triggerVariant === "asideOutline" ? "outline" : "ghost";

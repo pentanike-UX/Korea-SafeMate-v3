@@ -26,7 +26,7 @@ type RawPost = {
   cover_image_url: string | null;
   route_journey: RouteJourney | null;
   route_highlights: unknown;
-  /** DB에 컬럼이 없으면 undefined — 추가 후 자동 반영 */
+  /** `content_posts.hero_subject` — 마이그레이션 후 Supabase select에 포함 */
   hero_subject?: string | null;
 };
 

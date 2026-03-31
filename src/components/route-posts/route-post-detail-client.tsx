@@ -20,7 +20,15 @@ import { buildLocalPostVisualPlan, type LocalPostVisualPlan } from "@/lib/post-l
 import { routeSpotImageCoverClass } from "@/lib/post-image-crop";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { splitPostBodyLeadRest } from "@/lib/post-detail-body-split";
+import {
+  POST_DETAIL_PARAGRAPH_STACK,
+  POST_DETAIL_PARAGRAPH_STACK_COMPACT,
+  POST_DETAIL_PROSE_P_COMPACT,
+  POST_DETAIL_PROSE_P_MAIN,
+  POST_DETAIL_PROSE_P_SPOT,
+  splitPostBodyLeadRest,
+  splitPostBodyParagraphs,
+} from "@/lib/post-detail-body-split";
 
 function SpotDetailBody({
   spot,
@@ -47,13 +55,25 @@ function SpotDetailBody({
       {spot.photo_tip ? (
         <div className="rounded-lg border border-border/50 bg-background/80 p-3 text-sm">
           <p className="text-muted-foreground text-[10px] font-bold tracking-wide uppercase">{t("photoTip")}</p>
-          <p className="text-foreground mt-1 leading-relaxed">{spot.photo_tip}</p>
+          <div className={`mt-2 ${POST_DETAIL_PARAGRAPH_STACK_COMPACT}`}>
+            {splitPostBodyParagraphs(spot.photo_tip).map((block, i) => (
+              <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
+                {block}
+              </p>
+            ))}
+          </div>
         </div>
       ) : null}
       {spot.caution ? (
         <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-sm">
           <p className="text-amber-800 text-[10px] font-bold tracking-wide uppercase dark:text-amber-200">{t("caution")}</p>
-          <p className="text-foreground mt-1 leading-relaxed">{spot.caution}</p>
+          <div className={`mt-2 ${POST_DETAIL_PARAGRAPH_STACK_COMPACT}`}>
+            {splitPostBodyParagraphs(spot.caution).map((block, i) => (
+              <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
+                {block}
+              </p>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>
@@ -68,16 +88,28 @@ function SpotDetailBody({
       </div>
 
       {layout === "sheet" ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-muted-foreground text-xs font-medium">{spot.place_name}</p>
           {spot.short_description ? (
-            <p className="text-foreground text-sm font-medium leading-relaxed">{spot.short_description}</p>
+            <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+              {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
+                <p key={i} className="text-foreground text-sm font-medium leading-relaxed whitespace-pre-line">
+                  {block}
+                </p>
+              ))}
+            </div>
           ) : null}
           {spot.recommend_reason ? (
             <Card className="rounded-xl border-primary/20 bg-primary/5 shadow-none">
-              <CardContent className="space-y-1 p-4">
+              <CardContent className="space-y-2 p-4">
                 <p className="text-primary text-xs font-semibold">{t("whyRecommend")}</p>
-                <p className="text-foreground text-sm leading-relaxed">{spot.recommend_reason}</p>
+                <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                  {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
+                    <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
+                      {block}
+                    </p>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           ) : null}
@@ -85,9 +117,11 @@ function SpotDetailBody({
       ) : null}
 
       {spot.body ? (
-        <div className="text-foreground space-y-2 text-sm leading-relaxed sm:text-[15px]">
-          {spot.body.split("\n").map((para, i) => (
-            <p key={i}>{para}</p>
+        <div className={POST_DETAIL_PARAGRAPH_STACK}>
+          {splitPostBodyParagraphs(spot.body).map((para, i) => (
+            <p key={i} className={POST_DETAIL_PROSE_P_SPOT}>
+              {para}
+            </p>
           ))}
         </div>
       ) : null}
@@ -265,7 +299,7 @@ export function RoutePostDetailClient({
         {post.route_highlights && post.route_highlights.length > 0 ? (
           <section className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-[var(--shadow-sm)]">
             <h2 className="text-text-strong text-lg font-semibold">{t("insightTitle")}</h2>
-            <ul className="text-muted-foreground mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed">
+            <ul className="text-muted-foreground mt-4 list-inside list-disc space-y-3 text-sm leading-relaxed sm:space-y-3.5">
               {post.route_highlights.map((line) => (
                 <li key={line} className="marker:text-primary">
                   {line}
@@ -276,9 +310,11 @@ export function RoutePostDetailClient({
         ) : null}
 
         {rest ? (
-          <div className="text-foreground space-y-3 text-[15px] leading-relaxed sm:text-base">
-            {rest.split("\n").map((para, i) => (
-              <p key={i}>{para}</p>
+          <div className={POST_DETAIL_PARAGRAPH_STACK}>
+            {splitPostBodyParagraphs(rest).map((para, i) => (
+              <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
+                {para}
+              </p>
             ))}
           </div>
         ) : null}
@@ -310,20 +346,32 @@ export function RoutePostDetailClient({
                 >
                   {index + 1}
                 </span>
-                <div className="min-w-0 flex-1 space-y-2">
+                <div className="min-w-0 flex-1 space-y-3 sm:space-y-4">
                   <h3 className="text-text-strong text-xl font-semibold">{spot.title}</h3>
                   <p className="text-muted-foreground text-sm font-medium">{spot.place_name}</p>
                   {spot.address_line ? (
-                    <p className="text-muted-foreground text-xs leading-relaxed">{spot.address_line}</p>
+                    <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">{spot.address_line}</p>
                   ) : null}
                   {spot.short_description ? (
-                    <p className="text-foreground text-sm leading-relaxed">{spot.short_description}</p>
+                    <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                      {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
+                        <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
+                          {block}
+                        </p>
+                      ))}
+                    </div>
                   ) : null}
                   {spot.recommend_reason ? (
                     <Card className="rounded-xl border-primary/20 bg-primary/5 shadow-none">
-                      <CardContent className="space-y-1 p-3 sm:p-4">
+                      <CardContent className="space-y-2 p-3 sm:p-4">
                         <p className="text-primary text-xs font-semibold">{t("whyRecommend")}</p>
-                        <p className="text-foreground text-sm leading-relaxed">{spot.recommend_reason}</p>
+                        <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                          {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
+                            <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
+                              {block}
+                            </p>
+                          ))}
+                        </div>
                       </CardContent>
                     </Card>
                   ) : null}

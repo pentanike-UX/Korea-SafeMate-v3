@@ -19,7 +19,12 @@ import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
 import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
-import { splitPostBodyLeadRest } from "@/lib/post-detail-body-split";
+import {
+  POST_DETAIL_PARAGRAPH_STACK,
+  POST_DETAIL_PROSE_P_MAIN,
+  splitPostBodyLeadRest,
+  splitPostBodyParagraphs,
+} from "@/lib/post-detail-body-split";
 import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
 import { PostDetailHero } from "@/components/posts/post-detail-hero";
 import { PostDetailIntroPanel } from "@/components/posts/post-detail-intro-panel";
@@ -97,20 +102,28 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
           {articleIntro ? <PostDetailIntroPanel variant="article" primary={lead} /> : null}
 
           {showOneLineTip ? (
-            <p className="border-primary/35 text-foreground rounded-xl border-l-[3px] bg-primary/5 px-4 py-3 text-[15px] leading-relaxed sm:text-base">
-              <span className="text-primary mb-1 block text-[10px] font-bold tracking-[0.18em] uppercase">
+            <div className="border-primary/35 text-foreground rounded-xl border-l-[3px] bg-primary/5 px-4 py-3 text-[15px] leading-relaxed sm:text-base">
+              <span className="text-primary mb-2 block text-[10px] font-bold tracking-[0.18em] uppercase">
                 {t("articleOneLineTipEyebrow")}
               </span>
-              {oneLineTip}
-              {!articleIntro && post.summary.trim().length > 140 ? "…" : ""}
-            </p>
+              <p className="whitespace-pre-line leading-relaxed">
+                {oneLineTip}
+                {!articleIntro && post.summary.trim().length > 140 ? "…" : ""}
+              </p>
+            </div>
           ) : null}
 
           {post.summary.trim() ? (
             <Card className="border-border/60 rounded-2xl border bg-white/90 shadow-[var(--shadow-sm)]">
-              <CardContent className="space-y-2 p-5 sm:p-6">
+              <CardContent className="space-y-4 p-5 sm:p-6">
                 <p className="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">{t("articleKeyTakeawayEyebrow")}</p>
-                <p className="text-foreground text-[15px] leading-relaxed sm:text-base">{post.summary.trim()}</p>
+                <div className={POST_DETAIL_PARAGRAPH_STACK}>
+                  {splitPostBodyParagraphs(post.summary.trim()).map((para, i) => (
+                    <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
+                      {para}
+                    </p>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           ) : null}
@@ -128,9 +141,11 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
           ) : null}
 
           {bodyText ? (
-            <div className="text-foreground space-y-4 text-[15px] leading-relaxed sm:text-base">
-              {bodyText.split("\n").map((para, i) => (
-                <p key={i}>{para}</p>
+            <div className={POST_DETAIL_PARAGRAPH_STACK}>
+              {splitPostBodyParagraphs(bodyText).map((para, i) => (
+                <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
+                  {para}
+                </p>
               ))}
             </div>
           ) : null}

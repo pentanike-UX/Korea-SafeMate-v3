@@ -18,7 +18,15 @@ function heroGradient(post: Pick<ContentPost, "title" | "kind">) {
 
 type HeroPost = Pick<
   ContentPost,
-  "title" | "summary" | "kind" | "tags" | "is_sample" | "region_slug" | "helpful_rating" | "created_at"
+  | "title"
+  | "summary"
+  | "kind"
+  | "hero_subject"
+  | "tags"
+  | "is_sample"
+  | "region_slug"
+  | "helpful_rating"
+  | "created_at"
 >;
 
 export function PostDetailHero({

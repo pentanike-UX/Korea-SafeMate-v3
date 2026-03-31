@@ -5,6 +5,11 @@ import { Clock, Footprints, Gauge, MapPin, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { RouteJourneyMetadata } from "@/types/domain";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  POST_DETAIL_PARAGRAPH_STACK_COMPACT,
+  POST_DETAIL_PROSE_P_COMPACT,
+  splitPostBodyParagraphs,
+} from "@/lib/post-detail-body-split";
 import { cn } from "@/lib/utils";
 
 function StatCell({
@@ -92,7 +97,13 @@ export function RouteSummaryCard({
         {goodForLine ? (
           <div className="border-primary/15 rounded-xl border bg-primary/5 px-4 py-3">
             <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("summaryGoodForLabel")}</p>
-            <p className="text-foreground mt-1 text-sm font-medium leading-relaxed">{goodForLine}</p>
+            <div className={`mt-2 ${POST_DETAIL_PARAGRAPH_STACK_COMPACT}`}>
+              {splitPostBodyParagraphs(goodForLine).map((block, i) => (
+                <p key={i} className={`font-medium ${POST_DETAIL_PROSE_P_COMPACT}`}>
+                  {block}
+                </p>
+              ))}
+            </div>
           </div>
         ) : null}
       </CardContent>

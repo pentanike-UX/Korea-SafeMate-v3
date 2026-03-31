@@ -43,7 +43,7 @@ export type ContentPostKind =
 
 /**
  * 히어로·카드 크롭 우선순위용 메타 — `kind` 휴리스틱보다 우선(없으면 kind fallback).
- * TODO(prod): `content_posts.hero_subject` 컬럼 등과 동기화.
+ * DB: `content_posts.hero_subject` (nullable).
  */
 export type ContentPostHeroSubject = "person" | "place" | "mixed";
 
