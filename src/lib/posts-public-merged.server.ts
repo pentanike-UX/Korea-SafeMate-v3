@@ -2,6 +2,7 @@ import { cache } from "react";
 import { mockContentPosts } from "@/data/mock";
 import { postHasRouteJourney } from "@/lib/content-post-route";
 import type { ContentPost, ContentPostHeroSubject, ContentPostKind, ContentPostStatus } from "@/types/domain";
+import { parsePostStructuredContent } from "@/lib/post-structured-content";
 import type { RouteJourney } from "@/types/domain";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 
@@ -28,6 +29,7 @@ type RawPost = {
   route_highlights: unknown;
   /** `content_posts.hero_subject` — 마이그레이션 후 Supabase select에 포함 */
   hero_subject?: string | null;
+  structured_content?: unknown;
 };
 
 function heroSubjectFromRow(v: unknown): ContentPostHeroSubject | undefined {
@@ -46,6 +48,7 @@ function mapToContentPost(
     : [];
   const rj = row.route_journey ?? undefined;
   const heroSubject = heroSubjectFromRow(row.hero_subject);
+  const structured = parsePostStructuredContent(row.structured_content);
   return {
     id: row.id,
     author_user_id: row.author_user_id,
@@ -69,6 +72,7 @@ function mapToContentPost(
     route_journey: rj,
     route_highlights: highlights,
     ...(heroSubject != null ? { hero_subject: heroSubject } : {}),
+    ...(structured != null ? { structured_content: structured } : {}),
     is_sample: false,
     has_route: Boolean(rj?.spots?.length),
   };

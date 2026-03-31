@@ -115,6 +115,7 @@ create table public.content_posts (
   route_journey jsonb,
   route_highlights jsonb not null default '[]'::jsonb,
   hero_subject text check (hero_subject is null or hero_subject in ('person', 'place', 'mixed')),
+  structured_content jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   reviewed_at timestamptz,

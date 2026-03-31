@@ -9,7 +9,7 @@ import { RouteStickyLocalNav } from "@/components/route-posts/route-sticky-local
 import { RouteSummaryCard } from "@/components/route-posts/route-summary-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PostDetailIntroPanel } from "@/components/posts/post-detail-intro-panel";
 import { PostGuardianAttributionRow } from "@/components/posts/post-guardian-attribution-row";
@@ -29,6 +29,16 @@ import {
   splitPostBodyLeadRest,
   splitPostBodyParagraphs,
 } from "@/lib/post-detail-body-split";
+import { splitSpotBodyAndNextCue } from "@/lib/post-detail-structured-parse";
+import { resolveRouteArticleRender } from "@/lib/post-structured-content";
+import { RouteArticleStructuredBody } from "@/components/posts/route-article-structured-body";
+import {
+  RouteSpotMetaStayRow,
+  RouteSpotNextFlowRow,
+  RouteSpotPhotoTipNote,
+  RouteSpotReasonBlock,
+  RouteSpotWarningNote,
+} from "@/components/posts/post-info-blocks";
 
 function SpotDetailBody({
   spot,
@@ -49,40 +59,34 @@ function SpotDetailBody({
   const t = useTranslations("RoutePosts");
   const img = getSpotDisplayImageUrl(spot, post, { plan: visualPlan });
   const imgAlt = getSpotDisplayImageAlt(spot, post, { plan: visualPlan });
+  const { main: bodyMain, nextCue } = splitSpotBodyAndNextCue(spot.body ?? "");
 
-  const secondaryBlock = (
-    <div className="border-border/40 grid gap-3 rounded-xl border border-dashed bg-muted/10 p-3 sm:grid-cols-2 sm:p-4">
-      {spot.photo_tip ? (
-        <div className="rounded-lg border border-border/50 bg-background/80 p-3 text-sm">
-          <p className="text-muted-foreground text-[10px] font-bold tracking-wide uppercase">{t("photoTip")}</p>
-          <div className={`mt-2 ${POST_DETAIL_PARAGRAPH_STACK_COMPACT}`}>
-            {splitPostBodyParagraphs(spot.photo_tip).map((block, i) => (
-              <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
-                {block}
-              </p>
-            ))}
-          </div>
-        </div>
-      ) : null}
-      {spot.caution ? (
-        <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-sm">
-          <p className="text-amber-800 text-[10px] font-bold tracking-wide uppercase dark:text-amber-200">{t("caution")}</p>
-          <div className={`mt-2 ${POST_DETAIL_PARAGRAPH_STACK_COMPACT}`}>
-            {splitPostBodyParagraphs(spot.caution).map((block, i) => (
-              <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
-                {block}
-              </p>
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
+  const photoInner = spot.photo_tip ? (
+    <RouteSpotPhotoTipNote label={t("photoTip")}>
+      <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+        {splitPostBodyParagraphs(spot.photo_tip).map((block, i) => (
+          <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
+            {block}
+          </p>
+        ))}
+      </div>
+    </RouteSpotPhotoTipNote>
+  ) : null;
 
-  const showSecondary = Boolean(spot.photo_tip || spot.caution);
+  const cautionInner = spot.caution ? (
+    <RouteSpotWarningNote label={t("caution")}>
+      <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+        {splitPostBodyParagraphs(spot.caution).map((block, i) => (
+          <p key={i} className={POST_DETAIL_PROSE_P_COMPACT}>
+            {block}
+          </p>
+        ))}
+      </div>
+    </RouteSpotWarningNote>
+  ) : null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-5">
       <div className="border-border/60 relative aspect-[16/10] overflow-hidden rounded-xl border sm:rounded-2xl">
         <Image src={img} alt={imgAlt} fill className={routeSpotImageCoverClass(post)} sizes="(max-width:768px) 100vw, 640px" />
       </div>
@@ -91,34 +95,34 @@ function SpotDetailBody({
         <div className="space-y-4">
           <p className="text-muted-foreground text-xs font-medium">{spot.place_name}</p>
           {spot.short_description ? (
-            <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
-              {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
-                <p key={i} className="text-foreground text-sm font-medium leading-relaxed whitespace-pre-line">
-                  {block}
-                </p>
-              ))}
-            </div>
+            <>
+              <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("spotCoreEyebrow")}</p>
+              <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
+                  <p key={i} className="text-foreground text-sm font-medium leading-relaxed whitespace-pre-line">
+                    {block}
+                  </p>
+                ))}
+              </div>
+            </>
           ) : null}
           {spot.recommend_reason ? (
-            <Card className="rounded-xl border-primary/20 bg-primary/5 shadow-none">
-              <CardContent className="space-y-2 p-4">
-                <p className="text-primary text-xs font-semibold">{t("whyRecommend")}</p>
-                <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
-                  {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
-                    <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
-                      {block}
-                    </p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <RouteSpotReasonBlock label={t("whyRecommend")}>
+              <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
+                  <p key={i} className="text-sm leading-relaxed whitespace-pre-line">
+                    {block}
+                  </p>
+                ))}
+              </div>
+            </RouteSpotReasonBlock>
           ) : null}
         </div>
       ) : null}
 
-      {spot.body ? (
+      {bodyMain ? (
         <div className={POST_DETAIL_PARAGRAPH_STACK}>
-          {splitPostBodyParagraphs(spot.body).map((para, i) => (
+          {splitPostBodyParagraphs(bodyMain).map((para, i) => (
             <p key={i} className={POST_DETAIL_PROSE_P_SPOT}>
               {para}
             </p>
@@ -126,11 +130,15 @@ function SpotDetailBody({
         </div>
       ) : null}
 
-      {showSecondary ? secondaryBlock : null}
+      <div className="space-y-3 sm:space-y-4">
+        {photoInner}
+        {cautionInner}
+      </div>
 
-      <p className="text-muted-foreground border-border/30 border-t pt-3 text-xs">
-        {t("stayDuration", { minutes: spot.stay_duration_minutes })}
-      </p>
+      {nextCue ? <RouteSpotNextFlowRow text={nextCue} label={t("spotNextFlowEyebrow")} /> : null}
+
+      <RouteSpotMetaStayRow>{t("stayDuration", { minutes: spot.stay_duration_minutes })}</RouteSpotMetaStayRow>
+
       {!isLast && onNext ? (
         <Button type="button" variant="outline" className="w-full gap-2 rounded-xl" onClick={onNext}>
           {t("ctaNextSpot")}
@@ -245,6 +253,13 @@ export function RoutePostDetailClient({
 
   const visualPlan = useMemo(() => buildLocalPostVisualPlan(post), [post]);
   const { lead, rest } = useMemo(() => splitPostBodyLeadRest(post.body), [post.body]);
+  const routeStructured =
+    post.structured_content?.template === "route_post" ? post.structured_content : null;
+  const introPrimary = routeStructured ? routeStructured.data.intro : lead;
+  const routeArticleRender = useMemo(
+    () => resolveRouteArticleRender(post.structured_content, rest),
+    [post.structured_content, rest],
+  );
   const goodForLine = useMemo(
     () => meta.recommended_traveler_types.filter(Boolean).join(" · ") || null,
     [meta.recommended_traveler_types],
@@ -263,7 +278,15 @@ export function RoutePostDetailClient({
       ) : null}
 
       <div className="space-y-5 sm:space-y-6">
-        <PostDetailIntroPanel variant="route" primary={lead} secondary={goodForLine} />
+        <PostDetailIntroPanel
+          variant="route"
+          primary={introPrimary}
+          secondary={
+            routeStructured
+              ? (routeStructured.data.route_best_for?.trim() || goodForLine)
+              : goodForLine
+          }
+        />
         <PostGuardianAttributionRow
           variant="route"
           displayName={requestHost.displayName}
@@ -309,14 +332,18 @@ export function RoutePostDetailClient({
           </section>
         ) : null}
 
-        {rest ? (
-          <div className={POST_DETAIL_PARAGRAPH_STACK}>
-            {splitPostBodyParagraphs(rest).map((para, i) => (
-              <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
-                {para}
-              </p>
-            ))}
-          </div>
+        {routeArticleRender.mode === "blocks" || rest.trim() ? (
+          routeArticleRender.mode === "blocks" ? (
+            <RouteArticleStructuredBody parsed={routeArticleRender.data} />
+          ) : rest.trim() ? (
+            <div className={POST_DETAIL_PARAGRAPH_STACK}>
+              {splitPostBodyParagraphs(rest).map((para, i) => (
+                <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
+                  {para}
+                </p>
+              ))}
+            </div>
+          ) : null
         ) : null}
       </div>
 
@@ -353,27 +380,27 @@ export function RoutePostDetailClient({
                     <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">{spot.address_line}</p>
                   ) : null}
                   {spot.short_description ? (
-                    <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
-                      {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
-                        <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
-                          {block}
-                        </p>
-                      ))}
-                    </div>
+                    <>
+                      <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("spotCoreEyebrow")}</p>
+                      <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                        {splitPostBodyParagraphs(spot.short_description).map((block, i) => (
+                          <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
+                            {block}
+                          </p>
+                        ))}
+                      </div>
+                    </>
                   ) : null}
                   {spot.recommend_reason ? (
-                    <Card className="rounded-xl border-primary/20 bg-primary/5 shadow-none">
-                      <CardContent className="space-y-2 p-3 sm:p-4">
-                        <p className="text-primary text-xs font-semibold">{t("whyRecommend")}</p>
-                        <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
-                          {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
-                            <p key={i} className="text-foreground text-sm leading-relaxed whitespace-pre-line">
-                              {block}
-                            </p>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <RouteSpotReasonBlock label={t("whyRecommend")}>
+                      <div className={POST_DETAIL_PARAGRAPH_STACK_COMPACT}>
+                        {splitPostBodyParagraphs(spot.recommend_reason).map((block, i) => (
+                          <p key={i} className="text-sm leading-relaxed whitespace-pre-line">
+                            {block}
+                          </p>
+                        ))}
+                      </div>
+                    </RouteSpotReasonBlock>
                   ) : null}
                   <Button
                     type="button"

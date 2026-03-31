@@ -1063,6 +1063,24 @@
     "articleOneLineFromTagPrefix": "이 글의 포인트:",
     "articleKeyTakeawayEyebrow": "핵심 요약",
     "articleTopicGuideEyebrow": "키워드 가이드",
+    "infoBlock": {
+      "situation": "이 팁이 필요한 상황",
+      "conclusion": "먼저 결론",
+      "coreTips": "핵심 팁",
+      "checklist": "체크 포인트",
+      "fieldTips": "실전 팁",
+      "mistakes": "자주 하는 실수·주의",
+      "summary": "실패 줄이는 요약",
+      "guardianQuote": "가디언 한 줄 제안",
+      "guardianBadge": "Guardian"
+    },
+    "routeArticleBlock": {
+      "routeSummary": "루트 요약",
+      "beforeYouGo": "먼저 알고 가면 좋은 점",
+      "routeClosing": "루트 마무리",
+      "guardianQuote": "가디언 한 줄 제안",
+      "guardianBadge": "Guardian"
+    },
     "filterContent": "포맷",
     "contentAll": "전체",
     "contentArticle": "아티클",
@@ -1118,6 +1136,8 @@
     "nightYes": "야간 OK",
     "nightNo": "주간 추천",
     "whyRecommend": "추천 이유",
+    "spotCoreEyebrow": "핵심 설명",
+    "spotNextFlowEyebrow": "다음으로",
     "photoTip": "포토 팁",
     "caution": "주의",
     "stayDuration": "머무름 · 약 {minutes}분",

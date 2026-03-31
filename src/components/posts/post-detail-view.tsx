@@ -25,6 +25,8 @@ import {
   splitPostBodyLeadRest,
   splitPostBodyParagraphs,
 } from "@/lib/post-detail-body-split";
+import { resolvePracticalArticleRender } from "@/lib/post-structured-content";
+import { PracticalTipStructuredBody } from "@/components/posts/practical-tip-structured-body";
 import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
 import { PostDetailHero } from "@/components/posts/post-detail-hero";
 import { PostDetailIntroPanel } from "@/components/posts/post-detail-intro-panel";
@@ -61,6 +63,7 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
   const { lead, rest } = splitPostBodyLeadRest(post.body);
   const articleIntro = lead.length > 0 && rest.length > 0;
   const bodyText = articleIntro ? rest : post.body.trim();
+  const practicalRender = resolvePracticalArticleRender(post.structured_content, bodyText);
   const typeLabelKey = resolvePostTypeLabelKey(post);
   /** 인트로 카드가 있으면 요약 첫 줄 대신 태그로 한 줄 팁 — 도입부 중복 완화 */
   const oneLineFromSummary =
@@ -141,13 +144,17 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
           ) : null}
 
           {bodyText ? (
-            <div className={POST_DETAIL_PARAGRAPH_STACK}>
-              {splitPostBodyParagraphs(bodyText).map((para, i) => (
-                <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
-                  {para}
-                </p>
-              ))}
-            </div>
+            practicalRender.mode === "blocks" ? (
+              <PracticalTipStructuredBody parsed={practicalRender.data} />
+            ) : (
+              <div className={POST_DETAIL_PARAGRAPH_STACK}>
+                {splitPostBodyParagraphs(practicalRender.text).map((para, i) => (
+                  <p key={i} className={POST_DETAIL_PROSE_P_MAIN}>
+                    {para}
+                  </p>
+                ))}
+              </div>
+            )
           ) : null}
 
           {post.tags.length > 0 ? (

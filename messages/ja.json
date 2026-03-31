@@ -1063,6 +1063,24 @@
     "articleOneLineFromTagPrefix": "この記事のポイント:",
     "articleKeyTakeawayEyebrow": "要点",
     "articleTopicGuideEyebrow": "キーワードガイド",
+    "infoBlock": {
+      "situation": "このヒントが役立つ場面",
+      "conclusion": "先に結論",
+      "coreTips": "核心ヒント",
+      "checklist": "チェックポイント",
+      "fieldTips": "現場でのヒント",
+      "mistakes": "よくある失敗・注意",
+      "summary": "振り返りの要約",
+      "guardianQuote": "ガーディアンから一言",
+      "guardianBadge": "Guardian"
+    },
+    "routeArticleBlock": {
+      "routeSummary": "ルート概要",
+      "beforeYouGo": "事前に知っておくと良いこと",
+      "routeClosing": "ルートの締め",
+      "guardianQuote": "ガーディアンから一言",
+      "guardianBadge": "Guardian"
+    },
     "filterContent": "形式",
     "contentAll": "すべて",
     "contentArticle": "記事",
@@ -1118,6 +1136,8 @@
     "nightYes": "夜OK",
     "nightNo": "昼推奨",
     "whyRecommend": "おすすめ理由",
+    "spotCoreEyebrow": "要点",
+    "spotNextFlowEyebrow": "次へ",
     "photoTip": "写真のコツ",
     "caution": "注意",
     "stayDuration": "滞在の目安 · 約{minutes}分",

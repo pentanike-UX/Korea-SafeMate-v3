@@ -3,8 +3,10 @@ import type {
   ContentPostHeroSubject,
   ContentPostKind,
   ContentPostStatus,
+  PostStructuredContentV1,
   RouteJourney,
 } from "@/types/domain";
+import { parsePostStructuredContent } from "@/lib/post-structured-content";
 
 /** Payload accepted by POST/PATCH `/api/guardian/posts` — mirrors `ContentPost` write shape. */
 export type GuardianPostSavePayload = {
@@ -23,6 +25,7 @@ export type GuardianPostSavePayload = {
   hero_subject?: ContentPostHeroSubject | null;
   route_journey: RouteJourney;
   route_highlights?: string[];
+  structured_content?: PostStructuredContentV1 | null;
 };
 
 function parseOptionalHeroSubject(v: unknown): ContentPostHeroSubject | null | undefined {
@@ -99,5 +102,9 @@ export function parseGuardianPostPayload(body: unknown): GuardianPostSavePayload
       ? o.route_highlights.filter((x): x is string => typeof x === "string")
       : undefined,
     hero_subject: parseOptionalHeroSubject(o.hero_subject),
+    structured_content:
+      o.structured_content === null
+        ? null
+        : parsePostStructuredContent(o.structured_content) ?? undefined,
   };
 }

@@ -3,11 +3,13 @@ import type {
   ContentPostHeroSubject,
   ContentPostKind,
   MapLatLng,
+  PostStructuredContentV1,
   RouteJourney,
   RouteJourneyMetadata,
   RouteSpot,
   StructuredExposureMeta,
 } from "@/types/domain";
+import { POST_STRUCTURED_CONTENT_VERSION } from "@/types/domain";
 import { postHasRouteJourney } from "@/lib/content-post-route";
 import { demoPickLocal, demoPickLocals, hashStringToInt } from "@/lib/post-demo-local-images";
 import type { PostVisualBucket } from "@/lib/post-local-images";
@@ -342,8 +344,9 @@ function enhanceRouteSpots(journey: RouteJourney): RouteJourney {
       i < arr.length - 1
         ? `\n\n다음 장소로 이어지는 포인트\n다음 핀「${arr[i + 1]?.place_name ?? ""}」으로 이어집니다. 보도 안쪽을 유지하며 이동하세요.`
         : "";
-    const block = `이곳에서 하는 일\n${s.short_description}\n\n위치·지역\n${s.place_name}${s.address_line ? ` · ${s.address_line}` : ""}\n\n왜 좋은지\n${s.recommend_reason}\n\n머무는 추천 시간\n약 ${s.stay_duration_minutes}분 전후\n\n현장 팁·포토\n${s.photo_tip ? `${s.photo_tip}\n` : ""}${s.body}${tail}`;
-    return { ...s, body: block };
+    const base = (s.body ?? "").trim();
+    const body = [base, tail].filter(Boolean).join("\n\n");
+    return { ...s, body };
   });
   return { ...journey, spots };
 }
@@ -388,6 +391,65 @@ function mergeSampleBody(def: SampleDef, route_journey: RouteJourney | undefined
     summary: `${def.title} — ${def.summary}`.slice(0, 160),
     guardianLine: `${authorName}: 오늘은 ‘한 번에 하나’만 고르는 연습을 해 보세요.`,
   });
+}
+
+function buildSampleStructured(
+  def: SampleDef,
+  route_journey: RouteJourney | undefined,
+  authorName: string,
+): PostStructuredContentV1 {
+  if (def.withRoute && route_journey) {
+    const spotGuideLine = `스팟별 상세는 지도·아래 카드 ${route_journey.spots.length}곳에 정리했습니다. 각 카드에 할 일·추천 체류·다음으로 이어지는 포인트를 넣었습니다.`;
+    const exposure = structuredFromSample(def, route_journey);
+    return {
+      version: POST_STRUCTURED_CONTENT_VERSION,
+      template: "route_post",
+      data: {
+        intro: sampleForWhoLine(def),
+        route_summary: formatRouteSummaryMeta(route_journey.metadata),
+        route_best_for: exposure.best_for_context,
+        route_notes:
+          "행사·통제 안내가 바뀔 수 있어 현장 표지를 한 번 확인하세요. 통행 중 장시간 정지 촬영은 피하고, 짧게 끊어 찍는 편이 전체 동선에 도움이 됩니다.",
+        narrative: `${def.body.trim()}\n\n${spotGuideLine}`.trim(),
+        closing: "같은 날 플랜 B를 하나만 더 준비해 두면 날씨·체력 변수에 덜 흔들립니다.",
+        guardian_signature: `${authorName}: 속도가 다른 동행이면 ‘여기서 2분 쉼’을 먼저 합의해 보세요.`,
+        spots: [],
+      },
+    };
+  }
+  const paras = def.body
+    .split(/\n\s*\n+/)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  const tipSource =
+    paras.length >= 3
+      ? paras.slice(0, 5)
+      : [def.summary, ...paras, def.body].map((x) => x.trim()).filter(Boolean).slice(0, 5);
+  const tipArr = [...tipSource];
+  while (tipArr.length < 3) {
+    tipArr.push("작은 결정 하나를 줄여도 하루 피로도는 확 줄어듭니다.");
+  }
+  const checklist = [
+    "큰 길·랜드마크 기준으로 위치를 설명했는지",
+    "물·그늘·화장실 중 급한 것을 먼저 채웠는지",
+    "통행 중에는 잠깐 멈춰 주변을 한 번 확인했는지",
+  ];
+  return {
+    version: POST_STRUCTURED_CONTENT_VERSION,
+    template: "practical_tip_post",
+    data: {
+      context: def.tags.some((x) => x.includes("강남"))
+        ? "강남·역세권에서 길·카페·만남이 겹칠 때"
+        : "광화문·도심에서 동선·촬영·휴게가 겹칠 때",
+      one_line_conclusion: def.summary,
+      tip_blocks: tipArr.slice(0, 5).map((primary) => ({ primary })),
+      checklist,
+      field_tips: paras[0] ?? def.summary,
+      mistakes_notes: "표지판과 횡단 타이밍을 동시에 확인하지 않으면 방향이 자주 흔들립니다.",
+      final_summary: `${def.title} — ${def.summary}`.slice(0, 160),
+      guardian_signature: `${authorName}: 오늘은 ‘한 번에 하나’만 고르는 연습을 해 보세요.`,
+    },
+  };
 }
 
 /** 33개 — 짝수 인덱스 포스트(정렬 후)에 순서대로 적용 */
@@ -442,12 +504,14 @@ function mergeSample(base: ContentPost, def: SampleDef): ContentPost {
 
   const post_format = def.withRoute ? (def.post_format ?? "route") : "article";
   const body = mergeSampleBody(def, route_journey, base.author_display_name);
+  const structured_content = buildSampleStructured(def, route_journey, base.author_display_name);
 
   return {
     ...base,
     title: def.title,
     summary: def.summary,
     body,
+    structured_content,
     tags: def.tags,
     category_slug: def.category_slug,
     kind: def.kind,

@@ -1063,6 +1063,24 @@
     "articleOneLineFromTagPrefix": "Quick focus:",
     "articleKeyTakeawayEyebrow": "Key takeaway",
     "articleTopicGuideEyebrow": "Keyword guide",
+    "infoBlock": {
+      "situation": "When this tip helps",
+      "conclusion": "Bottom line first",
+      "coreTips": "Core tips",
+      "checklist": "Checklist",
+      "fieldTips": "Field tips",
+      "mistakes": "Common mistakes & cautions",
+      "summary": "Quick recap",
+      "guardianQuote": "One line from your guardian",
+      "guardianBadge": "Guardian"
+    },
+    "routeArticleBlock": {
+      "routeSummary": "Route summary",
+      "beforeYouGo": "Good to know first",
+      "routeClosing": "Wrapping up",
+      "guardianQuote": "One line from your guardian",
+      "guardianBadge": "Guardian"
+    },
     "filterContent": "Format",
     "contentAll": "All",
     "contentArticle": "Article",
@@ -1118,6 +1136,8 @@
     "nightYes": "Night-friendly",
     "nightNo": "Day-first",
     "whyRecommend": "Why this stop",
+    "spotCoreEyebrow": "Essentials",
+    "spotNextFlowEyebrow": "Next",
     "photoTip": "Photo tip",
     "caution": "Heads-up",
     "stayDuration": "Suggested stay · {minutes} min",

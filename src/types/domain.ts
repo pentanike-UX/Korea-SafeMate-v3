@@ -250,6 +250,48 @@ export interface RouteJourney {
   structured_exposure_meta?: StructuredExposureMeta;
 }
 
+/** `content_posts.structured_content` JSON — v1. */
+export const POST_STRUCTURED_CONTENT_VERSION = 1 as const;
+
+export interface RoutePostStructuredSpotBlockV1 {
+  spot_order?: number;
+  spot_id?: string;
+  headline?: string;
+  notes?: string;
+}
+
+export interface RoutePostStructuredContentV1 {
+  intro: string;
+  route_summary: string;
+  route_best_for?: string;
+  route_notes: string;
+  narrative: string;
+  closing: string;
+  guardian_signature: string;
+  spots?: RoutePostStructuredSpotBlockV1[];
+}
+
+export interface PracticalTipBlockV1 {
+  primary: string;
+  secondary?: string;
+}
+
+export interface PracticalTipStructuredContentV1 {
+  context: string;
+  one_line_conclusion: string;
+  key_summary?: string;
+  tip_blocks: PracticalTipBlockV1[];
+  checklist: string[];
+  field_tips?: string;
+  mistakes_notes?: string;
+  final_summary: string;
+  guardian_signature: string;
+}
+
+export type PostStructuredContentV1 =
+  | { version: typeof POST_STRUCTURED_CONTENT_VERSION; template: "route_post"; data: RoutePostStructuredContentV1 }
+  | { version: typeof POST_STRUCTURED_CONTENT_VERSION; template: "practical_tip_post"; data: PracticalTipStructuredContentV1 };
+
 export interface ContentPost {
   id: string;
   author_user_id: string;
@@ -283,6 +325,11 @@ export interface ContentPost {
   route_journey?: RouteJourney;
   /** Short bullets for traveler “insight” strip on route detail. */
   route_highlights?: string[];
+  /**
+   * 구조형 본문(JSON). 있으면 상세 UI는 이 값을 최우선으로 렌더링하고, `body`는 폴백·검색·레거시용으로 유지.
+   * DB: `content_posts.structured_content` jsonb
+   */
+  structured_content?: PostStructuredContentV1 | null;
   /** Service intro mock — not real UGC; show subtle “(샘플)” in UI. */
   is_sample?: boolean;
   /** Denormalized flag for filtering (true when `route_journey` is present). */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
@@ -8,9 +8,13 @@ import type {
   ContentPostFormat,
   ContentPostHeroSubject,
   ContentPostKind,
+  PostStructuredContentV1,
   RouteJourney,
+  RoutePostStructuredContentV1,
   RouteSpot,
 } from "@/types/domain";
+import { POST_STRUCTURED_CONTENT_VERSION } from "@/types/domain";
+import { inferRouteStructuredDraftFromPost, serializeRoutePostToShellBody } from "@/lib/post-structured-content";
 import { saveGuardianRoutePostAction } from "@/app/[locale]/(authed)/guardian/posts/actions";
 import { signGuardianPostPreviewTokenAction } from "@/app/[locale]/(authed)/guardian/posts/preview-token-action";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
@@ -27,8 +31,18 @@ import { GuardianPostAiMetaPanel } from "@/components/guardian/guardian-post-ai-
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Copy, Loader2, MapPin, Star, Trash2 } from "lucide-react";
 
-function buildSavePayload(p: ContentPost, status: ContentPost["status"]): GuardianPostSavePayload | null {
+function buildSavePayload(
+  p: ContentPost,
+  routeDraft: RoutePostStructuredContentV1,
+  status: ContentPost["status"],
+): GuardianPostSavePayload | null {
   if (!p.route_journey) return null;
+  const body = serializeRoutePostToShellBody(routeDraft, p.route_journey.spots.length);
+  const structured_content: PostStructuredContentV1 = {
+    version: POST_STRUCTURED_CONTENT_VERSION,
+    template: "route_post",
+    data: routeDraft,
+  };
   return {
     author_user_id: p.author_user_id,
     region_slug: p.region_slug,
@@ -36,7 +50,7 @@ function buildSavePayload(p: ContentPost, status: ContentPost["status"]): Guardi
     kind: p.kind,
     title: p.title,
     summary: p.summary,
-    body: p.body,
+    body,
     tags: p.tags,
     status,
     post_format: p.post_format,
@@ -44,6 +58,7 @@ function buildSavePayload(p: ContentPost, status: ContentPost["status"]): Guardi
     hero_subject: p.hero_subject ?? null,
     route_journey: p.route_journey,
     route_highlights: p.route_highlights ?? [],
+    structured_content,
   };
 }
 
@@ -129,6 +144,15 @@ const COPY = {
   flowStep4: "AI 추천",
   flowStep5: "검토·수정",
   flowStep6: "미리보기·발행",
+  structuredSectionTitle: "루트 소개 (구조형 JSON 저장)",
+  structuredHint: "아래 필드가 상세 화면에 우선 표시됩니다. 저장 시 본문 문자열은 같은 내용으로 자동 생성됩니다.",
+  structIntro: "이 포스트가 맞는 사람 (intro)",
+  structRouteSummary: "루트 요약",
+  structRouteBestFor: "이 루트가 잘 맞는 분 (선택)",
+  structRouteNotes: "먼저 알고 가면 좋은 점",
+  structNarrative: "본문·스팟 안내 문단",
+  structClosing: "루트 마무리",
+  structGuardian: "가디언 한 줄 제안",
   kindLabel: "콘텐츠 종류(kind)",
   kindHint: "실용 팁·로컬 팁을 고르면 AI 추천은 본문 팁 블록 개수 기준으로 켜집니다. 그 외는 스팟·본문 문단 기준입니다.",
   heroSubjectLabel: "히어로 이미지 초점",
@@ -160,7 +184,22 @@ export function GuardianRoutePostEditor({
 }) {
   const router = useRouter();
   const [post, setPost] = useState<ContentPost>(initialPost);
+  const [routeDraft, setRouteDraft] = useState<RoutePostStructuredContentV1>(() =>
+    inferRouteStructuredDraftFromPost(initialPost),
+  );
   const journey = post.route_journey!;
+
+  const spotCountForShell = post.route_journey?.spots.length ?? 0;
+  useEffect(() => {
+    if (!post.route_journey) return;
+    const nextBody = serializeRoutePostToShellBody(routeDraft, spotCountForShell);
+    const structured_content: PostStructuredContentV1 = {
+      version: POST_STRUCTURED_CONTENT_VERSION,
+      template: "route_post",
+      data: routeDraft,
+    };
+    setPost((p) => (p.route_journey ? { ...p, body: nextBody, structured_content } : p));
+  }, [routeDraft, spotCountForShell, post.route_journey]);
   const [persistedPostId, setPersistedPostId] = useState<string | null>(() =>
     isUuidString(initialPost.id) ? initialPost.id : null,
   );
@@ -303,7 +342,7 @@ export function GuardianRoutePostEditor({
   }
 
   async function onSaveDraft() {
-    const payload = buildSavePayload({ ...post, status: "draft" }, "draft");
+    const payload = buildSavePayload({ ...post, status: "draft" }, routeDraft, "draft");
     if (!payload) {
       setSaveError("route_journey 가 없습니다.");
       return;
@@ -327,7 +366,7 @@ export function GuardianRoutePostEditor({
   }
 
   async function onPublish() {
-    const payload = buildSavePayload({ ...post, status: "pending" }, "pending");
+    const payload = buildSavePayload({ ...post, status: "pending" }, routeDraft, "pending");
     if (!payload) {
       setSaveError("route_journey 가 없습니다.");
       return;
@@ -902,14 +941,81 @@ export function GuardianRoutePostEditor({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>소개 본문 (하이브리드 상단 맥락)</Label>
-            <Textarea
-              value={post.body}
-              onChange={(e) => setPost((p) => ({ ...p, body: e.target.value }))}
-              className="rounded-xl"
-              rows={4}
-            />
+          <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/10 p-4 sm:p-5">
+            <div>
+              <h3 className="text-foreground text-sm font-semibold">{COPY.structuredSectionTitle}</h3>
+              <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{COPY.structuredHint}</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-intro">{COPY.structIntro}</Label>
+              <Textarea
+                id="struct-intro"
+                value={routeDraft.intro}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, intro: e.target.value }))}
+                className="rounded-xl"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-sum">{COPY.structRouteSummary}</Label>
+              <Textarea
+                id="struct-sum"
+                value={routeDraft.route_summary}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, route_summary: e.target.value }))}
+                className="rounded-xl"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-bf">{COPY.structRouteBestFor}</Label>
+              <Textarea
+                id="struct-bf"
+                value={routeDraft.route_best_for ?? ""}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, route_best_for: e.target.value || undefined }))}
+                className="rounded-xl"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-notes">{COPY.structRouteNotes}</Label>
+              <Textarea
+                id="struct-notes"
+                value={routeDraft.route_notes}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, route_notes: e.target.value }))}
+                className="rounded-xl"
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-narr">{COPY.structNarrative}</Label>
+              <Textarea
+                id="struct-narr"
+                value={routeDraft.narrative}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, narrative: e.target.value }))}
+                className="rounded-xl"
+                rows={4}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-close">{COPY.structClosing}</Label>
+              <Textarea
+                id="struct-close"
+                value={routeDraft.closing}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, closing: e.target.value }))}
+                className="rounded-xl"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="struct-guard">{COPY.structGuardian}</Label>
+              <Textarea
+                id="struct-guard"
+                value={routeDraft.guardian_signature}
+                onChange={(e) => setRouteDraft((d) => ({ ...d, guardian_signature: e.target.value }))}
+                className="rounded-xl"
+                rows={2}
+              />
+            </div>
           </div>
         </section>
 

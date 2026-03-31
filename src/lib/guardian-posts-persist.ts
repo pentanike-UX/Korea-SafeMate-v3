@@ -61,6 +61,7 @@ export async function insertGuardianContentPost(payload: GuardianPostSavePayload
       post_format: payload.post_format ?? null,
       cover_image_url: payload.cover_image_url ?? null,
       hero_subject: payload.hero_subject ?? null,
+      structured_content: payload.structured_content ?? null,
       route_journey: payload.route_journey,
       route_highlights: highlights,
       usefulness_votes: 0,
@@ -147,6 +148,7 @@ export async function updateGuardianContentPost(
       post_format: payload.post_format ?? null,
       cover_image_url: payload.cover_image_url ?? null,
       hero_subject: payload.hero_subject ?? null,
+      structured_content: payload.structured_content ?? null,
       route_journey: payload.route_journey,
       route_highlights: highlights,
     })
