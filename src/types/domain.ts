@@ -225,11 +225,29 @@ export interface RouteSpot {
   featured?: boolean;
 }
 
+/**
+ * 카드·탐색 노출용 구조화 메타 — DB 전용 컬럼 추가 전까지 `route_journey` JSON에 함께 저장된다.
+ * AI 추천 초안 승인 후 에디터가 채운다.
+ */
+export interface StructuredExposureMeta {
+  audience_tags: string[];
+  duration_tags: string[];
+  mobility_tags: string[];
+  mood_tags: string[];
+  /** 목록·카드용 짧은 요약(한 줄 소개 `summary`와 별개). */
+  summary_card: string;
+  /** 한 줄 추천 이유. */
+  reason_line: string;
+  /** “이럴 때 좋아요” 맥락 문구. */
+  best_for_context: string;
+}
+
 export interface RouteJourney {
   metadata: RouteJourneyMetadata;
   spots: RouteSpot[];
   /** Display path (spot-to-spot or routed polyline). Provider-agnostic. */
   path: MapLatLng[];
+  structured_exposure_meta?: StructuredExposureMeta;
 }
 
 export interface ContentPost {

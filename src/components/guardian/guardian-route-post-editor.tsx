@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ContentPost, ContentPostFormat, RouteJourney, RouteSpot } from "@/types/domain";
+import type { ContentPost, ContentPostFormat, ContentPostKind, RouteJourney, RouteSpot } from "@/types/domain";
 import { saveGuardianRoutePostAction } from "@/app/[locale]/(authed)/guardian/posts/actions";
 import { signGuardianPostPreviewTokenAction } from "@/app/[locale]/(authed)/guardian/posts/preview-token-action";
 import { GUARDIAN_WORKSPACE } from "@/lib/mypage/guardian-workspace-routes";
@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { mockSeoulSearchPlaces } from "@/data/mock/guardian-mock-places";
+import { GuardianPostAiMetaPanel } from "@/components/guardian/guardian-post-ai-meta-panel";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Copy, Loader2, MapPin, Star, Trash2 } from "lucide-react";
 
@@ -33,6 +34,7 @@ function buildSavePayload(p: ContentPost, status: ContentPost["status"]): Guardi
     status,
     post_format: p.post_format,
     cover_image_url: p.cover_image_url ?? null,
+    hero_subject: p.hero_subject ?? null,
     route_journey: p.route_journey,
     route_highlights: p.route_highlights ?? [],
   };
@@ -114,7 +116,24 @@ const COPY = {
   routeOsrmHint: "도보/차량 기준 실제 도로 형상(데모 서버). 운영 시 OSRM_BASE_URL을 자체 인스턴스로 교체하세요.",
   saving: "저장 중…",
   savedPending: "검토 대기(pending)로 저장됨",
+  flowStep1: "유형",
+  flowStep2: "기본 정보",
+  flowStep3: "본문·스팟",
+  flowStep4: "AI 추천",
+  flowStep5: "검토·수정",
+  flowStep6: "미리보기·발행",
+  kindLabel: "콘텐츠 종류(kind)",
+  kindHint: "실용 팁·로컬 팁을 고르면 AI 추천은 본문 팁 블록 개수 기준으로 켜집니다. 그 외는 스팟·본문 문단 기준입니다.",
 } as const;
+
+const KIND_OPTIONS: { value: ContentPostKind; label: string }[] = [
+  { value: "k_content", label: "K-콘텐츠" },
+  { value: "practical", label: "실용 팁" },
+  { value: "local_tip", label: "로컬 팁" },
+  { value: "hot_place", label: "핫플" },
+  { value: "food", label: "맛집·식도락" },
+  { value: "shopping", label: "쇼핑" },
+];
 
 export function GuardianRoutePostEditor({
   initialPost,
@@ -392,6 +411,28 @@ export function GuardianRoutePostEditor({
           <p className="border-primary/20 bg-primary/5 text-foreground rounded-xl border px-4 py-3 text-sm">{saveNotice}</p>
         ) : null}
 
+        <nav aria-label="포스트 작성 단계" className="border-border/50 rounded-2xl border bg-card/60 px-3 py-3">
+          <ol className="text-muted-foreground flex flex-wrap gap-x-2 gap-y-1.5 text-[11px] font-medium sm:gap-x-3 sm:text-xs">
+            {(
+              [
+                COPY.flowStep1,
+                COPY.flowStep2,
+                COPY.flowStep3,
+                COPY.flowStep4,
+                COPY.flowStep5,
+                COPY.flowStep6,
+              ] as const
+            ).map((label, i) => (
+              <li key={label} className="flex items-center gap-1.5">
+                <span className="bg-primary/15 text-primary inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                  {i + 1}
+                </span>
+                <span className="whitespace-nowrap">{label}</span>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
         <section className="space-y-3">
           <h2 className="text-foreground text-sm font-semibold">{COPY.typeTitle}</h2>
           <div className="flex flex-wrap gap-2">
@@ -454,6 +495,22 @@ export function GuardianRoutePostEditor({
               }
               className="rounded-xl"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rt-kind">{COPY.kindLabel}</Label>
+            <select
+              id="rt-kind"
+              className="border-input bg-background h-9 w-full rounded-lg border px-2 text-sm"
+              value={post.kind}
+              onChange={(e) => setPost((p) => ({ ...p, kind: e.target.value as ContentPostKind }))}
+            >
+              {KIND_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <p className="text-muted-foreground text-xs leading-relaxed">{COPY.kindHint}</p>
           </div>
         </section>
 
@@ -816,6 +873,8 @@ export function GuardianRoutePostEditor({
             />
           </div>
         </section>
+
+        <GuardianPostAiMetaPanel post={post} onApply={(next) => setPost(next)} />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <Button
