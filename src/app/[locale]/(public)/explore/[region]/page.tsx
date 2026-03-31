@@ -6,7 +6,6 @@ import { listApprovedPostsMerged } from "@/lib/posts-public-merged.server";
 import { enrichInsight } from "@/lib/explore-utils";
 import { ExploreCtas } from "@/components/explore/explore-ctas";
 import { ExploreDiscoveryClient } from "@/components/explore/explore-discovery-client";
-import { ExploreInsightCard } from "@/components/explore/explore-insight-card";
 import { ExploreRegionGuardians } from "@/components/explore/explore-region-guardians";
 import { ExploreRegionHero } from "@/components/explore/explore-region-hero";
 import { Badge } from "@/components/ui/badge";
@@ -36,15 +35,9 @@ export default async function ExploreRegionPage({ params }: Props) {
   if (!meta) notFound();
 
   const [allPosts, allGuardians] = await Promise.all([listApprovedPostsMerged(), listPublicGuardiansMerged()]);
-  const posts = allPosts.filter((p) => p.region_slug === region);
-  const approved = posts.filter((p) => p.status === "approved");
-  const pending = posts.filter((p) => p.status === "pending");
+  const approved = allPosts.filter((p) => p.region_slug === region && p.status === "approved");
 
   const insights = approved.map((p) =>
-    enrichInsight(p, mockRegions, mockContentCategories, allGuardians),
-  );
-
-  const pendingInsights = pending.map((p) =>
     enrichInsight(p, mockRegions, mockContentCategories, allGuardians),
   );
 
@@ -79,21 +72,6 @@ export default async function ExploreRegionPage({ params }: Props) {
       />
 
       <ExploreCtas />
-
-      {pendingInsights.length > 0 ? (
-        <section className="mx-auto max-w-6xl border-t px-4 py-10 sm:px-6">
-          <h2 className="text-lg font-semibold">{t("moderationPreviewTitle")}</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {t("moderationPreviewLead")}
-            {/* TODO(prod): Remove from public build or gate behind `admin` role. */}
-          </p>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            {pendingInsights.map((i) => (
-              <ExploreInsightCard key={i.post.id} insight={i} showRegion={false} />
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <InlineTextLink href="/explore" className="text-sm">

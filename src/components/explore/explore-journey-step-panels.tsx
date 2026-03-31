@@ -673,8 +673,6 @@ export function ExploreResultsDashboard(props: {
     try {
       return (tThemes.raw(theme) as { title: string }).title;
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn("[ExploreStep5][i18n]", { key: theme, err });
       return t("dashThemeAny");
     }
   }, [t, tThemes, theme]);
@@ -751,9 +749,7 @@ export function ExploreResultsDashboard(props: {
                                 {(() => {
                                   try {
                                     return (tLaunch.raw(featured.launch_area_slug) as { name: string }).name;
-                                  } catch (err) {
-                                    // eslint-disable-next-line no-console
-                                    console.warn("[ExploreStep5][i18n]", { key: featured.launch_area_slug, err });
+                                  } catch {
                                     return featured.launch_area_slug;
                                   }
                                 })()}

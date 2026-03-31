@@ -1147,6 +1147,8 @@
     "bottomCtaTitle": "この雰囲気で旅したい方へ",
     "bottomCtaLead": "日程や好みを送ってください。範囲を確認しGuardianにつなぎます。",
     "ctaRequestGuardian": "このGuardianにリクエスト",
+    "ctaRequestCourseBody": "{name}にこのコースをリクエスト",
+    "ctaRequestBtn": "リクエスト",
     "formatHybrid": "ハイブリッドルート",
     "formatRoute": "ルート",
     "formatSpot": "スポット",

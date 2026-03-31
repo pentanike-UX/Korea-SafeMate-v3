@@ -7,18 +7,17 @@ import { HomeHeroCarousel } from "@/components/home/home-hero-carousel";
 import { getHomeHeroScopeNoteSecondaryFromSm } from "@/lib/home/hero-scope-note-policy.server";
 import { HomeDualCtaSection } from "@/components/home/home-dual-cta-section";
 import { HomeExploreBundle } from "@/components/home/home-explore-bundle";
-import { FileText, Languages, MessageCircle, ShieldCheck, Star, Zap } from "lucide-react";
+import { FileText, Info, Languages, MessageCircle, ShieldCheck, Star, Zap } from "lucide-react";
 
 const POSTS_PREVIEW = 4;
 
 export async function HomeFortyTwoPage() {
   const t = await getTranslations("Home");
   const tHub = await getTranslations("TravelerHub");
+  const tFooter = await getTranslations("Footer");
   const locale = await getLocale();
   const isKo = locale === "ko";
   const scopeNoteSecondaryFromSm = getHomeHeroScopeNoteSecondaryFromSm();
-  const disclaimerText =
-    "이 서비스는 동행·실무 지원만 가능합니다. 의료·법률·긴급 구조는 범위 밖입니다.";
 
   const seoulPosts = mockContentPosts
     .filter((p) => p.status === "approved" && p.region_slug === "seoul")
@@ -40,10 +39,8 @@ export async function HomeFortyTwoPage() {
 
       <div className="border-border/40 bg-[var(--bg-surface-subtle)] border-b">
         <div className="mx-auto flex min-h-11 max-w-6xl items-center justify-center gap-2 px-4 py-2 text-center text-sm sm:px-6">
-          <span className="text-muted-foreground/80" aria-hidden>
-            ℹ︎
-          </span>
-          <p className="text-muted-foreground text-sm leading-snug">{disclaimerText}</p>
+          <Info className="text-muted-foreground/70 size-3.5 shrink-0" aria-hidden />
+          <p className="text-muted-foreground text-sm leading-snug">{tFooter("disclaimerShort")}</p>
         </div>
       </div>
 
@@ -89,7 +86,7 @@ export async function HomeFortyTwoPage() {
                       <CardContent className="flex flex-col gap-2.5 p-4 sm:p-5">
                         <div className="flex items-center gap-0.5 text-amber-500">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} className={i < r.rating ? "size-3.5 fill-current sm:size-4" : "size-3.5 sm:size-4"} aria-hidden />
+                            <Star key={i} className={i < r.rating ? "size-3.5 fill-current sm:size-4" : "size-3.5 fill-current opacity-20 sm:size-4"} aria-hidden />
                           ))}
                         </div>
                         <p className="text-foreground text-sm leading-relaxed">&ldquo;{text}&rdquo;</p>
@@ -123,7 +120,7 @@ export async function HomeFortyTwoPage() {
               {t("postsCta")}
             </TextActionLink>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {seoulPosts.map((p) => (
               <Link
                 key={p.id}

@@ -85,17 +85,7 @@ export function ExploreJourneyClient() {
   const comingSoonArea = region === "busan" || region === "jeju";
 
   useEffect(() => {
-    // Browser console only; helps diagnose prod step crashes without breaking UX.
-    // eslint-disable-next-line no-console
-    console.log(`[ExploreStep${step + 1}]`, {
-      step,
-      region,
-      theme,
-      comingSoonArea,
-      langPref,
-      pace,
-      partySize,
-    });
+    // step 변경 시 추가 동작이 필요하면 여기에 작성
   }, [step, region, theme, comingSoonArea, langPref, pace, partySize]);
 
   const effectiveTasteIds = useMemo(() => {
@@ -158,12 +148,9 @@ export function ExploreJourneyClient() {
         })
         .slice(0, 8);
 
-      // eslint-disable-next-line no-console
-      console.log("[ExploreRecommendationLoader]", { pool: pool.length, guardians: g.length, posts: posts.length });
       return { guardians: g.slice(0, 6), posts };
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("[ExploreRecommendationLoader]", err);
+      if (process.env.NODE_ENV === "development") console.error("[ExploreRecommendationLoader]", err);
       return { guardians: [] as PublicGuardian[], posts: [] as ContentPost[] };
     }
   }, [region, theme, langPref, pace, comingSoonArea, resultsSpin, guardianStylePrefs, effectiveTasteIds]);

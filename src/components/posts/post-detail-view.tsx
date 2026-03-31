@@ -188,14 +188,14 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
                 <Image src={sheetAvatar} alt="" fill sizes="32px" className="object-cover" />
               </div>
               <p className="text-sm font-semibold">
-                {sheetName}에게 이 코스로 요청하기
+                {t("ctaRequestCourseBody", { name: sheetName })}
               </p>
             </div>
             <Link
               href={`/guardians/${post.author_user_id}#request`}
               className="bg-primary text-primary-foreground inline-flex h-10 min-h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold shadow-[var(--shadow-brand)]"
             >
-              요청하기
+              {t("ctaRequestBtn")}
             </Link>
           </CardContent>
         </Card>
