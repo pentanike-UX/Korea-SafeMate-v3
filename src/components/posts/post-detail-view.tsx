@@ -13,7 +13,6 @@ import {
 } from "@/lib/content-post-route";
 import { RelatedPostsBrowseSheet } from "@/components/posts/related-posts-browse-sheet";
 import { GuardianRequestDefaultsPublisher } from "@/components/guardians/guardian-request-defaults-publisher";
-import { SaveTravelerPostButton } from "@/components/posts/save-traveler-post-button";
 import { PostAuthorAside } from "@/components/posts/post-author-aside";
 import { PostDetailStickyAside } from "@/components/posts/post-detail-sticky-aside";
 import { RoutePostDetailView } from "@/components/posts/route-post-detail-view";
@@ -77,19 +76,11 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
         </Link>
       </div>
 
-      <PostDetailHero post={post} coverUrl={heroCover} coverAlt={heroAlt} typeLabelKey={typeLabelKey} />
+      <PostDetailHero post={post} coverUrl={heroCover} coverAlt={heroAlt} typeLabelKey={typeLabelKey} postId={post.id} />
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-12 lg:gap-12">
         <div className="max-w-none space-y-8 lg:col-span-8">
           {articleIntro ? <PostDetailIntroPanel variant="article" primary={lead} /> : null}
-
-          {bodyText ? (
-            <div className="text-foreground space-y-4 text-[15px] leading-relaxed sm:text-base">
-              {bodyText.split("\n").map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-            </div>
-          ) : null}
 
           {showEnrichedPair ? (
             <figure className="border-border/60 relative aspect-[16/10] overflow-hidden rounded-xl border sm:aspect-[21/9]">
@@ -103,13 +94,20 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
             </figure>
           ) : null}
 
+          {bodyText ? (
+            <div className="text-foreground space-y-4 text-[15px] leading-relaxed sm:text-base">
+              {bodyText.split("\n").map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+          ) : null}
+
           {guardian ? (
             <PostGuardianAttributionRow variant="article" displayName={sheetName} avatarUrl={sheetAvatar} />
           ) : null}
         </div>
 
         <PostDetailStickyAside id="post-author-aside">
-          <SaveTravelerPostButton postId={post.id} />
           <PostAuthorAside post={post} />
         </PostDetailStickyAside>
       </div>
@@ -126,6 +124,7 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
                   summary: r.summary,
                   imageUrl: getPostHeroImageUrl(r),
                   kind: r.kind,
+                  hero_subject: r.hero_subject,
                 }))}
                 sheetTitle={t("relatedBrowseSheetTitle")}
                 triggerLabel={t("relatedBrowseTrigger")}

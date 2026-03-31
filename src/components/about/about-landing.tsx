@@ -7,6 +7,7 @@ import { AboutParallaxBand } from "@/components/about/about-parallax-band";
 import { AboutParallaxHero } from "@/components/about/about-parallax-hero";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/constants";
+import { FILL_IMAGE_COVER_CENTER, FILL_IMAGE_MARKETING_REGION_TILE } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -198,7 +199,7 @@ export function AboutLanding() {
                   src={src}
                   alt=""
                   fill
-                  className="object-cover object-[center_42%] sm:object-center"
+                  className={FILL_IMAGE_MARKETING_REGION_TILE}
                   sizes="(max-width:1024px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" aria-hidden />
@@ -237,7 +238,7 @@ export function AboutLanding() {
               src={IMG.guardian}
               alt=""
               fill
-              className="object-cover object-center"
+              className={FILL_IMAGE_COVER_CENTER}
               sizes="(max-width:1024px) 100vw, 50vw"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand-trust-blue)]/15 to-transparent" aria-hidden />

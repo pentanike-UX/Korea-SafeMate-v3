@@ -41,6 +41,12 @@ export type ContentPostKind =
   | "k_content"
   | "practical";
 
+/**
+ * 히어로·카드 크롭 우선순위용 메타 — `kind` 휴리스틱보다 우선(없으면 kind fallback).
+ * TODO(prod): `content_posts.hero_subject` 컬럼 등과 동기화.
+ */
+export type ContentPostHeroSubject = "person" | "place" | "mixed";
+
 export type RegionPhase = 1 | 2;
 
 /** Explore sorting — TODO(prod): backed by DB columns or materialized views. */
@@ -233,6 +239,8 @@ export interface ContentPost {
   region_slug: string;
   category_slug: string;
   kind: ContentPostKind;
+  /** 명시 시 이미지 크롭이 kind 추정보다 이 값을 우선한다. */
+  hero_subject?: ContentPostHeroSubject | null;
   title: string;
   body: string;
   /** Short line for cards; TODO(prod): generated or editor field. */

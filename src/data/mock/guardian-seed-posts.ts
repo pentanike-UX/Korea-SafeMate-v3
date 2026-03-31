@@ -1,4 +1,4 @@
-import type { ContentPost, ContentPostKind, ContentPostStatus } from "@/types/domain";
+import type { ContentPost, ContentPostHeroSubject, ContentPostKind, ContentPostStatus } from "@/types/domain";
 import {
   GUARDIAN_SEED_USE_LOCAL_POST_COVERS,
   type GuardianSeedRow,
@@ -12,6 +12,8 @@ type SeedPostTheme = {
   summary: string;
   body: string;
   tags: string[];
+  /** 일부 시드만 명시 — 크롭 우선순위 데모 */
+  hero_subject?: ContentPostHeroSubject;
 };
 
 const UNSPLASH_COVER_IDS = [
@@ -79,6 +81,7 @@ const SEED_POST_THEMES: readonly SeedPostTheme[] = [
     summary: "메인 거리 전면이 붐비면 평행 골목의 리뷰 수와 최근 사진을 같이 봅니다.",
     body: "유명 식당 앞 줄이 길면, 같은 블록 안쪽으로 들어가면 비슷한 카테고리의 작은 식당이 종종 있습니다. 지도 앱에서 최근 리뷰 사진이 올라오는지, 메뉴판 사진이 있는지를 함께 보면 실패 확률이 줄었습니다. 첫 주문은 세트나 대표 메뉴 하나로 단순하게 가져가는 편이 마음이 편합니다. 추천 동행에서는 입맛과 알레르기를 먼저 짧게 정리합니다.",
     tags: ["식사", "웨이팅", "골목"],
+    hero_subject: "mixed",
   },
   {
     category_slug: "local-tips",
@@ -143,6 +146,7 @@ const SEED_POST_THEMES: readonly SeedPostTheme[] = [
     summary: "보조배터리는 케이블 고정이 흔들리지 않게 먼저 확인합니다.",
     body: "지도·번역·결제가 한 기기에 몰리면 배터리 소모가 빠릅니다. 점심 전후로 한 번씩 충전 슬롯을 잡아 두면 저녁이 편합니다. 데이터가 불안하면 카페 와이파이는 비밀번호 표지판 위치를 사진으로 남겨 두면 재접속이 빠릅니다. 안심 동행에서는 ‘충전할 수 있는 20분’을 일정에 넣어 두는 것을 권합니다.",
     tags: ["배터리", "데이터", "준비"],
+    hero_subject: "person",
   },
   {
     category_slug: "local-tips",
@@ -255,6 +259,7 @@ const SEED_POST_THEMES: readonly SeedPostTheme[] = [
     summary: "포장 테이프와 영수증을 받은 뒤 바로 가방에 넣으면 분실이 줄었습니다.",
     body: "주말 오후는 대기가 길어지기 쉽습니다. 평일 점심 전후가 상대적으로 여유로웠습니다. 포장이 약하면 한 장 더 감싸 달라고 부탁해도 대부분 흔쾌히 해 줍니다. 동행에서는 ‘구매 후 5분’ 안에 가방 정리를 같이 확인합니다.",
     tags: ["K-pop", "굿즈", "대기"],
+    hero_subject: "place",
   },
   {
     category_slug: "hot-places",
@@ -468,6 +473,7 @@ function pushPosts(
       region_slug: row.primary_region_slug,
       category_slug: theme.category_slug,
       kind: theme.kind,
+      ...(theme.hero_subject != null ? { hero_subject: theme.hero_subject } : {}),
       title: theme.title,
       body: theme.body,
       summary: theme.summary,

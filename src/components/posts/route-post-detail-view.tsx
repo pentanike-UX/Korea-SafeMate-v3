@@ -1,17 +1,19 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { ContentPost } from "@/types/domain";
-import { getPostHeroImageUrl } from "@/lib/content-post-route";
+import { getPostHeroImageAlt, getPostHeroImageUrl } from "@/lib/content-post-route";
 import { getPublicGuardianByIdMerged } from "@/lib/guardian-public-merged.server";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
 import { mockRegions } from "@/data/mock";
 import { clampSheetHeadline, resolveGuardianHeadlineWithPostFallback } from "@/lib/guardian-sheet-headline";
 import { relatedPostsForMerged } from "@/lib/posts-public-merged.server";
-import { SaveTravelerPostButton } from "@/components/posts/save-traveler-post-button";
 import { PostAuthorAside } from "@/components/posts/post-author-aside";
+import { PostDetailHero } from "@/components/posts/post-detail-hero";
 import { PostDetailStickyAside } from "@/components/posts/post-detail-sticky-aside";
 import { RelatedPostsBrowseSheet } from "@/components/posts/related-posts-browse-sheet";
 import { RoutePostDetailClient } from "@/components/route-posts/route-post-detail-client";
+import { GuardianRequestDefaultsPublisher } from "@/components/guardians/guardian-request-defaults-publisher";
+import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
 import { ArrowLeft } from "lucide-react";
 
 export async function RoutePostDetailView({ post }: { post: ContentPost }) {
@@ -28,8 +30,19 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
         ? post.region_slug
         : null;
 
+  const heroCover = getPostHeroImageUrl(post);
+  const heroAlt = getPostHeroImageAlt(post);
+  const typeLabelKey = resolvePostTypeLabelKey(post);
+
   return (
     <article className="bg-[var(--bg-page)] pb-16">
+      <GuardianRequestDefaultsPublisher
+        guardianUserId={post.author_user_id}
+        displayName={sheetName}
+        headline={sheetHeadline}
+        avatarUrl={sheetAvatar}
+        suggestedRegionSlug={sheetRegion}
+      />
       <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6">
         <Link
           href="/posts"
@@ -40,7 +53,16 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
         </Link>
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 sm:py-6 lg:grid-cols-12 lg:gap-12">
+      <PostDetailHero
+        post={post}
+        coverUrl={heroCover}
+        coverAlt={heroAlt}
+        typeLabelKey={typeLabelKey}
+        visualWeight="emphasized"
+        postId={post.id}
+      />
+
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-8">
           <RoutePostDetailClient
             post={post}
@@ -54,13 +76,12 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
           />
         </div>
         <PostDetailStickyAside id="post-author-aside" variant="route">
-          <SaveTravelerPostButton postId={post.id} />
           <PostAuthorAside post={post} />
         </PostDetailStickyAside>
       </div>
 
       {related.length > 0 ? (
-        <section className="border-border/50 mt-12 border-t bg-card/90">
+        <section className="border-border/50 border-t bg-card/90">
           <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <h2 className="text-text-strong text-xl font-semibold">{t("relatedTitle")}</h2>
@@ -71,6 +92,7 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
                   summary: r.summary,
                   imageUrl: getPostHeroImageUrl(r),
                   kind: r.kind,
+                  hero_subject: r.hero_subject,
                 }))}
                 sheetTitle={t("relatedBrowseSheetTitle")}
                 triggerLabel={t("relatedBrowseTrigger")}

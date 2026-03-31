@@ -11,18 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { PostDetailHero } from "@/components/posts/post-detail-hero";
 import { PostDetailIntroPanel } from "@/components/posts/post-detail-intro-panel";
 import { PostGuardianAttributionRow } from "@/components/posts/post-guardian-attribution-row";
-import { GuardianRequestDefaultsPublisher } from "@/components/guardians/guardian-request-defaults-publisher";
 import { GuardianRequestIntakeBullets } from "@/components/guardians/guardian-request-intake-bullets";
 import { GuardianRequestOpenTrigger, type GuardianRequestSheetHostProps } from "@/components/guardians/guardian-request-sheet";
-import { postCoverImageUrl, getSpotDisplayImageAlt, getSpotDisplayImageUrl } from "@/lib/content-post-route";
-import { buildLocalPostVisualPlan, localHeroAlt, type LocalPostVisualPlan } from "@/lib/post-local-images";
+import { getSpotDisplayImageAlt, getSpotDisplayImageUrl } from "@/lib/content-post-route";
+import { buildLocalPostVisualPlan, type LocalPostVisualPlan } from "@/lib/post-local-images";
 import { routeSpotImageCoverClass } from "@/lib/post-image-crop";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
 import { splitPostBodyLeadRest } from "@/lib/post-detail-body-split";
 
 function SpotDetailBody({
@@ -213,18 +210,14 @@ export function RoutePostDetailClient({
   const selectedSpot = spots.find((s) => s.id === activeSpotId) ?? null;
 
   const visualPlan = useMemo(() => buildLocalPostVisualPlan(post), [post]);
-  const cover = postCoverImageUrl(post) ?? visualPlan.hero;
-  const coverAlt = postCoverImageUrl(post) ? post.title : localHeroAlt(post, visualPlan);
   const { lead, rest } = useMemo(() => splitPostBodyLeadRest(post.body), [post.body]);
   const goodForLine = useMemo(
     () => meta.recommended_traveler_types.filter(Boolean).join(" · ") || null,
     [meta.recommended_traveler_types],
   );
-  const typeLabelKey = useMemo(() => resolvePostTypeLabelKey(post), [post]);
 
   return (
     <>
-      <GuardianRequestDefaultsPublisher {...requestHost} />
       {showStickyNav && spots.length > 0 ? (
         <RouteStickyLocalNav
           spots={spots}
@@ -235,10 +228,8 @@ export function RoutePostDetailClient({
         />
       ) : null}
 
-      <PostDetailHero post={post} coverUrl={cover} coverAlt={coverAlt} typeLabelKey={typeLabelKey} />
-
-      <div className="mt-8 space-y-5 sm:space-y-6">
-        <PostDetailIntroPanel variant="route" primary={lead} secondary={null} />
+      <div className="space-y-5 sm:space-y-6">
+        <PostDetailIntroPanel variant="route" primary={lead} secondary={goodForLine} />
         <PostGuardianAttributionRow
           variant="route"
           displayName={requestHost.displayName}

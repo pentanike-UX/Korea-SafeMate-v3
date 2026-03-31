@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, Loader2 } from "lucide-react";
+import { FILL_IMAGE_POST_THUMB_SQUARE } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 
 const TAG_KEYS = ["routeEasy", "explainSimple", "calming", "vibeMatch", "photoFriendly", "fastResponse"] as const;
@@ -188,7 +189,7 @@ export function TravelerReviewSubmitSheet({
                 >
                   {p.thumb ? (
                     // eslint-disable-next-line @next/next/no-img-element -- small preset thumbs
-                    <img src={p.thumb} alt="" className="size-full object-cover" />
+                    <img src={p.thumb} alt="" className={cn("size-full", FILL_IMAGE_POST_THUMB_SQUARE)} />
                   ) : (
                     <span className="text-muted-foreground flex size-full items-center justify-center text-[10px] font-medium">
                       {t("reviewPhotoNone")}

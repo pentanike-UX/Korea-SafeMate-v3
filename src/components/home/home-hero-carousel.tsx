@@ -8,6 +8,7 @@ import { HOME_HERO_INTERVAL_MS, HOME_HERO_SLIDES } from "@/data/home-hero-slides
 import { useViewerRole } from "@/hooks/use-viewer-role";
 import { HomeAuxiliaryNoteHero } from "@/components/home/home-auxiliary-note";
 import { Button } from "@/components/ui/button";
+import { FILL_IMAGE_MARKETING_HERO_FULLBLEED } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -103,7 +104,7 @@ export function HomeHeroCarousel({
               src={slide.src}
               alt=""
               fill
-              className="object-cover object-center"
+              className={FILL_IMAGE_MARKETING_HERO_FULLBLEED}
               sizes="100vw"
               priority={i === 0}
               fetchPriority={i === 0 ? "high" : "low"}

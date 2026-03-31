@@ -1,4 +1,12 @@
-import type { ContentPost, ContentPostKind, MapLatLng, RouteJourney, RouteJourneyMetadata, RouteSpot } from "@/types/domain";
+import type {
+  ContentPost,
+  ContentPostHeroSubject,
+  ContentPostKind,
+  MapLatLng,
+  RouteJourney,
+  RouteJourneyMetadata,
+  RouteSpot,
+} from "@/types/domain";
 import { postHasRouteJourney } from "@/lib/content-post-route";
 
 function densifyPath(pts: MapLatLng[], perLeg = 5): MapLatLng[] {
@@ -291,11 +299,12 @@ type SampleDef = {
   post_format?: ContentPost["post_format"];
   route_highlights?: string[];
   recommended_boost?: number;
+  hero_subject?: ContentPostHeroSubject | null;
 };
 
 /** 33개 — 짝수 인덱스 포스트(정렬 후)에 순서대로 적용 */
 const SAMPLE_DEFINITIONS: SampleDef[] = [
-  { withRoute: true, journey: journeyGwanghwamunClassic, title: "광화문 반나절 — 광장에서 경복궁까지 천천히", summary: "광화문광장·이순신·세종로를 잇는 도보 루트로 첫 서울 동선을 잡아 보세요.", body: "만남은 광장이 편하고, 사진은 짧게·통행은 우선으로 두면 반나절이 한결 가볍습니다.\n경복궁 입장 전에는 가방 규정만 한 번 확인해 두세요.", tags: ["광화문권", "도보", "첫방문", "경복궁"], category_slug: "hot-places", kind: "hot_place", cover_image_url: IMG.palace, post_format: "route", route_highlights: ["광장에서 방향을 잡고 출발", "랜드마크를 기준점으로 사용", "입장 전 규정만 짧게 확인"] },
+  { withRoute: true, journey: journeyGwanghwamunClassic, title: "광화문 반나절 — 광장에서 경복궁까지 천천히", summary: "광화문광장·이순신·세종로를 잇는 도보 루트로 첫 서울 동선을 잡아 보세요.", body: "만남은 광장이 편하고, 사진은 짧게·통행은 우선으로 두면 반나절이 한결 가볍습니다.\n경복궁 입장 전에는 가방 규정만 한 번 확인해 두세요.", tags: ["광화문권", "도보", "첫방문", "경복궁"], category_slug: "hot-places", kind: "hot_place", cover_image_url: IMG.palace, post_format: "route", route_highlights: ["광장에서 방향을 잡고 출발", "랜드마크를 기준점으로 사용", "입장 전 규정만 짧게 확인"], hero_subject: "mixed" },
   { withRoute: true, journey: journeyGangnamWalk, title: "강남역 도보 — 카페 두 곳과 테헤란로 거리", summary: "역에서 골목 카페까지, 외부·내부 분위기를 번갈아 즐기는 오후 코스.", body: "큰 길을 기준으로만 움직여도 길 잃을 확률이 크게 줄어듭니다.\n카페는 창가·실내 좌석을 먼저 보고 주문하면 대기가 덜 답답합니다.", tags: ["강남역권", "카페", "도보", "오후"], category_slug: "food", kind: "food", cover_image_url: IMG.cafeIn, post_format: "hybrid", route_highlights: ["출구 기준으로 큰 도로 먼저", "카페는 외관·내부를 한 번에 확인", "거리 산책은 통행 우선"] },
   { withRoute: true, journey: journeyGwangShort, title: "랜드마크 도보 — 광화문 삼각 루프 50분", summary: "광화문·광장·궁 담장을 잇는 짧은 루프로 사진과 휴식을 나눕니다.", body: "시간이 빠듯할 때 ‘넓게’보다 ‘선명하게’ 한 장면씩 남기는 용도로 좋습니다.", tags: ["광화문권", "사진", "짧은코스"], category_slug: "hot-places", kind: "hot_place", cover_image_url: IMG.statue, post_format: "route", route_highlights: ["3스팟만 반복 없이 루프", "그늘·벤치를 쉼표로", "담장 라인이 사진 배경으로 안정적"] },
   { withRoute: true, journey: journeyGangnamWalk, title: "혼자 가기 좋은 강남 안전 동선", summary: "밝은 도로변 위주, 골목은 짧게만 들어가는 구성입니다.", body: "야간에도 가로등이 있는 큰 길을 축으로 두면 방향 전환이 단순해집니다.", tags: ["강남역권", "솔로", "야간"], category_slug: "local-tips", kind: "local_tip", cover_image_url: IMG.gangnamNight, post_format: "route", route_highlights: ["큰 길 우선", "골목은 목적지가 보일 때만", "휴식은 카페 실내"] },
@@ -314,10 +323,10 @@ const SAMPLE_DEFINITIONS: SampleDef[] = [
   { withRoute: true, journey: journeyGangnamWalk, title: "테헤란로 카페거리 — 창밖 풍경이 있는 자리 잡기", summary: "2층 좌석이 있으면 거리 흐름이 한눈에 들어옵니다.", body: "창가 자리는 햇빛 각도에 따라 뜨거울 수 있어 겉옷을 챙기세요.", tags: ["강남역권", "테헤란로", "카페"], category_slug: "food", kind: "food", cover_image_url: IMG.cafeIn, post_format: "route" },
   { withRoute: false, title: "광화문에서 시작하는 첫 하루 — 무리하지 않는 기준", summary: "광장·궁 일대는 ‘반나절=광장+담장’ 정도만 잡아도 충분합니다.", body: "첫날은 이동 거리보다 화장실·물·그늘 같은 기본 니즈를 채우는 데 점수를 주세요.\n광화문권은 표지판이 또렷한 편이라 길 물어보기도 수월합니다.", tags: ["광화문권", "첫날", "팁"], category_slug: "practical", kind: "practical", cover_image_url: IMG.gwGate },
   { withRoute: false, title: "경복궁 앞에서 사진·예절을 동시에", summary: "촬영은 짧게, 통행과 주민·관광객 흐름을 먼저 봅니다.", body: "삼각대·셀카봉은 주변 동선을 가리지 않게 낮은 높이를 권합니다.\n담장 따라 걸을 때는 자전거 도로 표시를 함께 확인하세요.", tags: ["광화문권", "사진", "예절"], category_slug: "local-tips", kind: "local_tip", cover_image_url: IMG.palace },
-  { withRoute: false, title: "강남역에서 길 잃지 않는 습관", summary: "‘큰 길 + 랜드마크 빌딩’ 두 개만 기억해도 충분합니다.", body: "지하를 오래 돌다 지치면 일단 지상으로 올라와 방향을 다시 잡는 편이 마음이 편합니다.\n카페는 지도 핀과 실제 입구가 어긋나는 경우가 있어 건물 번지를 함께 확인하세요.", tags: ["강남역권", "길찾기", "팁"], category_slug: "practical", kind: "practical", cover_image_url: IMG.gangnamStreet },
+  { withRoute: false, title: "강남역에서 길 잃지 않는 습관", summary: "‘큰 길 + 랜드마크 빌딩’ 두 개만 기억해도 충분합니다.", body: "지하를 오래 돌다 지치면 일단 지상으로 올라와 방향을 다시 잡는 편이 마음이 편합니다.\n카페는 지도 핀과 실제 입구가 어긋나는 경우가 있어 건물 번지를 함께 확인하세요.", tags: ["강남역권", "길찾기", "팁"], category_slug: "practical", kind: "practical", cover_image_url: IMG.gangnamStreet, hero_subject: "place" },
   { withRoute: false, title: "광화문광장 바람이 셀 때 체크할 것", summary: "모자·머리 묶음·가방 끈부터 정리하면 촬영도 편합니다.", body: "광장은 바람이 갑자기 세질 수 있어 작은 짐이 날리지 않게 정리합니다.\n이후 실내로 들어갈 계획이면 우산 물기를 털고 입장합니다.", tags: ["광화문권", "날씨", "광장"], category_slug: "local-tips", kind: "local_tip", cover_image_url: IMG.crosswalk },
   { withRoute: false, title: "강남 카페 — 외부 파사드와 내부 좌석을 나눠 보기", summary: "같은 매장이라도 입구 밖에서 분위기를 먼저 확인하면 실패가 줄어듭니다.", body: "유리 너머 좌석이 보이면 대기 인원을 가늠하기 쉽습니다.\n실내는 조명 색이 사진 톤을 좌우하니 화이트밸런스만 한 번 확인해 보세요.", tags: ["강남역권", "카페", "인테리어"], category_slug: "food", kind: "food", cover_image_url: IMG.cafeOut },
-  { withRoute: false, title: "이순신장군상 앞 만남 — 기준점만 맞추기", summary: "‘동상 앞’보다 ‘동상에서 궁 쪽’처럼 방향을 붙이면 정확해집니다.", body: "광화문 일대는 행사로 통제가 바뀔 수 있어 당일 안내판을 한 번만 훑어도 마음이 편합니다.", tags: ["광화문권", "만남", "이순신"], category_slug: "practical", kind: "practical", cover_image_url: IMG.statue },
+  { withRoute: false, title: "이순신장군상 앞 만남 — 기준점만 맞추기", summary: "‘동상 앞’보다 ‘동상에서 궁 쪽’처럼 방향을 붙이면 정확해집니다.", body: "광화문 일대는 행사로 통제가 바뀔 수 있어 당일 안내판을 한 번만 훑어도 마음이 편합니다.", tags: ["광화문권", "만남", "이순신"], category_slug: "practical", kind: "practical", cover_image_url: IMG.statue, hero_subject: "person" },
   { withRoute: false, title: "강남역 카페 투어 없이 ‘한 곳’만 고르기", summary: "메뉴는 단순하게, 자리는 창가 vs 조용한 구석 중 하나만 고릅니다.", body: "디저트와 음료를 한 번에 주문하면 결제 대기가 짧아집니다.\n혼자면 코너 자리, 대화면 소파측을 고르면 만족도가 안정적입니다.", tags: ["강남역권", "카페", "솔로"], category_slug: "food", kind: "food", cover_image_url: IMG.cafeIn },
   { withRoute: false, title: "세종대왕상·광장 산책 무드", summary: "넓은 공간은 ‘한 바퀴’보다 ‘한쪽 끝까지’ 목표만 정합니다.", body: "중간에 벤치가 보이면 그늘 쪽을 먼저 차지하는 편이 여름·가을 모두 편합니다.", tags: ["광화문권", "세종로", "산책"], category_slug: "hot-places", kind: "hot_place", cover_image_url: IMG.seoulPlaza },
   { withRoute: false, title: "강남 거리 분위기만 담는 30분", summary: "쇼핑 목적 없이 ‘거리의 속도’만 느끼는 가벼운 제안입니다.", body: "이어폰으로 음악을 줄이고, 횡단 전후로 주변만 한 번씩 돌아보면 방향 감각이 살아납니다.", tags: ["강남역권", "분위기", "도보"], category_slug: "local-tips", kind: "local_tip", cover_image_url: IMG.gangnamNight },
@@ -345,6 +354,7 @@ function mergeSample(base: ContentPost, def: SampleDef): ContentPost {
     post_format,
     route_journey,
     route_highlights: def.route_highlights,
+    hero_subject: def.hero_subject !== undefined ? def.hero_subject : base.hero_subject,
     recommended_score: Math.min(99, base.recommended_score + (def.recommended_boost ?? 8)),
     popular_score: Math.min(99, base.popular_score + 4),
     is_sample: true,

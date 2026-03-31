@@ -1,4 +1,10 @@
-import type { ContentPost, ContentPostKind, ContentPostStatus, RouteJourney } from "@/types/domain";
+import type {
+  ContentPost,
+  ContentPostHeroSubject,
+  ContentPostKind,
+  ContentPostStatus,
+  RouteJourney,
+} from "@/types/domain";
 
 /** Payload accepted by POST/PATCH `/api/guardian/posts` — mirrors `ContentPost` write shape. */
 export type GuardianPostSavePayload = {
@@ -13,9 +19,18 @@ export type GuardianPostSavePayload = {
   status: ContentPostStatus;
   post_format?: ContentPost["post_format"];
   cover_image_url?: string | null;
+  /** DB 컬럼 추가 전까지는 페이로드만 수용(클라이언트·미리보기용). persist는 무시 가능. */
+  hero_subject?: ContentPostHeroSubject | null;
   route_journey: RouteJourney;
   route_highlights?: string[];
 };
+
+function parseOptionalHeroSubject(v: unknown): ContentPostHeroSubject | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null) return null;
+  if (v === "person" || v === "place" || v === "mixed") return v;
+  return undefined;
+}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -83,5 +98,6 @@ export function parseGuardianPostPayload(body: unknown): GuardianPostSavePayload
     route_highlights: Array.isArray(o.route_highlights)
       ? o.route_highlights.filter((x): x is string => typeof x === "string")
       : undefined,
+    hero_subject: parseOptionalHeroSubject(o.hero_subject),
   };
 }

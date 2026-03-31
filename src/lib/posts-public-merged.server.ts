@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { mockContentPosts } from "@/data/mock";
 import { postHasRouteJourney } from "@/lib/content-post-route";
-import type { ContentPost, ContentPostKind, ContentPostStatus } from "@/types/domain";
+import type { ContentPost, ContentPostHeroSubject, ContentPostKind, ContentPostStatus } from "@/types/domain";
 import type { RouteJourney } from "@/types/domain";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 
@@ -26,7 +26,14 @@ type RawPost = {
   cover_image_url: string | null;
   route_journey: RouteJourney | null;
   route_highlights: unknown;
+  /** DB에 컬럼이 없으면 undefined — 추가 후 자동 반영 */
+  hero_subject?: string | null;
 };
+
+function heroSubjectFromRow(v: unknown): ContentPostHeroSubject | undefined {
+  if (v === "person" || v === "place" || v === "mixed") return v;
+  return undefined;
+}
 
 function mapToContentPost(
   row: RawPost,
@@ -38,6 +45,7 @@ function mapToContentPost(
     ? row.route_highlights.filter((x): x is string => typeof x === "string")
     : [];
   const rj = row.route_journey ?? undefined;
+  const heroSubject = heroSubjectFromRow(row.hero_subject);
   return {
     id: row.id,
     author_user_id: row.author_user_id,
@@ -60,6 +68,7 @@ function mapToContentPost(
     cover_image_url: row.cover_image_url,
     route_journey: rj,
     route_highlights: highlights,
+    ...(heroSubject != null ? { hero_subject: heroSubject } : {}),
     is_sample: false,
     has_route: Boolean(rj?.spots?.length),
   };

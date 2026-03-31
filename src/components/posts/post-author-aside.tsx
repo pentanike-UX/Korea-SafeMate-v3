@@ -32,6 +32,7 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
     summary: gp.summary,
     imageUrl: getPostHeroImageUrl(gp),
     kind: gp.kind,
+    hero_subject: gp.hero_subject,
   }));
   const repForPreview =
     guardian != null
@@ -114,13 +115,11 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
           ) : (
             <p className="text-muted-foreground text-sm">{t("authorFallback")}</p>
           )}
-        </CardContent>
-      </Card>
 
-      <Card className="border-border/60 rounded-2xl border bg-white/90 shadow-[var(--shadow-sm)]">
-        <CardContent className="space-y-2 p-5">
-          <p className="text-sm font-semibold">{t("trustNoteTitle")}</p>
-          <p className="text-muted-foreground text-sm leading-relaxed">{t("trustNoteBody")}</p>
+          <div className="border-border/50 space-y-2 border-t pt-5">
+            <p className="text-sm font-semibold">{t("trustNoteTitle")}</p>
+            <p className="text-muted-foreground text-sm leading-relaxed">{t("trustNoteBody")}</p>
+          </div>
         </CardContent>
       </Card>
     </aside>

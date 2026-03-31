@@ -6,6 +6,7 @@ import { mockLaunchAreas } from "@/data/mock";
 import type { LaunchAreaSlug } from "@/types/launch-area";
 import { isLaunchAreaSelectable } from "@/lib/launch-area-selectable";
 import { Badge } from "@/components/ui/badge";
+import { FILL_IMAGE_MARKETING_REGION_TILE } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 
@@ -48,7 +49,7 @@ export function ExploreRegionStep({
                 alt={copy.imageAlt}
                 fill
                 className={cn(
-                  "object-cover object-[center_42%] sm:object-center",
+                  FILL_IMAGE_MARKETING_REGION_TILE,
                   selectable && "transition duration-500 group-hover:scale-[1.02]",
                   !selectable && "brightness-[0.66] contrast-[0.94] saturate-[0.48]",
                 )}

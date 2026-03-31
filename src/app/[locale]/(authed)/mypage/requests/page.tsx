@@ -29,6 +29,7 @@ import {
   resolveRepresentativeContentPost,
 } from "@/lib/guardian-representative-post-context";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
+import { FILL_IMAGE_AVATAR_COVER } from "@/lib/ui/fill-image";
 import { Compass } from "lucide-react";
 
 function requestTypeFromTheme(themeSlug: string): RequestPageRequestType {
@@ -246,14 +247,12 @@ export default async function TravelerRequestsPage() {
 
                     <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2">
                       {avatar ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={avatar}
-                          alt=""
-                          className="size-8 rounded-full object-cover object-top sm:object-center"
-                        />
+                        <div className="relative size-8 shrink-0 overflow-hidden rounded-full border border-border/50 bg-muted">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={avatar} alt="" className={`absolute inset-0 ${FILL_IMAGE_AVATAR_COVER}`} />
+                        </div>
                       ) : (
-                        <div className="bg-muted-foreground/20 size-8 rounded-full" />
+                        <div className="bg-muted-foreground/20 size-8 shrink-0 rounded-full" />
                       )}
                       <div className="min-w-0">
                         <p className="text-muted-foreground text-xs">{t("assignedGuardian")}</p>

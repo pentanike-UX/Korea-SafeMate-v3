@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM } from "@/lib/ui/fill-image";
 
 /**
  * 「이 가디언을 소개합니다」 직후 — 서술을 보조하는 가벼운 가로 스크롤 갤러리.
@@ -32,7 +33,7 @@ export function GuardianIntroGallery({
               src={src}
               alt=""
               fill
-              className="object-cover"
+              className={FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM}
               sizes="(max-width:640px) 88vw, 280px"
             />
             <figcaption className="sr-only">{displayName}</figcaption>

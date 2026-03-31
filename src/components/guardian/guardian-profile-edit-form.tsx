@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { CoverCropPreview } from "@/components/media/cover-crop-preview";
-import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
+import { FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM } from "@/lib/ui/fill-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -184,7 +184,7 @@ export function GuardianProfileEditForm({ initial }: { initial: GuardianProfileE
                 <CoverCropPreview
                   src={firstGalleryUrl}
                   containerClassName="aspect-[4/3] w-full max-w-[17.5rem]"
-                  imgClassName={FILL_IMAGE_COVER_CENTER}
+                  imgClassName={FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM}
                   emptyLabel={tImg("previewEmpty")}
                   caption={tImg("introGalleryPreviewCaption")}
                   safeFrame

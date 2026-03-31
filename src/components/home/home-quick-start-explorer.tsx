@@ -11,6 +11,7 @@ import { HomeAuxiliaryNoteSection } from "@/components/home/home-auxiliary-note"
 import { HomeMoodOptionCard } from "@/components/home/home-mood-option-card";
 import { Badge } from "@/components/ui/badge";
 import { useHomeExplorePreferences } from "@/components/home/home-explore-preferences";
+import { FILL_IMAGE_MARKETING_REGION_TILE } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -95,7 +96,7 @@ export function HomeQuickStartExplorer() {
                     alt={copy.imageAlt}
                     fill
                     className={cn(
-                      "object-cover object-[center_42%] sm:object-center",
+                      FILL_IMAGE_MARKETING_REGION_TILE,
                       active && "transition duration-500 group-hover:scale-[1.02]",
                       !active && "brightness-[0.66] contrast-[0.94] saturate-[0.48]",
                     )}

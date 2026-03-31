@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { actionDrawerTriggerButtonClass } from "@/components/ui/action-variants";
+import { FILL_IMAGE_REVIEW_UGC_WIDE } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 
@@ -127,7 +128,7 @@ export function GuardianTravelerReviewsList({
                   <p className="text-foreground mt-3 text-sm leading-relaxed">{body}</p>
                   {r.image_url ? (
                     <div className="border-border/50 relative mt-3 aspect-[16/10] w-full max-w-xs overflow-hidden rounded-xl border">
-                      <Image src={r.image_url} alt="" fill className="object-cover" sizes="320px" />
+                      <Image src={r.image_url} alt="" fill className={FILL_IMAGE_REVIEW_UGC_WIDE} sizes="320px" />
                     </div>
                   ) : null}
                   {r.help_tag_ids?.length ? (
@@ -190,7 +191,7 @@ export function GuardianTravelerReviewsList({
                           <p className="text-foreground mt-3 text-sm leading-relaxed">{body}</p>
                           {r.image_url ? (
                             <div className="border-border/50 relative mt-3 aspect-[16/10] w-full max-w-xs overflow-hidden rounded-xl border">
-                              <Image src={r.image_url} alt="" fill className="object-cover" sizes="320px" />
+                              <Image src={r.image_url} alt="" fill className={FILL_IMAGE_REVIEW_UGC_WIDE} sizes="320px" />
                             </div>
                           ) : null}
                           {r.help_tag_ids?.length ? (

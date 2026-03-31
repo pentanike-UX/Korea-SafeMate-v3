@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { FILL_IMAGE_MARKETING_CTA_GUARDIAN, FILL_IMAGE_MARKETING_CTA_TRAVELER } from "@/lib/ui/fill-image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { HOME_CTA_IMAGES } from "@/data/home-cta-images";
@@ -97,7 +98,7 @@ export function HomeDualCtaSection() {
                 src={HOME_CTA_IMAGES.travelerPortrait}
                 alt={t("dualCtaTravelerImageAlt")}
                 fill
-                className="object-cover object-[center_28%]"
+                className={FILL_IMAGE_MARKETING_CTA_TRAVELER}
                 sizes="(max-width:1024px) 100vw, 300px"
                 priority={false}
               />
@@ -138,7 +139,7 @@ export function HomeDualCtaSection() {
                 src={HOME_CTA_IMAGES.guardianPortrait}
                 alt={t("dualCtaGuardianImageAlt")}
                 fill
-                className="object-cover object-top sm:object-[center_28%]"
+                className={FILL_IMAGE_MARKETING_CTA_GUARDIAN}
                 sizes="(max-width:1024px) 100vw, 300px"
                 priority={false}
               />

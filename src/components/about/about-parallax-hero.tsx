@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { useAboutParallaxShift } from "@/components/about/use-about-parallax";
+import { FILL_IMAGE_MARKETING_HERO_FULLBLEED } from "@/lib/ui/fill-image";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -39,7 +40,7 @@ export function AboutParallaxHero({
             alt={imageAlt}
             fill
             priority={priority}
-            className="object-cover object-center"
+            className={FILL_IMAGE_MARKETING_HERO_FULLBLEED}
             sizes="100vw"
           />
         </div>

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { GuardianProfile } from "@/types/domain";
 import { CoverCropPreview } from "@/components/media/cover-crop-preview";
 import { guardianProfileImageUrls } from "@/lib/guardian-profile-images";
-import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
+import { FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM, FILL_IMAGE_POST_THUMB_SQUARE } from "@/lib/ui/fill-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -123,7 +123,7 @@ export function AdminGuardianMediaClient({
           <CoverCropPreview
             src={firstIntroUrl}
             containerClassName="aspect-[4/3] w-full max-w-md"
-            imgClassName={FILL_IMAGE_COVER_CENTER}
+            imgClassName={FILL_IMAGE_GUARDIAN_INTRO_GALLERY_ITEM}
             emptyLabel={t("previewEmpty")}
             caption={t("introGalleryPreviewCaption")}
             safeFrame
@@ -141,7 +141,7 @@ export function AdminGuardianMediaClient({
               >
                 {u.trim() ? (
                   // eslint-disable-next-line @next/next/no-img-element -- admin preview of arbitrary URLs
-                  <img src={u.trim()} alt="" className={`size-full ${FILL_IMAGE_COVER_CENTER}`} />
+                  <img src={u.trim()} alt="" className={`size-full ${FILL_IMAGE_POST_THUMB_SQUARE}`} />
                 ) : null}
               </div>
               <Input

@@ -16,6 +16,7 @@ export type GuardianPostSheetItem = {
   summary: string;
   imageUrl: string;
   kind?: ContentPost["kind"];
+  hero_subject?: ContentPost["hero_subject"] | null;
 };
 
 type TriggerVariant = "inlineText" | "asideOutline";
@@ -89,7 +90,10 @@ export function GuardianPostsExplorerSheet({
                       src={p.imageUrl}
                       alt=""
                       fill
-                      className={cn(sheetRelatedPostThumbCoverClass(p.kind), "transition-transform duration-300 group-hover:scale-[1.03]")}
+                      className={cn(
+                        sheetRelatedPostThumbCoverClass({ kind: p.kind, hero_subject: p.hero_subject }),
+                        "transition-transform duration-300 group-hover:scale-[1.03]",
+                      )}
                       sizes="76px"
                     />
                   </div>

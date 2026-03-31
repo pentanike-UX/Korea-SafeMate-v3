@@ -69,6 +69,7 @@ export async function GuardianDetailView({
     summary: p.summary,
     imageUrl: getPostHeroImageUrl(p),
     kind: p.kind,
+    hero_subject: p.hero_subject,
   }));
 
   const reviews = mergedReviews;
