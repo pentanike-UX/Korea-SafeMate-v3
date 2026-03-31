@@ -25,7 +25,11 @@ export function GuardianApplyForm() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-6">
+      <form onSubmit={onSubmit} className="border-border/60 bg-card/60 rounded-2xl border p-6 shadow-[var(--shadow-sm)] space-y-5">
+        <div className="space-y-0.5">
+          <p className="text-text-strong text-sm font-semibold">지원서 작성</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">검토 후 영업일 기준 3–5일 내 이메일로 안내드립니다.</p>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
             <Label htmlFor="g-name">실명</Label>
@@ -52,7 +56,7 @@ export function GuardianApplyForm() {
           <Label htmlFor="g-bio">소개 및 경험</Label>
           <Textarea
             id="g-bio"
-            rows={5}
+            rows={4}
             required
             placeholder="서울에서의 경험, 잘 아는 지역, 동행 스타일을 간략히 적어주세요"
           />
@@ -64,14 +68,9 @@ export function GuardianApplyForm() {
             정해진 범위 내의 실무 동행 지원임을 확인합니다.
           </span>
         </label>
-        <div className="space-y-3">
-          <Button type="submit" size="lg" className="w-full rounded-xl">
-            지원서 제출
-          </Button>
-          <p className="text-muted-foreground text-[13px] leading-relaxed">
-            지원서를 검토한 뒤 이메일로 안내드립니다. 보통 영업일 기준 3~5일 내로 소식을 드려요.
-          </p>
-        </div>
+        <Button type="submit" size="lg" className="w-full rounded-xl">
+          지원서 제출
+        </Button>
       </form>
 
       <Dialog open={open} onOpenChange={setOpen}>
