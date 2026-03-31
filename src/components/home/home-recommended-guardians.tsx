@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { mockContentPosts } from "@/data/mock";
 import { pickHomeRecommendedGuardians } from "@/lib/home-recommended-guardians";
 import type { PublicGuardian } from "@/lib/guardian-public";
-import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import { guardianProfileImageUrls, GUARDIAN_AVATAR_COVER_CLASS } from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { cn } from "@/lib/utils";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
@@ -103,7 +103,7 @@ export function HomeRecommendedGuardiansSection() {
                 <div className="flex gap-3">
                   <div className="border-border/50 relative size-14 shrink-0 overflow-hidden rounded-full border bg-muted sm:size-[4.25rem]">
                     {imgs.avatar ? (
-                      <Image src={imgs.avatar} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="72px" />
+                      <Image src={imgs.avatar} alt="" fill className={GUARDIAN_AVATAR_COVER_CLASS} sizes="72px" />
                     ) : (
                       <span className="text-muted-foreground flex size-full items-center justify-center text-lg font-semibold">
                         {g.display_name.charAt(0)}

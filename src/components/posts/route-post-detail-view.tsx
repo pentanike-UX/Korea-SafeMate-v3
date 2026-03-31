@@ -70,6 +70,7 @@ export async function RoutePostDetailView({ post }: { post: ContentPost }) {
                   title: r.title,
                   summary: r.summary,
                   imageUrl: getPostHeroImageUrl(r),
+                  kind: r.kind,
                 }))}
                 sheetTitle={t("relatedBrowseSheetTitle")}
                 triggerLabel={t("relatedBrowseTrigger")}

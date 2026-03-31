@@ -7,12 +7,15 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import type { ContentPost } from "@/types/domain";
+import { sheetRelatedPostThumbCoverClass } from "@/lib/post-image-crop";
 
 export type GuardianPostSheetItem = {
   id: string;
   title: string;
   summary: string;
   imageUrl: string;
+  kind?: ContentPost["kind"];
 };
 
 type TriggerVariant = "inlineText" | "asideOutline";
@@ -86,7 +89,7 @@ export function GuardianPostsExplorerSheet({
                       src={p.imageUrl}
                       alt=""
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      className={cn(sheetRelatedPostThumbCoverClass(p.kind), "transition-transform duration-300 group-hover:scale-[1.03]")}
                       sizes="76px"
                     />
                   </div>

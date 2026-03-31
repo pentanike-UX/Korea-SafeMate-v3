@@ -13,7 +13,7 @@ import {
   representativePostLinesForSheetPreviewWithFallback,
   resolveRepresentativeContentPost,
 } from "@/lib/guardian-representative-post-context";
-import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import { guardianProfileImageUrls, GUARDIAN_AVATAR_COVER_CLASS } from "@/lib/guardian-profile-images";
 import { getSessionUserId } from "@/lib/supabase/server-user";
 import { getTravelerSavedGuardianIdsUnified } from "@/lib/traveler-saved-unified.server";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
@@ -76,7 +76,7 @@ export default async function TravelerSavedGuardiansPage() {
               <Card className="overflow-hidden rounded-2xl border-border/60 py-0 shadow-[var(--shadow-sm)]">
                 <div className="flex gap-4 p-4 sm:p-5">
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-xl sm:size-24">
-                    <Image src={imgs.avatar} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="96px" />
+                    <Image src={imgs.avatar} alt="" fill className={GUARDIAN_AVATAR_COVER_CLASS} sizes="96px" />
                   </div>
                   <CardContent className="flex flex-1 flex-col gap-2 p-0">
                     <p className="font-semibold leading-snug">{g.display_name}</p>

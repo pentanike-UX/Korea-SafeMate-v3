@@ -9,9 +9,11 @@ import type { ContentPost } from "@/types/domain";
 import type { LaunchAreaSlug } from "@/types/launch-area";
 import { getPostHeroImageUrl, postHasRouteJourney } from "@/lib/content-post-route";
 import {
-  exploreGuardianFitLineKeyAtIndex,
+  exploreCompareCardKeys,
+  exploreTopPickBulletKeys,
   type ExploreFitLineKey,
 } from "@/lib/explore-guardian-fit-line";
+import { formatDecisionInterpretLine } from "@/lib/explore-decision-interpret";
 import type { PublicGuardian } from "@/lib/guardian-public";
 import { listCardActionButtonClass } from "@/components/ui/action-variants";
 import { Badge } from "@/components/ui/badge";
@@ -30,11 +32,9 @@ import { PostPreviewSheetPanel } from "@/components/posts/post-preview-sheet";
 import { publicGuardianToSheetPreview } from "@/lib/guardian-profile-sheet-preview";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import {
-  guardianProfileImageUrls,
-  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
-  GUARDIAN_PROFILE_HERO_COVER_CLASS,
-} from "@/lib/guardian-profile-images";
+import { guardianProfileImageUrls, GUARDIAN_AVATAR_COVER_CLASS } from "@/lib/guardian-profile-images";
+import { FILL_IMAGE_EXPLORE_TOP_PICK } from "@/lib/ui/fill-image";
+import { postCompactThumbCoverClass } from "@/lib/post-image-crop";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -601,7 +601,7 @@ function ExploreJourneyPostCompactCard({
               src={cover}
               alt=""
               fill
-              className="object-cover object-[center_42%] transition-transform duration-300 group-hover:scale-[1.03] sm:object-center"
+              className={cn(postCompactThumbCoverClass(post), "transition-transform duration-300 group-hover:scale-[1.03]")}
               sizes="96px"
             />
           ) : null}
@@ -652,7 +652,8 @@ export function ExploreResultsDashboard(props: {
   const tStyles = useTranslations("CompanionStyles");
   const [postsSheetOpen, setPostsSheetOpen] = useState(false);
 
-  const { comingSoonArea, results, region, theme, pace, onEditConditions, onReRecommend, resultsSpinDisabled } = props;
+  const { comingSoonArea, results, region, theme, pace, days, partySize, onEditConditions, onReRecommend, resultsSpinDisabled } =
+    props;
 
   const featured = results.guardians[0];
   const more = results.guardians.slice(1);
@@ -660,24 +661,12 @@ export function ExploreResultsDashboard(props: {
   const extraPosts = results.posts.slice(3);
   const featuredRepCtx = featured ? postContextFromGuardianRepresentative(featured, mockContentPosts) : null;
 
-  const paceLabel = pace === "calm" ? t("paceCalm") : pace === "packed" ? t("pacePacked") : t("paceBalanced");
+  const interpretLine = useMemo(
+    () => formatDecisionInterpretLine(t, tLaunch, tThemes, { region, theme, days, partySize, pace }),
+    [t, tLaunch, tThemes, region, theme, days, partySize, pace],
+  );
 
-  const criteriaLine = useMemo(() => {
-    if (region && theme) {
-      const an = (tLaunch.raw(region) as { name: string }).name;
-      const tt = (tThemes.raw(theme) as { title: string }).title;
-      return t("criteriaLineBoth", { area: an, theme: tt, pace: paceLabel });
-    }
-    if (region) {
-      const an = (tLaunch.raw(region) as { name: string }).name;
-      return t("criteriaLineArea", { area: an, pace: paceLabel });
-    }
-    if (theme) {
-      const tt = (tThemes.raw(theme) as { title: string }).title;
-      return t("criteriaLineTheme", { theme: tt, pace: paceLabel });
-    }
-    return t("criteriaLineFallback", { pace: paceLabel });
-  }, [region, theme, paceLabel, t, tLaunch, tThemes]);
+  const basisBulletKeys = useMemo(() => exploreTopPickBulletKeys(region, theme, pace), [region, theme, pace]);
 
   const themeTitleForUi = theme ? (tThemes.raw(theme) as { title: string }).title : t("dashThemeAny");
 
@@ -694,37 +683,6 @@ export function ExploreResultsDashboard(props: {
         </Card>
       ) : (
         <>
-          {/* 결과 요약: 건수 + 추천 기준 한 줄 (선택 상세는 상단 요약 바) */}
-          <Card className="from-primary/[0.05] border-primary/20 rounded-[1.25rem] border bg-gradient-to-br to-transparent shadow-[var(--shadow-sm)]">
-            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
-              <div className="min-w-0 flex-1">
-                <p className="text-primary text-[10px] font-bold tracking-[0.22em] uppercase">{t("dashFinalEyebrow")}</p>
-                <p className="text-text-strong mt-2 text-lg font-bold leading-tight sm:text-xl">
-                  {results.posts.length > 0
-                    ? t("resultsStatsLine", { g: results.guardians.length, p: results.posts.length })
-                    : t("resultsStatsGuardiansOnly", { g: results.guardians.length })}
-                </p>
-                {results.guardians.length > 0 ? (
-                  <p className="text-muted-foreground mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm">{t("dashDecisionHelperShort")}</p>
-                ) : null}
-                <p className="text-foreground mt-3 text-sm font-semibold leading-snug">{t("resultsReflectTitle")}</p>
-                <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{criteriaLine}</p>
-              </div>
-              {results.guardians.length > 0 ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className={cn(listCardActionButtonClass, "h-10 w-full shrink-0 sm:mt-1 sm:w-auto")}
-                  disabled={resultsSpinDisabled}
-                  onClick={onReRecommend}
-                >
-                  {t("reRecommend")}
-                </Button>
-              ) : null}
-            </CardContent>
-          </Card>
-
           {results.guardians.length === 0 ? (
             <div className="border-border/60 rounded-[1.35rem] border border-dashed bg-muted/10 p-10 text-center">
               <p className="text-foreground text-sm font-semibold">{tG("empty")}</p>
@@ -747,19 +705,19 @@ export function ExploreResultsDashboard(props: {
               {featured ? (
                 <section className="space-y-3">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                    <h3 className="text-foreground text-lg font-semibold">{t("dashFeaturedTitle")}</h3>
-                    <p className="text-muted-foreground text-xs font-medium">{t("dashTopPickHint")}</p>
+                    <h3 className="text-text-strong text-xl font-bold tracking-tight">{t("dashFeaturedTitle")}</h3>
+                    <p className="text-primary text-xs font-semibold">{t("dashTopPickHint")}</p>
                   </div>
-                  <Card className="border-primary/35 from-primary/[0.09] ring-primary/15 overflow-hidden rounded-[1.5rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-lg)] ring-2">
+                  <Card className="border-primary/40 from-primary/[0.11] ring-primary/20 overflow-hidden rounded-[1.5rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-xl)] ring-2">
                     <CardContent className="p-0">
                       <div className="flex flex-col lg:flex-row">
-                        <div className="relative aspect-[5/4] w-full min-h-0 overflow-hidden bg-muted lg:aspect-auto lg:max-w-[300px] lg:min-h-[260px] lg:shrink-0">
+                        <div className="relative aspect-[3/4] w-full min-h-0 overflow-hidden bg-muted max-[1023px]:max-h-[min(88vw,26rem)] sm:aspect-[5/4] lg:aspect-auto lg:max-h-none lg:max-w-[320px] lg:min-h-[300px] lg:shrink-0">
                           <Image
                             src={guardianProfileImageUrls(featured).landscape}
                             alt=""
                             fill
-                            className={GUARDIAN_PROFILE_HERO_COVER_CLASS}
-                            sizes="(max-width:1024px) 100vw, 300px"
+                            className={FILL_IMAGE_EXPLORE_TOP_PICK}
+                            sizes="(max-width:1024px) 100vw, 320px"
                           />
                           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                             <Badge className="rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
@@ -770,10 +728,10 @@ export function ExploreResultsDashboard(props: {
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex flex-1 flex-col justify-center gap-4 p-5 sm:p-7">
+                        <div className="flex flex-1 flex-col justify-center gap-5 p-5 sm:p-7">
                           <div>
-                            <span className="text-xl font-bold tracking-tight">{featured.display_name}</span>
-                            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                            <span className="text-text-strong text-xl font-bold tracking-tight">{featured.display_name}</span>
+                            <div className="border-border/50 mt-3 flex flex-wrap gap-2 border-b pb-3">
                               <Badge
                                 variant={guardianTierBadgeVariant(featured.guardian_tier)}
                                 className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME)}
@@ -786,37 +744,39 @@ export function ExploreResultsDashboard(props: {
                               <Badge variant="outline" className="rounded-full font-mono text-[10px] font-medium">
                                 {guardianLangsLine(featured)}
                               </Badge>
+                              {featured.companion_style_slugs.slice(0, 2).map((slug) => (
+                                <Badge key={slug} variant="secondary" className="rounded-full text-[10px] font-medium">
+                                  {tStyles(slug)}
+                                </Badge>
+                              ))}
                             </div>
-                            <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
+                            <p className="text-muted-foreground mt-3 text-[11px] leading-relaxed">
                               {t("dashCardMatchLine", {
                                 area: (tLaunch.raw(featured.launch_area_slug) as { name: string }).name,
                                 theme: themeTitleForUi,
                                 langs: guardianLangsLine(featured),
                               })}
                             </p>
-                            {featured.companion_style_slugs.length > 0 ? (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {featured.companion_style_slugs.slice(0, 2).map((slug) => (
-                                  <Badge key={slug} variant="secondary" className="rounded-full text-[10px] font-medium">
-                                    {tStyles(slug)}
-                                  </Badge>
+                            <div className="border-primary/25 bg-primary/5 mt-4 rounded-xl border px-3 py-3 sm:px-4 sm:py-3.5">
+                              <p className="text-primary text-[10px] font-bold tracking-wide uppercase">{t("dashTopWhyTitle")}</p>
+                              <ul className="mt-2 space-y-2">
+                                {basisBulletKeys.map((key) => (
+                                  <li key={key} className="text-foreground flex gap-2 text-sm font-medium leading-snug">
+                                    <span className="text-primary shrink-0 font-bold" aria-hidden>
+                                      ·
+                                    </span>
+                                    <span>{translateExploreFitLine(t, key)}</span>
+                                  </li>
                                 ))}
-                              </div>
-                            ) : null}
-                            <div className="border-primary/20 bg-primary/5 mt-3 rounded-xl border px-3 py-2">
-                              <p className="text-foreground text-xs font-semibold leading-snug">{t("resultsReflectTitle")}</p>
-                              <p className="text-foreground mt-1 text-sm font-medium leading-snug">
-                                {translateExploreFitLine(t, exploreGuardianFitLineKeyAtIndex(region, theme, pace, 0))}
-                              </p>
+                              </ul>
                             </div>
                             <TrustBadgeRow ids={featured.trust_badge_ids} className="mt-3" size="sm" />
+                            <p className="text-muted-foreground mt-2 text-[11px] leading-relaxed">{t("dashTrustMetaNote")}</p>
                           </div>
-                          <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+                          <div className="flex flex-col gap-2">
                             <GuardianRequestOpenTrigger
-                              className={cn(
-                                listCardActionButtonClass,
-                                "w-full shadow-[var(--shadow-brand)] sm:min-w-0 sm:flex-[1.35] sm:text-sm",
-                              )}
+                              size="lg"
+                              className={cn(listCardActionButtonClass, "w-full shadow-[var(--shadow-brand)]")}
                               openDetail={{
                                 guardianUserId: featured.user_id,
                                 displayName: featured.display_name,
@@ -828,7 +788,7 @@ export function ExploreResultsDashboard(props: {
                             >
                               {t("dashCtaRequest")}
                             </GuardianRequestOpenTrigger>
-                            <div className="grid grid-cols-2 gap-2 sm:max-w-[14rem] sm:shrink-0">
+                            <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
                               <GuardianProfilePreviewSheetTrigger
                                 guardian={publicGuardianToSheetPreview(
                                   featured,
@@ -836,11 +796,11 @@ export function ExploreResultsDashboard(props: {
                                 )}
                                 triggerLabel={t("dashCtaDetail")}
                                 triggerVariant="outline"
-                                className={cn(listCardActionButtonClass, "w-full")}
-                                size="sm"
+                                className={cn(listCardActionButtonClass, "w-full border-border/80")}
+                                size="default"
                                 postContext={featuredRepCtx}
                               />
-                              <div className={cn("[&_button]:w-full", "[&_button]:min-h-9 [&_button]:h-9 [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm")}>
+                              <div className={cn("[&_button]:w-full", "[&_button]:min-h-10 [&_button]:h-10 [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm")}>
                                 <SaveGuardianButton guardianUserId={featured.user_id} compact />
                               </div>
                             </div>
@@ -852,99 +812,156 @@ export function ExploreResultsDashboard(props: {
                 </section>
               ) : null}
 
-              {/* More guardians */}
+              <Card className="border-border/55 rounded-[1.2rem] border bg-muted/25 shadow-none">
+                <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:p-5">
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <div>
+                      <p className="text-muted-foreground text-[10px] font-bold tracking-[0.18em] uppercase">{t("decisionSummaryEyebrow")}</p>
+                      <p className="text-text-strong mt-1.5 text-base font-bold sm:text-lg">
+                        {results.posts.length > 0
+                          ? t("decisionSummaryHeadlineWithPosts", { g: results.guardians.length, p: results.posts.length })
+                          : t("decisionSummaryHeadline", { g: results.guardians.length })}
+                      </p>
+                      <p className="text-foreground mt-2 text-sm font-medium leading-relaxed">{interpretLine}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-[10px] font-bold tracking-wide uppercase">{t("decisionBasisTitle")}</p>
+                      <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1 text-sm leading-relaxed">
+                        {basisBulletKeys.map((key) => (
+                          <li key={key} className="marker:text-primary">
+                            {translateExploreFitLine(t, key)}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <p className="text-muted-foreground text-xs leading-relaxed">{t("dashDecisionHelperShort")}</p>
+                  </div>
+                  <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:min-w-[10.5rem]">
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      className={cn(listCardActionButtonClass, "h-10 w-full")}
+                      onClick={onEditConditions}
+                    >
+                      {t("editConditions")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={cn(listCardActionButtonClass, "h-10 w-full")}
+                      disabled={resultsSpinDisabled}
+                      onClick={onReRecommend}
+                    >
+                      {t("reRecommend")}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
               {more.length > 0 ? (
                 <section className="space-y-3">
-                  <h3 className="text-foreground font-semibold">{t("dashMoreGuardians")}</h3>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <h3 className="text-muted-foreground text-xs font-bold tracking-wide uppercase">{t("dashCompareSectionTitle")}</h3>
+                  <p className="text-foreground -mt-1 text-sm font-semibold">{t("dashCompareSectionLead")}</p>
+                  <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                     {more.map((g, idx) => {
                       const repCtx = postContextFromGuardianRepresentative(g, mockContentPosts);
                       const rankN = idx + 2;
+                      const compareKeys = exploreCompareCardKeys(region, theme, pace, rankN as 2 | 3);
                       return (
-                      <Card key={g.user_id} className="overflow-hidden rounded-2xl border-border/70 py-0 shadow-[var(--shadow-sm)] ring-1 ring-border/40">
-                        <CardContent className="p-4 sm:p-5">
-                          <div className="flex gap-4">
-                            <div className="relative size-20 min-h-0 min-w-0 shrink-0 overflow-hidden rounded-xl sm:size-24">
-                              <Image
-                                src={guardianProfileImageUrls(g).avatar}
-                                alt=""
-                                fill
-                                className={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
-                                sizes="96px"
-                              />
-                              <div className="absolute top-1 left-1">
-                                <Badge className="rounded-md bg-foreground/90 px-1.5 py-0 text-[9px] font-bold text-background">
-                                  {t("dashRankN", { n: rankN })}
-                                </Badge>
-                              </div>
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <span className="font-semibold leading-snug">{g.display_name}</span>
-                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                <Badge
-                                  variant={guardianTierBadgeVariant(g.guardian_tier)}
-                                  className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME)}
-                                >
-                                  {tTier(g.guardian_tier)}
-                                </Badge>
-                                <Badge variant="outline" className="rounded-full text-[9px] font-medium">
-                                  {(tLaunch.raw(g.launch_area_slug) as { name: string }).name}
-                                </Badge>
-                                <span className="text-muted-foreground font-mono text-[10px]">{guardianLangsLine(g)}</span>
-                              </div>
-                              {g.companion_style_slugs.length > 0 ? (
-                                <div className="mt-1.5 flex flex-wrap gap-1">
-                                  {g.companion_style_slugs.slice(0, 2).map((slug) => (
-                                    <Badge key={slug} variant="secondary" className="rounded-full text-[9px] font-normal">
-                                      {tStyles(slug)}
-                                    </Badge>
-                                  ))}
+                        <Card
+                          key={g.user_id}
+                          className="overflow-hidden rounded-xl border-border/55 bg-card/90 py-0 shadow-none ring-1 ring-border/35"
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex gap-3">
+                              <div className="relative size-16 min-h-0 min-w-0 shrink-0 overflow-hidden rounded-lg sm:size-[4.5rem]">
+                                <Image
+                                  src={guardianProfileImageUrls(g).avatar}
+                                  alt=""
+                                  fill
+                                  className={GUARDIAN_AVATAR_COVER_CLASS}
+                                  sizes="72px"
+                                />
+                                <div className="absolute top-0.5 left-0.5">
+                                  <Badge className="rounded bg-foreground/85 px-1 py-0 text-[8px] font-bold text-background">
+                                    {t("dashRankN", { n: rankN })}
+                                  </Badge>
                                 </div>
-                              ) : null}
-                              <div className="border-border/60 bg-muted/20 mt-2 rounded-lg border border-dashed px-2.5 py-1.5">
-                                <p className="text-foreground text-[10px] font-semibold leading-snug sm:text-xs">{t("resultsReflectTitle")}</p>
-                                <p className="text-foreground mt-0.5 line-clamp-2 text-xs font-medium leading-snug">
-                                  {translateExploreFitLine(t, exploreGuardianFitLineKeyAtIndex(region, theme, pace, idx + 1))}
-                                </p>
                               </div>
-                              <TrustBadgeRow ids={g.trust_badge_ids} className="mt-2" size="sm" />
-                              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-stretch">
-                                <GuardianRequestOpenTrigger
-                                  size="sm"
-                                  className={cn(listCardActionButtonClass, "w-full sm:flex-1")}
-                                  openDetail={{
-                                    guardianUserId: g.user_id,
-                                    displayName: g.display_name,
-                                    headline: g.headline,
-                                    avatarUrl: guardianProfileImageUrls(g).avatar,
-                                    suggestedRegionSlug: g.primary_region_slug,
-                                    ...(repCtx ?? {}),
-                                  }}
-                                >
-                                  {t("dashCtaRequest")}
-                                </GuardianRequestOpenTrigger>
-                                <div className="grid grid-cols-2 gap-2 sm:max-w-[11rem] sm:shrink-0">
-                                  <GuardianProfilePreviewSheetTrigger
-                                    guardian={publicGuardianToSheetPreview(
-                                      g,
-                                      representativePostLinesForSheetPreview(g, mockContentPosts),
-                                    )}
-                                    triggerLabel={t("dashCtaDetail")}
-                                    triggerVariant="outline"
+                              <div className="min-w-0 flex-1 space-y-2">
+                                <span className="text-foreground line-clamp-1 text-sm font-semibold">{g.display_name}</span>
+                                <div className="text-muted-foreground flex flex-wrap gap-1 text-[10px]">
+                                  <Badge
+                                    variant={guardianTierBadgeVariant(g.guardian_tier)}
+                                    className={cn(GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, "h-5 px-1.5 text-[9px]")}
+                                  >
+                                    {tTier(g.guardian_tier)}
+                                  </Badge>
+                                  <span className="text-border">·</span>
+                                  <span>{(tLaunch.raw(g.launch_area_slug) as { name: string }).name}</span>
+                                  <span className="text-border">·</span>
+                                  <span className="font-mono">{guardianLangsLine(g)}</span>
+                                </div>
+                                <div className="space-y-1.5 border-border/40 border-t pt-2 text-xs">
+                                  <div>
+                                    <p className="text-muted-foreground text-[9px] font-bold tracking-wide uppercase">
+                                      {t("compareStrengthLabel")}
+                                    </p>
+                                    <p className="text-foreground font-medium leading-snug">{translateExploreFitLine(t, compareKeys.strength)}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground text-[9px] font-bold tracking-wide uppercase">
+                                      {t("compareReasonLabel")}
+                                    </p>
+                                    <p className="text-foreground leading-snug">{translateExploreFitLine(t, compareKeys.reason)}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground text-[9px] font-bold tracking-wide uppercase">
+                                      {t("compareDiffLabel")}
+                                    </p>
+                                    <p className="text-muted-foreground leading-snug">{translateExploreFitLine(t, compareKeys.diff)}</p>
+                                  </div>
+                                </div>
+                                <TrustBadgeRow ids={g.trust_badge_ids} className="pt-0.5" size="sm" />
+                                <div className="flex flex-col gap-1.5 pt-1">
+                                  <GuardianRequestOpenTrigger
                                     size="sm"
-                                    className={cn(listCardActionButtonClass, "w-full")}
-                                    postContext={repCtx}
-                                  />
-                                  <div className="[&_button]:h-9 [&_button]:min-h-9 [&_button]:w-full [&_button]:rounded-xl [&_button]:text-xs [&_button]:font-semibold sm:[&_button]:text-sm">
-                                    <SaveGuardianButton guardianUserId={g.user_id} compact />
+                                    className={cn(listCardActionButtonClass, "h-9 w-full font-semibold")}
+                                    openDetail={{
+                                      guardianUserId: g.user_id,
+                                      displayName: g.display_name,
+                                      headline: g.headline,
+                                      avatarUrl: guardianProfileImageUrls(g).avatar,
+                                      suggestedRegionSlug: g.primary_region_slug,
+                                      ...(repCtx ?? {}),
+                                    }}
+                                  >
+                                    {t("dashCtaRequest")}
+                                  </GuardianRequestOpenTrigger>
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    <GuardianProfilePreviewSheetTrigger
+                                      guardian={publicGuardianToSheetPreview(
+                                        g,
+                                        representativePostLinesForSheetPreview(g, mockContentPosts),
+                                      )}
+                                      triggerLabel={t("dashCtaDetail")}
+                                      triggerVariant="outline"
+                                      size="sm"
+                                      className={cn(listCardActionButtonClass, "h-9 w-full text-xs")}
+                                      postContext={repCtx}
+                                    />
+                                    <div className="[&_button]:h-9 [&_button]:min-h-9 [&_button]:w-full [&_button]:rounded-xl [&_button]:text-[11px] [&_button]:font-semibold">
+                                      <SaveGuardianButton guardianUserId={g.user_id} compact />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
+                          </CardContent>
+                        </Card>
+                      );
                     })}
                   </div>
                 </section>
@@ -954,7 +971,7 @@ export function ExploreResultsDashboard(props: {
 
           {/* 포스트는 보조 증거 — 가디언 아래 소형 카드 + 시트 */}
           {results.posts.length > 0 ? (
-            <section className="border-border/50 space-y-3 rounded-[1.25rem] border border-dashed bg-muted/10 px-4 py-5 sm:px-5">
+            <section className="border-border/40 space-y-3 rounded-[1.15rem] border border-dashed bg-muted/5 px-4 py-5 sm:px-5 opacity-[0.96]">
               <div>
                 <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{t("postsSecondaryEyebrow")}</h3>
                 <p className="text-foreground mt-1 text-sm font-semibold">{t("postsSecondaryTitle")}</p>
@@ -991,7 +1008,7 @@ export function ExploreResultsDashboard(props: {
                             >
                               <div className="relative h-14 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
                                 {getPostHeroImageUrl(p) ? (
-                                  <Image src={getPostHeroImageUrl(p)} alt="" fill className="object-cover" sizes="80px" />
+                                  <Image src={getPostHeroImageUrl(p)} alt="" fill className={postCompactThumbCoverClass(p)} sizes="80px" />
                                 ) : null}
                               </div>
                               <span className="min-w-0 flex-1">

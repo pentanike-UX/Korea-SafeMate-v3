@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import { GUARDIAN_AVATAR_COVER_CLASS } from "@/lib/guardian-profile-images";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
@@ -338,7 +338,7 @@ export function GuardianRequestSheetHost({
         <SheetHeader className="border-border/60 shrink-0 space-y-3 border-b px-5 py-4 sm:px-6">
           <div className="flex items-start gap-3">
             <div className="border-border/50 relative size-14 shrink-0 overflow-hidden rounded-xl border bg-muted">
-              <Image src={activeAvatarUrl} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="56px" />
+              <Image src={activeAvatarUrl} alt="" fill className={GUARDIAN_AVATAR_COVER_CLASS} sizes="56px" />
             </div>
             <div className="min-w-0 flex-1 text-left">
               <SheetTitle className="text-left text-base leading-snug sm:text-lg">{activeDisplayName}</SheetTitle>

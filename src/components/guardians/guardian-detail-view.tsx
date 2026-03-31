@@ -23,7 +23,7 @@ import { filterIntroGalleryExcludingHero } from "@/lib/guardian-intro-gallery";
 import { resolveRepresentativeContentPosts } from "@/lib/guardian-representative-post-context";
 import {
   guardianProfileImageUrls,
-  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_AVATAR_COVER_CLASS,
   GUARDIAN_PROFILE_HERO_COVER_CLASS,
 } from "@/lib/guardian-profile-images";
 import { GuardianIntroGallery } from "@/components/guardians/guardian-intro-gallery";
@@ -68,6 +68,7 @@ export async function GuardianDetailView({
     title: p.title,
     summary: p.summary,
     imageUrl: getPostHeroImageUrl(p),
+    kind: p.kind,
   }));
 
   const reviews = mergedReviews;
@@ -131,7 +132,7 @@ export async function GuardianDetailView({
               <div className="min-w-0 max-w-3xl">
                 <div className="flex flex-wrap items-end gap-3 sm:gap-4">
                   <div className="border-background/40 relative size-14 min-h-0 min-w-0 shrink-0 overflow-hidden rounded-full border-2 shadow-md ring-2 ring-black/20 sm:size-[4.25rem]">
-                    <Image src={imgs.avatar} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="72px" />
+                    <Image src={imgs.avatar} alt="" fill className={GUARDIAN_AVATAR_COVER_CLASS} sizes="72px" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <h1 className="text-3xl font-semibold tracking-tight text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] sm:text-4xl">

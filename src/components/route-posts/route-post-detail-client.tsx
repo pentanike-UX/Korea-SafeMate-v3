@@ -19,7 +19,7 @@ import { GuardianRequestIntakeBullets } from "@/components/guardians/guardian-re
 import { GuardianRequestOpenTrigger, type GuardianRequestSheetHostProps } from "@/components/guardians/guardian-request-sheet";
 import { postCoverImageUrl, getSpotDisplayImageAlt, getSpotDisplayImageUrl } from "@/lib/content-post-route";
 import { buildLocalPostVisualPlan, localHeroAlt, type LocalPostVisualPlan } from "@/lib/post-local-images";
-import { FILL_IMAGE_COVER_CARD_16_10 } from "@/lib/ui/fill-image";
+import { routeSpotImageCoverClass } from "@/lib/post-image-crop";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
@@ -67,7 +67,7 @@ function SpotDetailBody({
   return (
     <div className="space-y-4">
       <div className="border-border/60 relative aspect-[16/10] overflow-hidden rounded-xl border sm:rounded-2xl">
-        <Image src={img} alt={imgAlt} fill className={FILL_IMAGE_COVER_CARD_16_10} sizes="(max-width:768px) 100vw, 640px" />
+        <Image src={img} alt={imgAlt} fill className={routeSpotImageCoverClass(post)} sizes="(max-width:768px) 100vw, 640px" />
       </div>
 
       {layout === "sheet" ? (

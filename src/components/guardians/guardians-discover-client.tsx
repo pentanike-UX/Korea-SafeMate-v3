@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrustBadgeRow } from "@/components/forty-two/trust-badges";
-import { guardianProfileImageUrls, GUARDIAN_PROFILE_COVER_POSITION_CLASS } from "@/lib/guardian-profile-images";
+import { guardianProfileImageUrls, GUARDIAN_LIST_CARD_COVER_CLASS } from "@/lib/guardian-profile-images";
 import { GUARDIAN_TIER_ROLE_BADGE_CLASSNAME, guardianTierBadgeVariant } from "@/lib/guardian-tier-ui";
 import { GuardianProfilePreviewSheetTrigger } from "@/components/guardians/guardian-profile-preview-sheet-trigger";
 import { GuardianRequestOpenTrigger } from "@/components/guardians/guardian-request-sheet";
@@ -459,7 +459,7 @@ export function GuardiansDiscoverClient({
                   <Card className="border-border/70 h-full overflow-hidden rounded-[var(--radius-md)] py-0 shadow-[var(--shadow-sm)] transition-all hover:border-[color-mix(in_srgb,var(--brand-trust-blue)_30%,var(--border))] hover:shadow-[var(--shadow-md)]">
                     <div className="flex h-full min-h-[9.5rem]">
                       <div className="relative min-h-0 w-[30%] min-w-[6.75rem] max-w-[8.5rem] shrink-0 self-stretch overflow-hidden bg-muted sm:min-w-[7.25rem] sm:max-w-[9rem]">
-                        <Image src={imgs.default} alt="" fill className={GUARDIAN_PROFILE_COVER_POSITION_CLASS} sizes="(max-width:640px) 32vw, 18vw" />
+                        <Image src={imgs.default} alt="" fill className={GUARDIAN_LIST_CARD_COVER_CLASS} sizes="(max-width:640px) 32vw, 18vw" />
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/35 to-transparent" />
                       </div>
                       <CardContent className="flex min-w-0 flex-1 flex-col gap-2 p-2.5 sm:p-3">

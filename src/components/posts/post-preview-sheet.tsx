@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getPostHeroImageUrl } from "@/lib/content-post-route";
+import { postCompactThumbCoverClass, postHeroCoverClass } from "@/lib/post-image-crop";
 import type { ContentPost } from "@/types/domain";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { listCardActionButtonClass } from "@/components/ui/action-variants";
@@ -31,7 +32,7 @@ export function PostPreviewSheetPanel({
           <img
             src={getPostHeroImageUrl(post)}
             alt=""
-            className="size-full object-cover object-[center_42%] sm:object-center"
+            className={cn("size-full", postHeroCoverClass(post))}
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -87,7 +88,7 @@ export function PostPreviewSheetCardRoute({
               src={cover}
               alt=""
               fill
-              className="object-cover object-[center_40%] sm:object-center transition-transform duration-500 group-hover:scale-[1.03]"
+              className={cn(postCompactThumbCoverClass(post), "transition-transform duration-500 group-hover:scale-[1.03]")}
               sizes="128px"
             />
           ) : null}
@@ -135,7 +136,7 @@ export function PostPreviewSheetCardArticle({ post }: { post: ContentPost }) {
               src={cover}
               alt=""
               fill
-              className="object-cover object-[center_42%] sm:object-center transition-transform duration-500 group-hover:scale-[1.02]"
+              className={cn(postHeroCoverClass(post), "transition-transform duration-500 group-hover:scale-[1.02]")}
               sizes="(max-width:768px) 100vw, 50vw"
             />
           ) : null}

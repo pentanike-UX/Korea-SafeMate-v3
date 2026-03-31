@@ -1,16 +1,23 @@
 import type { GuardianProfile } from "@/types/domain";
-import { FILL_IMAGE_COVER_HERO } from "@/lib/ui/fill-image";
+import {
+  FILL_IMAGE_AVATAR_COVER,
+  FILL_IMAGE_GUARDIAN_DETAIL_HERO,
+  FILL_IMAGE_GUARDIAN_LIST_CARD,
+} from "@/lib/ui/fill-image";
+
+/** 가로 히어로(상세·포스트 사이드·시트 상단) — `landscape` URL + 중앙 크롭 */
+export const GUARDIAN_PROFILE_HERO_COVER_CLASS = FILL_IMAGE_GUARDIAN_DETAIL_HERO;
+
+/** 목록·디렉터리 카드 세로 컷 — `default`/`list_card` URL + 상단(얼굴·상체) */
+export const GUARDIAN_LIST_CARD_COVER_CLASS = FILL_IMAGE_GUARDIAN_LIST_CARD;
+
+/** 원형·작은 정사각 프로필 — `avatar` URL + 얼굴 중심 */
+export const GUARDIAN_AVATAR_COVER_CLASS = FILL_IMAGE_AVATAR_COVER;
 
 /**
- * 아바타·목록 세로 띠 등 — 박스를 항상 꽉 채움(`object-cover`). 모바일에서 얼굴·상단 피사체 우선.
- * 부모는 `relative overflow-hidden` + `fill` 또는 `absolute inset-0 size-full` 권장.
+ * @deprecated `GUARDIAN_LIST_CARD_COVER_CLASS`(목록) 또는 `GUARDIAN_AVATAR_COVER_CLASS`(아바타) 사용.
  */
-export const GUARDIAN_PROFILE_COVER_POSITION_CLASS = "h-full w-full object-cover object-top sm:object-center";
-
-/**
- * 가디언 상세/시트/사이드바 등 **가로 히어로**용 — 동일하게 cover로 빈틈 없이 채우고, 와이드 컷은 약한 상단 앵커.
- */
-export const GUARDIAN_PROFILE_HERO_COVER_CLASS = FILL_IMAGE_COVER_HERO;
+export const GUARDIAN_PROFILE_COVER_POSITION_CLASS = GUARDIAN_LIST_CARD_COVER_CLASS;
 
 export type GuardianImageSource = Pick<GuardianProfile, "user_id" | "photo_url"> & {
   avatar_image_url?: string | null;

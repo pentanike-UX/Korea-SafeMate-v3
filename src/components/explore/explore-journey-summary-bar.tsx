@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { formatDecisionInterpretLine } from "@/lib/explore-decision-interpret";
 import type { LaunchAreaSlug } from "@/types/launch-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +63,11 @@ export function ExploreJourneySummaryBar({
 
   const isResults = variant === "results";
 
+  const interpretLine = useMemo(() => {
+    if (!isResults || step < 2) return "";
+    return formatDecisionInterpretLine(t, tLaunch, tThemes, { region, theme, days, partySize, pace });
+  }, [isResults, step, t, tLaunch, tThemes, region, theme, days, partySize, pace]);
+
   return (
     <div
       className={cn(
@@ -70,6 +77,7 @@ export function ExploreJourneySummaryBar({
       role="region"
       aria-label={t("summaryBarAria")}
     >
+      <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 min-[400px]:flex-row min-[400px]:flex-wrap min-[400px]:items-center min-[400px]:justify-between">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1 min-[400px]:gap-2">
           <span className="text-muted-foreground inline-flex w-full min-w-0 items-center gap-1 text-[10px] font-semibold tracking-wide uppercase min-[400px]:w-auto">
@@ -142,7 +150,7 @@ export function ExploreJourneySummaryBar({
           {step >= 2 && onEditBasics ? (
             <Button
               type="button"
-              variant={isResults ? "secondary" : "ghost"}
+              variant={isResults ? "default" : "ghost"}
               size="sm"
               className={cn(
                 "h-9 min-h-9 w-full shrink-0 rounded-xl px-3 text-xs font-semibold min-[400px]:w-auto",
@@ -150,20 +158,38 @@ export function ExploreJourneySummaryBar({
               )}
               onClick={onEditBasics}
             >
-              {t("editAreaTheme")}
+              {isResults ? t("editConditions") : t("editAreaTheme")}
             </Button>
           ) : null}
           {isResults && onEditSchedule ? (
-            <Button type="button" variant="outline" size="sm" className="h-9 min-h-9 w-full rounded-xl text-xs font-semibold min-[400px]:w-auto" onClick={onEditSchedule}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 min-h-9 w-full rounded-xl text-xs font-semibold min-[400px]:w-auto"
+              onClick={onEditSchedule}
+            >
               {t("editScheduleShort")}
             </Button>
           ) : null}
           {isResults && onEditTaste ? (
-            <Button type="button" variant="outline" size="sm" className="h-9 min-h-9 w-full rounded-xl text-xs font-semibold min-[400px]:w-auto" onClick={onEditTaste}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-9 min-h-9 w-full rounded-xl text-xs font-semibold text-muted-foreground min-[400px]:w-auto"
+              onClick={onEditTaste}
+            >
               {t("editTasteShort")}
             </Button>
           ) : null}
         </div>
+      </div>
+      {interpretLine ? (
+        <p className="text-foreground border-border/40 mt-1 border-t pt-2 text-xs leading-relaxed font-medium sm:text-sm">
+          {interpretLine}
+        </p>
+      ) : null}
       </div>
     </div>
   );

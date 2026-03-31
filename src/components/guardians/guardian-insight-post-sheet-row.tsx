@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { ContentPost } from "@/types/domain";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { PostPreviewSheetPanel } from "@/components/posts/post-preview-sheet";
+import { postCompactThumbCoverClass } from "@/lib/post-image-crop";
 import { cn } from "@/lib/utils";
 
 export function GuardianInsightPostSheetRow({
@@ -51,7 +52,7 @@ export function GuardianInsightPostSheetRow({
               src={imageUrl}
               alt=""
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              className={cn(postCompactThumbCoverClass(post), "transition-transform duration-300 group-hover:scale-[1.03]")}
               sizes="(max-width:640px) 72px, 84px"
             />
           </div>

@@ -6,12 +6,16 @@ import { Link } from "@/i18n/navigation";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { ContentPost } from "@/types/domain";
+import { sheetRelatedPostThumbCoverClass } from "@/lib/post-image-crop";
 
 export type RelatedPostSheetItem = {
   id: string;
   title: string;
   summary: string;
   imageUrl: string;
+  /** 없으면 시트 썸네일은 `FILL_IMAGE_POST_THUMB_SQUARE` 계열 혼합 기본 */
+  kind?: ContentPost["kind"];
 };
 
 export function RelatedPostsBrowseSheet({
@@ -67,7 +71,13 @@ export function RelatedPostsBrowseSheet({
                   className="border-border/70 bg-card group flex gap-3 overflow-hidden rounded-xl border p-2.5 shadow-[var(--shadow-sm)] transition-colors hover:border-primary/30"
                 >
                   <div className="border-border/50 relative size-[4.25rem] shrink-0 overflow-hidden rounded-lg border bg-muted sm:size-[4.75rem]">
-                    <Image src={p.imageUrl} alt="" fill className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" sizes="76px" />
+                    <Image
+                      src={p.imageUrl}
+                      alt=""
+                      fill
+                      className={cn(sheetRelatedPostThumbCoverClass(p.kind), "transition-transform duration-300 group-hover:scale-[1.03]")}
+                      sizes="76px"
+                    />
                   </div>
                   <div className="min-w-0 flex-1 py-0.5">
                     <p className="text-foreground line-clamp-2 text-sm font-semibold leading-snug">{p.title}</p>

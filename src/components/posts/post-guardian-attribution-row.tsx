@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
+import { FILL_IMAGE_AVATAR_COVER } from "@/lib/ui/fill-image";
 
 export function PostGuardianAttributionRow({
   displayName,
@@ -26,7 +26,7 @@ export function PostGuardianAttributionRow({
       )}
     >
       <div className="relative size-11 shrink-0 overflow-hidden rounded-full border border-border/50 bg-muted sm:size-12">
-        <Image src={avatarUrl} alt="" fill className={FILL_IMAGE_COVER_CENTER} sizes="48px" />
+        <Image src={avatarUrl} alt="" fill className={FILL_IMAGE_AVATAR_COVER} sizes="48px" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-muted-foreground text-[10px] font-bold tracking-wide uppercase">

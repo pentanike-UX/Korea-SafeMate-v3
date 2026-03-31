@@ -26,7 +26,7 @@ import { resolvePostTypeLabelKey } from "@/lib/post-detail-type-label";
 import { PostDetailHero } from "@/components/posts/post-detail-hero";
 import { PostDetailIntroPanel } from "@/components/posts/post-detail-intro-panel";
 import { PostGuardianAttributionRow } from "@/components/posts/post-guardian-attribution-row";
-import { FILL_IMAGE_COVER_CENTER } from "@/lib/ui/fill-image";
+import { postHeroCoverClass } from "@/lib/post-image-crop";
 import { ArrowLeft } from "lucide-react";
 
 export async function PostDetailView({ post }: { post: ContentPost }) {
@@ -97,7 +97,7 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
                 src={secondaryCover!}
                 alt={secondaryAlt ?? heroAlt}
                 fill
-                className={FILL_IMAGE_COVER_CENTER}
+                className={postHeroCoverClass(post)}
                 sizes="(max-width:1024px) 100vw, 66vw"
               />
             </figure>
@@ -125,6 +125,7 @@ export async function PostDetailView({ post }: { post: ContentPost }) {
                   title: r.title,
                   summary: r.summary,
                   imageUrl: getPostHeroImageUrl(r),
+                  kind: r.kind,
                 }))}
                 sheetTitle={t("relatedBrowseSheetTitle")}
                 triggerLabel={t("relatedBrowseTrigger")}

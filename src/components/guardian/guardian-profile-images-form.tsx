@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { CoverCropPreview } from "@/components/media/cover-crop-preview";
 import {
   guardianProfileImageUrls,
-  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_AVATAR_COVER_CLASS,
+  GUARDIAN_LIST_CARD_COVER_CLASS,
+  GUARDIAN_PROFILE_HERO_COVER_CLASS,
   type GuardianImageSource,
 } from "@/lib/guardian-profile-images";
 import { Button } from "@/components/ui/button";
@@ -86,7 +88,7 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <CoverCropPreview
               src={imgs.avatar}
               containerClassName="size-28 shrink-0 sm:size-32"
-              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              imgClassName={GUARDIAN_AVATAR_COVER_CLASS}
               emptyLabel={t("previewEmpty")}
               roundedFull
               safeFrame
@@ -114,7 +116,7 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <CoverCropPreview
               src={imgs.default}
               containerClassName="h-[9.5rem] w-[7.25rem] shrink-0"
-              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              imgClassName={GUARDIAN_LIST_CARD_COVER_CLASS}
               emptyLabel={t("previewEmpty")}
               caption={t("listPreviewCaption")}
               safeFrame
@@ -142,7 +144,7 @@ export function GuardianProfileImagesForm({ userId, initial }: { userId: string;
             <CoverCropPreview
               src={imgs.landscape}
               containerClassName="aspect-[21/9] w-full max-w-xl shrink-0"
-              imgClassName={GUARDIAN_PROFILE_COVER_POSITION_CLASS}
+              imgClassName={GUARDIAN_PROFILE_HERO_COVER_CLASS}
               emptyLabel={t("previewEmpty")}
               caption={t("detailPreviewCaption")}
               safeFrame

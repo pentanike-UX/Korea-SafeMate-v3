@@ -31,6 +31,7 @@ export async function PostAuthorAside({ post }: { post: ContentPost }) {
     title: gp.title,
     summary: gp.summary,
     imageUrl: getPostHeroImageUrl(gp),
+    kind: gp.kind,
   }));
   const repForPreview =
     guardian != null

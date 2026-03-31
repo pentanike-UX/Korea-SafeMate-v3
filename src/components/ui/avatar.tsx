@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
 
+import { FILL_IMAGE_AVATAR_COVER } from "@/lib/ui/fill-image"
 import { cn } from "@/lib/utils"
 
 function Avatar({
@@ -30,7 +31,8 @@ function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square size-full rounded-full object-cover",
+        "aspect-square size-full rounded-full",
+        FILL_IMAGE_AVATAR_COVER,
         className
       )}
       {...props}

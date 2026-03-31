@@ -35,3 +35,48 @@ export function exploreGuardianFitLineKeyAtIndex(
   const list = exploreGuardianFitLineKeys(region, theme, pace);
   return list[index % list.length]!;
 }
+
+/** 조건 매칭 우선, 나머지는 일정한 순서로 이어 붙여 1·2·3순위 문구가 겹치지 않게 한다. */
+const ALL_KEYS_FALLBACK_ORDER: ExploreFitLineKey[] = [
+  "fitLineGwanghwamun",
+  "fitLineKpop",
+  "fitLinePhoto",
+  "fitLineFirstVisit",
+  "fitLineWalking",
+];
+
+export function exploreOrderedFitKeys(
+  region: LaunchAreaSlug | "",
+  theme: string,
+  pace: Pace,
+): ExploreFitLineKey[] {
+  const matched = exploreGuardianFitLineKeys(region, theme, pace);
+  const rest = ALL_KEYS_FALLBACK_ORDER.filter((k) => !matched.includes(k));
+  return [...matched, ...rest];
+}
+
+export function exploreTopPickBulletKeys(
+  region: LaunchAreaSlug | "",
+  theme: string,
+  pace: Pace,
+): [ExploreFitLineKey, ExploreFitLineKey, ExploreFitLineKey] {
+  const o = exploreOrderedFitKeys(region, theme, pace);
+  const n = o.length;
+  return [o[0 % n]!, o[1 % n]!, o[2 % n]!];
+}
+
+export function exploreCompareCardKeys(
+  region: LaunchAreaSlug | "",
+  theme: string,
+  pace: Pace,
+  rank: 2 | 3,
+): { strength: ExploreFitLineKey; reason: ExploreFitLineKey; diff: ExploreFitLineKey } {
+  const o = exploreOrderedFitKeys(region, theme, pace);
+  const n = o.length;
+  const base = rank === 2 ? 3 : 4;
+  return {
+    strength: o[base % n]!,
+    reason: o[(base + 1) % n]!,
+    diff: o[(base + 2) % n]!,
+  };
+}

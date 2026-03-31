@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   guardianProfileImageUrls,
-  GUARDIAN_PROFILE_COVER_POSITION_CLASS,
+  GUARDIAN_AVATAR_COVER_CLASS,
   GUARDIAN_PROFILE_HERO_COVER_CLASS,
 } from "@/lib/guardian-profile-images";
 import type { GuardianProfileSheetPreview } from "@/lib/guardian-profile-sheet-preview";
@@ -69,7 +69,7 @@ export function GuardianProfilePreviewPanel({
             <img
               src={imgs.avatar}
               alt=""
-              className={cn("absolute inset-0 size-full min-h-0 min-w-0", GUARDIAN_PROFILE_COVER_POSITION_CLASS)}
+              className={cn("absolute inset-0 size-full min-h-0 min-w-0", GUARDIAN_AVATAR_COVER_CLASS)}
             />
           </div>
           <div className="min-w-0">
