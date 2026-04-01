@@ -718,7 +718,7 @@ export function ExploreResultsDashboard(props: {
                   <Card className="border-primary/40 from-primary/[0.11] ring-primary/20 overflow-hidden rounded-[1.5rem] border-2 bg-gradient-to-br to-card shadow-[var(--shadow-xl)] ring-2">
                     <CardContent className="p-0">
                       <div className="flex flex-col lg:flex-row">
-                        <div className="relative aspect-[3/4] w-full min-h-0 overflow-hidden bg-muted max-[1023px]:max-h-[min(88vw,26rem)] sm:aspect-[5/4] lg:aspect-auto lg:max-h-[420px] lg:min-h-[320px] lg:max-w-[320px] lg:shrink-0">
+                        <div className="relative aspect-[3/4] w-full min-h-0 overflow-hidden bg-muted max-[1023px]:max-h-[min(88vw,26rem)] sm:aspect-[5/4] lg:aspect-auto lg:min-h-[320px] lg:max-w-[320px] lg:shrink-0">
                           <Image
                             src={guardianProfileImageUrls(featured).landscape}
                             alt=""
