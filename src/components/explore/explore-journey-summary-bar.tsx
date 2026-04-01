@@ -54,8 +54,6 @@ export function ExploreJourneySummaryBar({
 
   const hasAnything = Boolean(region) || Boolean(theme) || step >= 2;
 
-  if (!hasAnything) return null;
-
   const tripKey = days === "1" ? "tripDays1" : days === "2" ? "tripDays2" : "tripDays3";
 
   const chipClass =
@@ -64,9 +62,11 @@ export function ExploreJourneySummaryBar({
   const isResults = variant === "results";
 
   const interpretLine = useMemo(() => {
-    if (!isResults || step < 2) return "";
+    if (!hasAnything || !isResults || step < 2) return "";
     return formatDecisionInterpretLine(t, tLaunch, tThemes, { region, theme, days, partySize, pace });
-  }, [isResults, step, t, tLaunch, tThemes, region, theme, days, partySize, pace]);
+  }, [hasAnything, isResults, step, t, tLaunch, tThemes, region, theme, days, partySize, pace]);
+
+  if (!hasAnything) return null;
 
   return (
     <div
